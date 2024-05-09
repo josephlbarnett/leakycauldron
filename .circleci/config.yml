@@ -110,10 +110,12 @@ jobs:
       - run:
           name: Maven Build
           command: |
-            if [ "$CIRCLE_BRANCH" = "main" ]; then
+            if [ "$CIRCLE_BRANCH" = "main" -a "$CIRCLE_PROJECT_USERNAME" = "trib3" ]; then
               ./mvnw deploy -DaltDeploymentRepository=ossrh::${MAVEN_RELEASE_REPO} --no-transfer-progress -U
-            else
+            elif [ "$CIRCLE_PROJECT_USERNAME" = "trib3" ]; then
               ./mvnw deploy -DaltDeploymentRepository=ossrh::${MAVEN_SNAPSHOT_REPO} --no-transfer-progress -U
+            else
+              ./mvnw install --no-transfer-progress -U
             fi
       - save_cache:
           paths:
