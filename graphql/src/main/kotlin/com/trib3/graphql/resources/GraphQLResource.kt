@@ -51,9 +51,7 @@ private val log = KotlinLogging.logger {}
 /**
  * Helper method for null-safe context map construction
  */
-inline fun <reified T> contextMap(value: T?): Map<*, Any> {
-    return value?.let { mapOf(T::class to value) }.orEmpty()
-}
+inline fun <reified T> contextMap(value: T?): Map<*, Any> = value?.let { mapOf(T::class to value) }.orEmpty()
 
 /**
  * Helper method to construct a [GraphQLContext]'s underlying [Map] from a [CoroutineScope] and optional [Principal].
@@ -61,19 +59,18 @@ inline fun <reified T> contextMap(value: T?): Map<*, Any> {
 fun getGraphQLContextMap(
     scope: CoroutineScope,
     principal: Principal? = null,
-): Map<*, Any> {
-    return contextMap(scope) + contextMap(principal)
-}
+): Map<*, Any> = contextMap(scope) + contextMap(principal)
 
 /**
  * Returns a response telling the browser that basic authorization is required
  */
-internal fun unauthorizedResponse(): Response {
-    return Response.status(HttpStatus.UNAUTHORIZED_401).header(
-        "WWW-Authenticate",
-        "Basic realm=\"realm\"",
-    ).build()
-}
+internal fun unauthorizedResponse(): Response =
+    Response
+        .status(HttpStatus.UNAUTHORIZED_401)
+        .header(
+            "WWW-Authenticate",
+            "Basic realm=\"realm\"",
+        ).build()
 
 /**
  * Jersey Resource entry point to GraphQL execution.  Configures the graphql schemas at
@@ -95,10 +92,12 @@ open class GraphQLResource
         // when doing CORS checking of websockets
         private val corsRegex =
             Regex(
-                appConfig.corsDomains.joinToString("|") {
-                    "https?://*.?$it|" +
-                        "https?://*.?$it:${appConfig.appPort}"
-                }.replace(".", "\\.").replace("*", ".*"),
+                appConfig.corsDomains
+                    .joinToString("|") {
+                        "https?://*.?$it|" +
+                            "https?://*.?$it:${appConfig.appPort}"
+                    }.replace(".", "\\.")
+                    .replace("*", ".*"),
             )
         internal val runningFutures = ConcurrentHashMap<String, CoroutineScope>()
 

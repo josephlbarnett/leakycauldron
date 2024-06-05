@@ -38,9 +38,7 @@ import org.testng.annotations.Test
 import java.util.concurrent.CompletableFuture
 
 class DummyQuery {
-    fun query(): String {
-        return "test"
-    }
+    fun query(): String = "test"
 }
 
 class DummyModule : GraphQLApplicationModule() {
@@ -99,7 +97,8 @@ class GraphQLApplicationModuleTest
             val mockHandler = LeakyMock.mock<MutableServletContextHandler>()
             val initializerCapture = EasyMock.newCapture<ServletContainerInitializer>()
             EasyMock.expect(environment.applicationContext).andReturn(mockHandler)
-            EasyMock.expect(mockHandler.addServletContainerInitializer(LeakyMock.capture(initializerCapture)))
+            EasyMock
+                .expect(mockHandler.addServletContainerInitializer(LeakyMock.capture(initializerCapture)))
                 .andReturn(null)
             EasyMock.expect(mockHandler.isStopped).andReturn(true)
             EasyMock.replay(environment, mockHandler)
@@ -118,8 +117,8 @@ class OverrideDataLoaderModule : GraphQLApplicationModule() {
                 object : KotlinDataLoader<String, String> {
                     override val dataLoaderName = "loader"
 
-                    override fun getDataLoader(graphQLContext: GraphQLContext): DataLoader<String, String> {
-                        return DataLoaderFactory.newDataLoader { keys: List<String> ->
+                    override fun getDataLoader(graphQLContext: GraphQLContext): DataLoader<String, String> =
+                        DataLoaderFactory.newDataLoader { keys: List<String> ->
                             if (keys != listOf("a", "b")) {
                                 throw IllegalArgumentException("wrong keys!")
                             }
@@ -130,7 +129,6 @@ class OverrideDataLoaderModule : GraphQLApplicationModule() {
                                 ),
                             )
                         }
-                    }
                 },
             ),
         )
@@ -151,7 +149,8 @@ class GraphQLApplicationModuleDataLoaderOverrideTest
             val factory = graphQLResources.first().dataLoaderRegistryFactory
             assertThat(factory).isNotNull()
             val loader =
-                factory!!.generate(GraphQLContext.getDefault())
+                factory!!
+                    .generate(GraphQLContext.getDefault())
                     .getDataLoader<String, String>("loader")
             assertThat(loader).isNotNull()
             val future = loader.loadMany(listOf("a", "b"))

@@ -51,7 +51,9 @@ private val log = KotlinLogging.logger {}
  * sending messages back to the WebSocket client
  */
 @OptIn(DelicateCoroutinesApi::class)
-abstract class GraphQLCoroutine(private val channel: Channel<OperationMessage<*>>) {
+abstract class GraphQLCoroutine(
+    private val channel: Channel<OperationMessage<*>>,
+) {
     abstract suspend fun run()
 
     /**
@@ -110,25 +112,26 @@ class QueryCoroutine(
                     log.debug("Could not get Flow result, collecting result directly", e)
                     flowOf(result)
                 }
-            flow.onEach {
-                yield() // allow for cancellations to abort the coroutine
-                queueMessage(
-                    OperationMessage(
-                        OperationType.GQL_DATA,
-                        messageId,
-                        it.toGraphQLResponse(),
-                    ),
-                )
-            }.catch {
-                yield() // allow for cancellations to abort the coroutine
-                onChildError(messageId, it)
-            }.onCompletion { maybeException ->
-                // Only send complete if there's no exception
-                if (maybeException == null) {
+            flow
+                .onEach {
                     yield() // allow for cancellations to abort the coroutine
-                    queueMessage(OperationMessage(OperationType.GQL_COMPLETE, messageId))
-                }
-            }.collect()
+                    queueMessage(
+                        OperationMessage(
+                            OperationType.GQL_DATA,
+                            messageId,
+                            it.toGraphQLResponse(),
+                        ),
+                    )
+                }.catch {
+                    yield() // allow for cancellations to abort the coroutine
+                    onChildError(messageId, it)
+                }.onCompletion { maybeException ->
+                    // Only send complete if there's no exception
+                    if (maybeException == null) {
+                        yield() // allow for cancellations to abort the coroutine
+                        queueMessage(OperationMessage(OperationType.GQL_COMPLETE, messageId))
+                    }
+                }.collect()
         } catch (e: Throwable) {
             onChildError(messageId, e)
         }
@@ -314,11 +317,10 @@ class GraphQLWebSocketConsumer(
      * First checks any creds from the [OperationType.GQL_CONNECTION_INIT] payload,
      * then falls back to creds from the websocket upgrade request
      */
-    private fun getSocketPrincipal(): Principal? {
-        return connectionInitContainerRequest?.let {
+    private fun getSocketPrincipal(): Principal? =
+        connectionInitContainerRequest?.let {
             graphQLWebSocketAuthenticator?.invoke(it)
         } ?: graphQLWebSocketAuthenticator?.invoke(getReusableUpgradeContainerRequestContext())
-    }
 
     /**
      * Process an [OperationType.GQL_CONNECTION_INIT] message.  If the connection

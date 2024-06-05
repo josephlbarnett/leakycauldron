@@ -49,21 +49,13 @@ import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 
 class TestQuery : Query {
-    fun test(value: String): String {
-        return value
-    }
+    fun test(value: String): String = value
 
-    fun error(): String {
-        throw IllegalArgumentException("an error was thrown")
-    }
+    fun error(): String = throw IllegalArgumentException("an error was thrown")
 
-    fun unknownError(): String {
-        throw IllegalArgumentException()
-    }
+    fun unknownError(): String = throw IllegalArgumentException()
 
-    fun unauthorizedError(): String {
-        throw ClientErrorException(HttpStatus.UNAUTHORIZED_401)
-    }
+    fun unauthorizedError(): String = throw ClientErrorException(HttpStatus.UNAUTHORIZED_401)
 
     suspend fun cancellable(): String {
         delay(100)
@@ -73,17 +65,17 @@ class TestQuery : Query {
 
 class GraphQLResourceTest {
     val graphQL =
-        GraphQL.newGraphQL(
-            toSchema(
-                SchemaGeneratorConfig(
-                    listOf(this::class.java.packageName),
+        GraphQL
+            .newGraphQL(
+                toSchema(
+                    SchemaGeneratorConfig(
+                        listOf(this::class.java.packageName),
+                    ),
+                    listOf(TopLevelObject(TestQuery())),
+                    listOf(),
+                    listOf(),
                 ),
-                listOf(TopLevelObject(TestQuery())),
-                listOf(),
-                listOf(),
-            ),
-        )
-            .queryExecutionStrategy(AsyncExecutionStrategy(CustomDataFetcherExceptionHandler()))
+            ).queryExecutionStrategy(AsyncExecutionStrategy(CustomDataFetcherExceptionHandler()))
             .instrumentation(RequestIdInstrumentation())
             .build()
 
@@ -141,7 +133,8 @@ class GraphQLResourceTest {
         val mockCtx = LeakyMock.niceMock<ContainerRequestContext>()
         EasyMock.expect(mockReq.pathInfo).andReturn("/graphql")
         EasyMock.expect(mockReq.getHeader("Origin")).andReturn("http://test1.leakycauldron.trib3.com")
-        EasyMock.expect(mockRes.getHeader(CrossOriginFilter.ACCESS_CONTROL_ALLOW_ORIGIN_HEADER))
+        EasyMock
+            .expect(mockRes.getHeader(CrossOriginFilter.ACCESS_CONTROL_ALLOW_ORIGIN_HEADER))
             .andReturn("http://test1.leakycauldron.trib3.com")
         EasyMock.replay(mockReq, mockRes, mockCtx)
         val resp = resource.graphQLUpgrade(Optional.empty(), mockReq, mockRes, mockCtx)
@@ -170,7 +163,9 @@ class GraphQLResourceTest {
             val result = resource.graphQL(Optional.empty(), GraphQLRequest("query {error}"))
             val graphQLResult = result.entity as GraphQLResponse<*>
             val errors = graphQLResult.errors
-            assertThat(errors?.first()).isNotNull().prop("message", GraphQLServerError::message)
+            assertThat(errors?.first())
+                .isNotNull()
+                .prop("message", GraphQLServerError::message)
                 .isEqualTo("an error was thrown")
             val serializedError = objectMapper.writeValueAsString(graphQLResult.errors?.first())
             assertThat(objectMapper.readValue<Map<String, *>>(serializedError).keys).doesNotContain("exception")
@@ -190,7 +185,9 @@ class GraphQLResourceTest {
         runBlocking {
             val result = resource.graphQL(Optional.empty(), GraphQLRequest("query {unknownError}"))
             val graphQLResult = result.entity as GraphQLResponse<*>
-            assertThat(graphQLResult.errors?.first()).isNotNull().prop("message", GraphQLServerError::message)
+            assertThat(graphQLResult.errors?.first())
+                .isNotNull()
+                .prop("message", GraphQLServerError::message)
                 .contains("Exception while fetching data")
             val serializedError = objectMapper.writeValueAsString(graphQLResult.errors?.first())
             assertThat(objectMapper.readValue<Map<String, *>>(serializedError).keys).doesNotContain("exception")
@@ -272,10 +269,11 @@ class GraphQLResourceTest {
                 delay(1)
             }
             assertThat(
-                lockedResource.cancel(
-                    Optional.of(UserPrincipal(User("bill"))),
-                    "123",
-                ).status,
+                lockedResource
+                    .cancel(
+                        Optional.of(UserPrincipal(User("bill"))),
+                        "123",
+                    ).status,
             ).isEqualTo(HttpStatus.NO_CONTENT_204)
             job.join()
             assertThat(reached).isTrue()

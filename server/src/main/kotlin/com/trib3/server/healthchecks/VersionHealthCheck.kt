@@ -11,8 +11,8 @@ private val log = KotlinLogging.logger { }
  */
 open class VersionHealthCheck : HealthCheck() {
     companion object {
-        private fun readVersion(): Pair<String, Boolean> {
-            return try {
+        private fun readVersion(): Pair<String, Boolean> =
+            try {
                 val loader = this::class.java.classLoader
                 val info = loader.getResource("package-info.txt").readText().trim()
                 val gitProps = Properties()
@@ -27,7 +27,6 @@ open class VersionHealthCheck : HealthCheck() {
                 log.error("Unable to read version info: ${e.message}", e)
                 "Unable to read version info: ${e.message}" to false
             }
-        }
 
         private val info: String
         private val healthy: Boolean
@@ -42,12 +41,12 @@ open class VersionHealthCheck : HealthCheck() {
     /**
      * Returns version information as a string
      */
-    fun info(): String {
-        return info
-    }
+    fun info(): String = info
 
-    public override fun check(): Result {
-        return Result.builder().withMessage(info)
+    public override fun check(): Result =
+        Result
+            .builder()
+            .withMessage(info)
             .run {
                 if (healthy) {
                     healthy()
@@ -55,5 +54,4 @@ open class VersionHealthCheck : HealthCheck() {
                     unhealthy()
                 }
             }.build()
-    }
 }

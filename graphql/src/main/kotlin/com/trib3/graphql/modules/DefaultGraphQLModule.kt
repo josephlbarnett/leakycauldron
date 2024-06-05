@@ -35,7 +35,8 @@ class DefaultGraphQLModule : GraphQLApplicationModule() {
         // by default, null DataLoaderRegistryFactoryProvider is configured, applications can
         // override this by setting a binding
         dataLoaderRegistryFactoryBinder()
-            .setDefault().toProvider(Providers.of(null))
+            .setDefault()
+            .toProvider(Providers.of(null))
         // by default, any AuthFilter that is registered to guice will be used for
         // authenticating websocket connections during the websocket upgrade or
         // the [OperationType.GQL_CONNNECTION_INIT] message.  Applications can provide
@@ -93,15 +94,15 @@ class DefaultGraphQLModule : GraphQLApplicationModule() {
                 graphQLPackages.toList(),
                 hooks = hooks,
             )
-        return GraphQL.newGraphQL(
-            toSchema(
-                config,
-                queries.toList().map { TopLevelObject(it) },
-                mutations.toList().map { TopLevelObject(it) },
-                subscriptions.toList().map { TopLevelObject(it) },
-            ),
-        )
-            .queryExecutionStrategy(AsyncExecutionStrategy(exceptionHandler))
+        return GraphQL
+            .newGraphQL(
+                toSchema(
+                    config,
+                    queries.toList().map { TopLevelObject(it) },
+                    mutations.toList().map { TopLevelObject(it) },
+                    subscriptions.toList().map { TopLevelObject(it) },
+                ),
+            ).queryExecutionStrategy(AsyncExecutionStrategy(exceptionHandler))
             .mutationExecutionStrategy(AsyncExecutionStrategy(exceptionHandler))
             .subscriptionExecutionStrategy(FlowSubscriptionExecutionStrategy(exceptionHandler))
             .instrumentation(ChainedInstrumentation(listOf(RequestIdInstrumentation()) + instrumentations.toList()))
@@ -109,11 +110,7 @@ class DefaultGraphQLModule : GraphQLApplicationModule() {
     }
 
     // allow multiple installations so that multiple other modules can install this one
-    override fun equals(other: Any?): Boolean {
-        return other is DefaultGraphQLModule
-    }
+    override fun equals(other: Any?): Boolean = other is DefaultGraphQLModule
 
-    override fun hashCode(): Int {
-        return this::class.hashCode()
-    }
+    override fun hashCode(): Int = this::class.hashCode()
 }

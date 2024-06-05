@@ -9,7 +9,9 @@ import jakarta.inject.Inject
  */
 class TribeApplicationConfig
     @Inject
-    constructor(loader: ConfigLoader) {
+    constructor(
+        loader: ConfigLoader,
+    ) {
         val env: String
         val appName: String
         val corsDomains: List<String>

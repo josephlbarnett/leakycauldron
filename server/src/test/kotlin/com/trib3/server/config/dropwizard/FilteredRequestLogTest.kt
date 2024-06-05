@@ -49,9 +49,11 @@ class FilteredRequestLogTest {
         val mockResponse = LeakyMock.niceMock<Response>()
         EasyMock.expect(mockRequest.requestURI).andReturn("/app/ping").anyTimes()
         EasyMock.expect(mockRequest.timeStamp).andReturn(System.currentTimeMillis() + 200).anyTimes()
-        EasyMock.expect(mockResponse.committedMetaData).andReturn(
-            MetaData.Response(null, HttpServletResponse.SC_OK, null),
-        ).anyTimes()
+        EasyMock
+            .expect(mockResponse.committedMetaData)
+            .andReturn(
+                MetaData.Response(null, HttpServletResponse.SC_OK, null),
+            ).anyTimes()
         EasyMock.replay(mockRequest, mockResponse)
         logger.log(mockRequest, mockResponse)
         assertThat(events).isEmpty()
@@ -82,9 +84,11 @@ class FilteredRequestLogTest {
         val mockResponse = LeakyMock.niceMock<Response>()
         EasyMock.expect(mockRequest.requestURI).andReturn("/app/ping").anyTimes()
         EasyMock.expect(mockRequest.timeStamp).andReturn(System.currentTimeMillis() - 300).anyTimes()
-        EasyMock.expect(mockResponse.committedMetaData).andReturn(
-            MetaData.Response(null, HttpServletResponse.SC_OK, null),
-        ).anyTimes()
+        EasyMock
+            .expect(mockResponse.committedMetaData)
+            .andReturn(
+                MetaData.Response(null, HttpServletResponse.SC_OK, null),
+            ).anyTimes()
         EasyMock.replay(mockRequest, mockResponse)
         logger.log(mockRequest, mockResponse)
         assertThat(events).isNotEmpty()
@@ -117,9 +121,11 @@ class FilteredRequestLogTest {
         val fields = HttpFields.build(HttpFields.from(HttpField(null, "X-Request-Id", fakeRequestId)))
         EasyMock.expect(mockRequest.requestURI).andReturn("/app/ping").anyTimes()
         EasyMock.expect(mockRequest.timeStamp).andReturn(System.currentTimeMillis() + 200).anyTimes()
-        EasyMock.expect(mockResponse.committedMetaData).andReturn(
-            MetaData.Response(null, HttpServletResponse.SC_SERVICE_UNAVAILABLE, fields),
-        ).anyTimes()
+        EasyMock
+            .expect(mockResponse.committedMetaData)
+            .andReturn(
+                MetaData.Response(null, HttpServletResponse.SC_SERVICE_UNAVAILABLE, fields),
+            ).anyTimes()
         val mockChannel = LeakyMock.niceMock<HttpChannel>()
         EasyMock.expect(mockResponse.httpChannel).andReturn(mockChannel).anyTimes()
         EasyMock.expect(mockResponse.getHeader("X-Request-Id")).andReturn(fakeRequestId).anyTimes()

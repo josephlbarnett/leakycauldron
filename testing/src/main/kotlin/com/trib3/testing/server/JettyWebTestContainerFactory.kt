@@ -29,16 +29,17 @@ private const val DEFAULT_PORT = 9080
  * Equivalent of GrizzlyWebTestContainerFactory, but using jetty instead of grizzly.
  */
 class JettyWebTestContainerFactory : TestContainerFactory {
-    class JettyWebTestContainer(private var uri: URI, context: DeploymentContext) : TestContainer {
+    class JettyWebTestContainer(
+        private var uri: URI,
+        context: DeploymentContext,
+    ) : TestContainer {
         val server =
             create(
                 UriBuilder.fromUri(uri).path(context.contextPath).build(),
                 ServletContainer(context.resourceConfig),
             )
 
-        override fun getClientConfig(): ClientConfig? {
-            return null
-        }
+        override fun getClientConfig(): ClientConfig? = null
 
         override fun start() {
             server.start()
@@ -49,9 +50,7 @@ class JettyWebTestContainerFactory : TestContainerFactory {
             server.stop()
         }
 
-        override fun getBaseUri(): URI {
-            return uri
-        }
+        override fun getBaseUri(): URI = uri
 
         // simplified version of JettyWebContainerFactory#create
         private fun create(
@@ -100,7 +99,5 @@ class JettyWebTestContainerFactory : TestContainerFactory {
     override fun create(
         baseUri: URI,
         deploymentContext: DeploymentContext,
-    ): JettyWebTestContainer {
-        return JettyWebTestContainer(baseUri, deploymentContext)
-    }
+    ): JettyWebTestContainer = JettyWebTestContainer(baseUri, deploymentContext)
 }

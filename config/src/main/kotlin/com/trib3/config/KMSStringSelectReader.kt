@@ -14,7 +14,9 @@ import java.util.Base64
 private val log = KotlinLogging.logger { }
 private val base64 = Base64.getDecoder()!!
 
-class KMSStringReader(private val kms: KmsClient?) {
+class KMSStringReader(
+    private val kms: KmsClient?,
+) {
     fun getValue(
         config: Config,
         path: String,
@@ -58,7 +60,9 @@ class KMSStringReader(private val kms: KmsClient?) {
 
 class KMSStringSelectReader
     @Inject
-    constructor(private val kms: KmsClient?) {
+    constructor(
+        private val kms: KmsClient?,
+    ) {
         companion object {
             private var _instance: KMSStringSelectReader = KMSStringSelectReader(null)
             val instance: KMSStringSelectReader
@@ -78,11 +82,10 @@ class KMSStringSelectReader
          * @param clazz a instance got from the given type by reflection
          * @throws Config4kException.UnSupportedType if the passed type is not supported
          */
-        fun getReader(clazz: ClassContainer): (Config, String) -> Any? {
-            return when (clazz.mapperClass) {
+        fun getReader(clazz: ClassContainer): (Config, String) -> Any? =
+            when (clazz.mapperClass) {
                 String::class -> KMSStringReader(kms)::getValue
                 else ->
                     SelectReader.getReader(clazz)
             }
-        }
     }

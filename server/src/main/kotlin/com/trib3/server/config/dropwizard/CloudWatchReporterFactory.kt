@@ -136,7 +136,8 @@ class CloudWatchReporterFactory(
 
     override fun build(registry: MetricRegistry): CloudWatchReporter {
         val finalDimensions = globalDimensions + listOf("Hostname=$hostname", "Application=${appConfig.appName}")
-        return CloudWatchReporter.forRegistry(registry, cloudwatch, namespace ?: appConfig.env)
+        return CloudWatchReporter
+            .forRegistry(registry, cloudwatch, namespace ?: appConfig.env)
             .withGlobalDimensions(*finalDimensions.toTypedArray())
             .convertDurationsTo(durationUnit)
             .convertRatesTo(rateUnit)

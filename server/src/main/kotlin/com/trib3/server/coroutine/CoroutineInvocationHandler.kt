@@ -30,7 +30,8 @@ class CoroutineInvocationHandler(
     private val originalObjectProvider: () -> Any,
     private val originalInvocable: Invocable,
     private val shouldIgnoreReturn: Boolean,
-) : InvocationHandler, CoroutineScope by CoroutineScope(Dispatchers.Unconfined) {
+) : InvocationHandler,
+    CoroutineScope by CoroutineScope(Dispatchers.Unconfined) {
     private suspend fun executeCoroutine(
         originalObject: Any,
         args: Array<out Any>?,

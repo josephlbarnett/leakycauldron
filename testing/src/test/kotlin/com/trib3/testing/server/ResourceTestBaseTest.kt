@@ -38,9 +38,7 @@ class SimpleResource {
     @GET
     fun getThing(
         @Context request: HttpServletRequest,
-    ): String {
-        return request.getHeader("Test-Header")
-    }
+    ): String = request.getHeader("Test-Header")
 
     @GET
     @Path("/websocket")
@@ -71,13 +69,16 @@ class SimpleResource {
 }
 
 class ResourceTestBaseJettyWebContainerTest : ResourceTestBase<SimpleResource>() {
-    override fun getResource(): SimpleResource {
-        return SimpleResource()
-    }
+    override fun getResource(): SimpleResource = SimpleResource()
 
     @Test
     fun testSimpleResource() {
-        val response = resource.target("/").request().header("Test-Header", "Test-Value").get()
+        val response =
+            resource
+                .target("/")
+                .request()
+                .header("Test-Header", "Test-Value")
+                .get()
         assertThat(response.status).isEqualTo(200)
         assertThat(response.readEntity(String::class.java)).isEqualTo("Test-Value")
     }
@@ -99,12 +100,16 @@ class ResourceTestBaseJettyWebContainerTest : ResourceTestBase<SimpleResource>()
                 }
             }
         val session =
-            client.connect(
-                clientAdapter,
-                resource.target("/websocket").uriBuilder.scheme("ws").build(),
-                ClientUpgradeRequest(),
-            )
-                .get()
+            client
+                .connect(
+                    clientAdapter,
+                    resource
+                        .target("/websocket")
+                        .uriBuilder
+                        .scheme("ws")
+                        .build(),
+                    ClientUpgradeRequest(),
+                ).get()
         lock.withLock {
             session.remote.sendString("ping")
             condition.await()
@@ -114,17 +119,18 @@ class ResourceTestBaseJettyWebContainerTest : ResourceTestBase<SimpleResource>()
 }
 
 class ResourceTestBaseInMemoryContainerTest : ResourceTestBase<SimpleResource>() {
-    override fun getResource(): SimpleResource {
-        return SimpleResource()
-    }
+    override fun getResource(): SimpleResource = SimpleResource()
 
-    override fun getContainerFactory(): TestContainerFactory {
-        return InMemoryTestContainerFactory()
-    }
+    override fun getContainerFactory(): TestContainerFactory = InMemoryTestContainerFactory()
 
     @Test
     fun testSimpleResource() {
-        val response = resource.target("/").request().header("Test-Header", "Test-Value").get()
+        val response =
+            resource
+                .target("/")
+                .request()
+                .header("Test-Header", "Test-Value")
+                .get()
         assertThat(response.status).isEqualTo(500)
     }
 }

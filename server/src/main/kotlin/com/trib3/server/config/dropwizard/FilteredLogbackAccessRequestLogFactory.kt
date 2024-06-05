@@ -42,9 +42,7 @@ class RequestIdLogbackAccessRequestLayoutFactory : LayoutFactory<IAccessEvent> {
     override fun build(
         context: LoggerContext,
         timeZone: TimeZone,
-    ): PatternLayoutBase<IAccessEvent> {
-        return RequestIdLogbackAccessRequestLayout(context, timeZone)
-    }
+    ): PatternLayoutBase<IAccessEvent> = RequestIdLogbackAccessRequestLayout(context, timeZone)
 }
 
 /**

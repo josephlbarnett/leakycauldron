@@ -81,10 +81,11 @@ class DefaultApplicationModule : TribeApplicationModule() {
     @ProvidesIntoSet
     fun provideCorsFilter(appConfig: TribeApplicationConfig): ServletFilterConfig {
         val corsDomain =
-            appConfig.corsDomains.map {
-                "https?://*.?$it," +
-                    "https?://*.?$it:${appConfig.appPort}"
-            }.joinToString(",")
+            appConfig.corsDomains
+                .map {
+                    "https?://*.?$it," +
+                        "https?://*.?$it:${appConfig.appPort}"
+                }.joinToString(",")
         val paramMap =
             mapOf(
                 CrossOriginFilter.ALLOWED_ORIGINS_PARAM to corsDomain,
@@ -124,11 +125,7 @@ class DefaultApplicationModule : TribeApplicationModule() {
     }
 
     // allow multiple installations so that multiple other modules can install this one
-    override fun equals(other: Any?): Boolean {
-        return other is DefaultApplicationModule
-    }
+    override fun equals(other: Any?): Boolean = other is DefaultApplicationModule
 
-    override fun hashCode(): Int {
-        return this::class.hashCode()
-    }
+    override fun hashCode(): Int = this::class.hashCode()
 }

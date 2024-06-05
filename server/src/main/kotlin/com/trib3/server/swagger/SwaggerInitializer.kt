@@ -21,7 +21,9 @@ interface JaxrsAppProcessor {
 
 class SwaggerInitializer
     @Inject
-    constructor(val appConfig: TribeApplicationConfig) : JaxrsAppProcessor {
+    constructor(
+        val appConfig: TribeApplicationConfig,
+    ) : JaxrsAppProcessor {
         override fun process(application: Application) {
             // this is tricky, but we want to document the jersey exposed APIs
             // from within the admin servlet, and the swagger libraries don't
@@ -40,10 +42,8 @@ class SwaggerInitializer
                                     Server().url("http://${appConfig.corsDomains[0]}:${appConfig.appPort}/app"),
                                 ),
                             ),
-                        )
-                        .scannerClass(JaxrsApplicationScanner::class.qualifiedName),
-                )
-                .application(application)
+                        ).scannerClass(JaxrsApplicationScanner::class.qualifiedName),
+                ).application(application)
                 .ctxId(ctxId)
                 .buildContext(true)
         }
