@@ -48,13 +48,9 @@ private val log = KotlinLogging.logger {}
 class GraphQLWebSocketAdapterTest : ResourceTestBase<SimpleWebSocketResource>() {
     val rawResource = SimpleWebSocketResource()
 
-    override fun getResource(): SimpleWebSocketResource {
-        return rawResource
-    }
+    override fun getResource(): SimpleWebSocketResource = rawResource
 
-    override fun getContainerFactory(): TestContainerFactory {
-        return JettyWebTestContainerFactory()
-    }
+    override fun getContainerFactory(): TestContainerFactory = JettyWebTestContainerFactory()
 
     /**
      * Tests that a websocket client can start a child coroutine, have the session
@@ -66,10 +62,16 @@ class GraphQLWebSocketAdapterTest : ResourceTestBase<SimpleWebSocketResource>() 
             val client = WebSocketClient()
             client.start()
             val session =
-                client.connect(
-                    WebSocketAdapter(),
-                    resource.target("/websocket").uriBuilder.scheme("ws").queryParam("name", "timeout").build(),
-                ).get()
+                client
+                    .connect(
+                        WebSocketAdapter(),
+                        resource
+                            .target("/websocket")
+                            .uriBuilder
+                            .scheme("ws")
+                            .queryParam("name", "timeout")
+                            .build(),
+                    ).get()
             session.remote.sendString(
                 mapper.writeValueAsString(
                     OperationMessage(
@@ -102,10 +104,16 @@ class GraphQLWebSocketAdapterTest : ResourceTestBase<SimpleWebSocketResource>() 
             val client = WebSocketClient()
             client.start()
             val session =
-                client.connect(
-                    WebSocketAdapter(),
-                    resource.target("/websocket").uriBuilder.scheme("ws").queryParam("name", "clientClose").build(),
-                ).get()
+                client
+                    .connect(
+                        WebSocketAdapter(),
+                        resource
+                            .target("/websocket")
+                            .uriBuilder
+                            .scheme("ws")
+                            .queryParam("name", "clientClose")
+                            .build(),
+                    ).get()
             session.remote.sendString(
                 mapper.writeValueAsString(OperationMessage(OperationType.GQL_START, "launch", null)),
             )
@@ -137,10 +145,16 @@ class GraphQLWebSocketAdapterTest : ResourceTestBase<SimpleWebSocketResource>() 
             val client = WebSocketClient()
             client.start()
             val session =
-                client.connect(
-                    WebSocketAdapter(),
-                    resource.target("/websocket").uriBuilder.scheme("ws").queryParam("name", "spin").build(),
-                ).get()
+                client
+                    .connect(
+                        WebSocketAdapter(),
+                        resource
+                            .target("/websocket")
+                            .uriBuilder
+                            .scheme("ws")
+                            .queryParam("name", "spin")
+                            .build(),
+                    ).get()
             session.remote.sendString(
                 mapper.writeValueAsString(OperationMessage(OperationType.GQL_START, "launch", null)),
             )
@@ -182,10 +196,16 @@ class GraphQLWebSocketAdapterTest : ResourceTestBase<SimpleWebSocketResource>() 
             val client = WebSocketClient()
             client.start()
             val session =
-                client.connect(
-                    WebSocketAdapter(),
-                    resource.target("/websocket").uriBuilder.scheme("ws").queryParam("name", "finish").build(),
-                ).get()
+                client
+                    .connect(
+                        WebSocketAdapter(),
+                        resource
+                            .target("/websocket")
+                            .uriBuilder
+                            .scheme("ws")
+                            .queryParam("name", "finish")
+                            .build(),
+                    ).get()
             session.remote.sendString(
                 mapper.writeValueAsString(OperationMessage(OperationType.GQL_START, "launch", null)),
             )

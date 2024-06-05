@@ -56,7 +56,9 @@ class GraphQLWebSocketProtocolTest {
         assertThat(start.id).isEqualTo("123")
         assertThat(start.payload).isNotNull().isInstanceOf(GraphQLRequest::class)
         assertThat((start.payload as GraphQLRequest).query).isEqualTo("hi")
-        assertThat((start.payload as GraphQLRequest).variables).isNotNull().isInstanceOf(Map::class)
+        assertThat((start.payload as GraphQLRequest).variables)
+            .isNotNull()
+            .isInstanceOf(Map::class)
             .isEqualTo(mapOf<String, Any?>())
         assertThat((start.payload as GraphQLRequest).operationName).isEqualTo("boo")
     }
@@ -77,7 +79,8 @@ class GraphQLWebSocketProtocolTest {
                 GraphQLResponse::class to null, // only need to support serialization right now, not round trip
             )
         for (
-        t in OperationType.Companion::class.memberProperties
+        t in OperationType.Companion::class
+            .memberProperties
             .filterIsInstance<KProperty1<OperationType.Companion, OperationType<Any>>>()
         ) {
             val type = t.get(OperationType.Companion)

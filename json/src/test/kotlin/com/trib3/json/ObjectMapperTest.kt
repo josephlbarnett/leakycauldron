@@ -49,7 +49,9 @@ private data class InjectedValueBean(
 
 private enum class SimpleEnum { ONE, TWO }
 
-private class UnDeserializable(var enumValue: SimpleEnum) {
+private class UnDeserializable(
+    var enumValue: SimpleEnum,
+) {
     fun setFoo(strValue: String) {
         enumValue = SimpleEnum.valueOf(strValue)
     }
@@ -81,12 +83,14 @@ private val moduleInjectedBean =
 
 private class SimpleMixinModule : KotlinModule() {
     override fun configure() {
-        MapBinder.newMapBinder(
-            binder(),
-            typeLiteral<KClass<*>>(),
-            typeLiteral<KClass<*>>(),
-            Names.named(ObjectMapperProvider.OBJECT_MAPPER_MIXINS),
-        ).addBinding(SimpleBean::class).toInstance(SimpleMixin::class)
+        MapBinder
+            .newMapBinder(
+                binder(),
+                typeLiteral<KClass<*>>(),
+                typeLiteral<KClass<*>>(),
+                Names.named(ObjectMapperProvider.OBJECT_MAPPER_MIXINS),
+            ).addBinding(SimpleBean::class)
+            .toInstance(SimpleMixin::class)
         bind<Int>().toInstance(25)
         bind<UnDeserializable>().toInstance(UnDeserializable(SimpleEnum.TWO))
         bind<SimpleBean>().toInstance(
@@ -98,7 +102,9 @@ private class SimpleMixinModule : KotlinModule() {
 @Guice(modules = [ObjectMapperModule::class, SimpleMixinModule::class])
 class ObjectMapperTest
     @Inject
-    constructor(val mapper: ObjectMapper) {
+    constructor(
+        val mapper: ObjectMapper,
+    ) {
         @Test
         fun testMapper() {
             val bean = SimpleBean("hahaha", 3, "yes", LocalDate.of(2019, 1, 1))
@@ -138,7 +144,9 @@ class ObjectMapperTest
             }
         }
 
-        private data class YQContainer(val yearQuarter: YearQuarter)
+        private data class YQContainer(
+            val yearQuarter: YearQuarter,
+        )
 
         @Test
         fun testYearQuarterContainer() {

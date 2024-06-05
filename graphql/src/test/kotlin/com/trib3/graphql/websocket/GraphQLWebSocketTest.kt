@@ -52,31 +52,21 @@ class SocketQuery {
         return listOf("1", "2", "3")
     }
 
-    fun v(len: Int): List<String> {
-        return (1..len).toList().map(Int::toString)
-    }
+    fun v(len: Int): List<String> = (1..len).toList().map(Int::toString)
 
-    fun e(): List<String> {
-        throw IllegalStateException("forced exception")
-    }
+    fun e(): List<String> = throw IllegalStateException("forced exception")
 
-    fun u(dfe: DataFetchingEnvironment): String? {
-        return dfe.graphQlContext.get<Principal>()?.name
-    }
+    fun u(dfe: DataFetchingEnvironment): String? = dfe.graphQlContext.get<Principal>()?.name
 }
 
 class SocketSubscription {
-    fun s(): Flow<String> {
-        return flowOf("1", "2", "3")
-    }
+    fun s(): Flow<String> = flowOf("1", "2", "3")
 
     fun e(): Flow<String> {
         return object : Iterator<String> {
             var value = 1
 
-            override fun hasNext(): Boolean {
-                return value < 4
-            }
+            override fun hasNext(): Boolean = value < 4
 
             override fun next(): String {
                 val toReturn = value.toString()
@@ -91,9 +81,7 @@ class SocketSubscription {
         return object : Iterator<String> {
             var value = 1
 
-            override fun hasNext(): Boolean {
-                return true
-            }
+            override fun hasNext(): Boolean = true
 
             override fun next(): String {
                 val toReturn = value.toString()
@@ -110,30 +98,29 @@ class SocketSubscription {
 }
 
 class WebSocketTestAuthenticator : GraphQLWebSocketAuthenticator {
-    override fun invoke(context: ContainerRequestContext): Principal? {
-        return when (context.headers.getFirst("user")) {
+    override fun invoke(context: ContainerRequestContext): Principal? =
+        when (context.headers.getFirst("user")) {
             "bill" -> TestPrincipal("billy")
             "bob" -> TestPrincipal("bobby")
             else -> null
         }
-    }
 }
 
 @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
 class GraphQLWebSocketTest {
     val testGraphQL =
-        GraphQL.newGraphQL(
-            toSchema(
-                SchemaGeneratorConfig(
-                    listOf(this::class.java.packageName),
-                    hooks = FlowSubscriptionSchemaGeneratorHooks(),
+        GraphQL
+            .newGraphQL(
+                toSchema(
+                    SchemaGeneratorConfig(
+                        listOf(this::class.java.packageName),
+                        hooks = FlowSubscriptionSchemaGeneratorHooks(),
+                    ),
+                    listOf(TopLevelObject(SocketQuery())),
+                    listOf(),
+                    listOf(TopLevelObject(SocketSubscription())),
                 ),
-                listOf(TopLevelObject(SocketQuery())),
-                listOf(),
-                listOf(TopLevelObject(SocketSubscription())),
-            ),
-        )
-            .subscriptionExecutionStrategy(FlowSubscriptionExecutionStrategy())
+            ).subscriptionExecutionStrategy(FlowSubscriptionExecutionStrategy())
             .instrumentation(RequestIdInstrumentation())
             .build()
     val mapper = ObjectMapperProvider().get()
@@ -156,9 +143,11 @@ class GraphQLWebSocketTest {
         val containerRequestContext = LeakyMock.niceMock<ContainerRequestContext>()
         val mockUriInfo = LeakyMock.niceMock<UriInfo>()
         EasyMock.expect(containerRequestContext.uriInfo).andReturn(mockUriInfo).anyTimes()
-        EasyMock.expect(containerRequestContext.headers).andReturn(
-            MultivaluedHashMap<String, String>().apply { user?.let { add("user", it) } },
-        ).anyTimes()
+        EasyMock
+            .expect(containerRequestContext.headers)
+            .andReturn(
+                MultivaluedHashMap<String, String>().apply { user?.let { add("user", it) } },
+            ).anyTimes()
         EasyMock.replay(containerRequestContext, mockUriInfo)
         val channel = Channel<OperationMessage<*>>()
         val adapter = GraphQLWebSocketAdapter(subProtocol, channel, mapper, dispatcher)
@@ -190,24 +179,26 @@ class GraphQLWebSocketTest {
         val mockRemote = LeakyMock.mock<RemoteEndpoint>()
         val mockSession = LeakyMock.mock<Session>()
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""q" : [ "1", "2", "3" ]"""),
-                    LeakyMock.contains(""""type" : "data""""),
-                    LeakyMock.contains(""""id" : "simplequery""""),
-                    LeakyMock.contains(""""RequestId" : "simplequery""""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""q" : [ "1", "2", "3" ]"""),
+                        LeakyMock.contains(""""type" : "data""""),
+                        LeakyMock.contains(""""id" : "simplequery""""),
+                        LeakyMock.contains(""""RequestId" : "simplequery""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "complete""""),
-                    LeakyMock.contains(""""id" : "simplequery""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "complete""""),
+                        LeakyMock.contains(""""id" : "simplequery""""),
+                    ),
                 ),
-            ),
-        ).once()
+            ).once()
 
         EasyMock.replay(mockRemote, mockSession)
         socket.adapter.onWebSocketConnect(mockSession)
@@ -223,23 +214,25 @@ class GraphQLWebSocketTest {
         val mockRemote = LeakyMock.mock<RemoteEndpoint>()
         val mockSession = LeakyMock.mock<Session>()
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""v" : [ "1", "2", "3" ]"""),
-                    LeakyMock.contains(""""type" : "data""""),
-                    LeakyMock.contains(""""id" : "simplequery""""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""v" : [ "1", "2", "3" ]"""),
+                        LeakyMock.contains(""""type" : "data""""),
+                        LeakyMock.contains(""""id" : "simplequery""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "complete""""),
-                    LeakyMock.contains(""""id" : "simplequery""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "complete""""),
+                        LeakyMock.contains(""""id" : "simplequery""""),
+                    ),
                 ),
-            ),
-        ).once()
+            ).once()
 
         EasyMock.replay(mockRemote, mockSession)
         socket.adapter.onWebSocketConnect(mockSession)
@@ -262,14 +255,15 @@ class GraphQLWebSocketTest {
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
         val errorCapture = EasyMock.newCapture<String>()
         EasyMock.expect(mockRemote.sendString(EasyMock.capture(errorCapture))).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "complete""""),
-                    LeakyMock.contains(""""id" : "errorquery""""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "complete""""),
+                        LeakyMock.contains(""""id" : "errorquery""""),
+                    ),
                 ),
-            ),
-        ).once()
+            ).once()
 
         EasyMock.replay(mockRemote, mockSession)
         socket.adapter.onWebSocketConnect(mockSession)
@@ -285,16 +279,18 @@ class GraphQLWebSocketTest {
         val mockRemote = LeakyMock.mock<RemoteEndpoint>()
         val mockSession = LeakyMock.mock<Session>()
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(mockGraphQL.executeAsync(LeakyMock.anyObject<ExecutionInput>()))
+        EasyMock
+            .expect(mockGraphQL.executeAsync(LeakyMock.anyObject<ExecutionInput>()))
             .andThrow(IllegalStateException("ExecutionError"))
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "error""""),
-                    LeakyMock.contains(""""id" : "executionerror""""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "error""""),
+                        LeakyMock.contains(""""id" : "executionerror""""),
+                    ),
                 ),
-            ),
-        ).once()
+            ).once()
 
         EasyMock.replay(mockRemote, mockSession, mockGraphQL)
         socket.adapter.onWebSocketConnect(mockSession)
@@ -310,44 +306,48 @@ class GraphQLWebSocketTest {
         val mockRemote = LeakyMock.mock<RemoteEndpoint>()
         val mockSession = LeakyMock.mock<Session>()
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""s" : "1""""),
-                    LeakyMock.contains(""""type" : "data""""),
-                    LeakyMock.contains(""""id" : "simplesubscription""""),
-                    LeakyMock.contains(""""RequestId" : "simplesubscription""""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""s" : "1""""),
+                        LeakyMock.contains(""""type" : "data""""),
+                        LeakyMock.contains(""""id" : "simplesubscription""""),
+                        LeakyMock.contains(""""RequestId" : "simplesubscription""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""s" : "2""""),
-                    LeakyMock.contains(""""type" : "data""""),
-                    LeakyMock.contains(""""id" : "simplesubscription""""),
-                    LeakyMock.contains(""""RequestId" : "simplesubscription""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""s" : "2""""),
+                        LeakyMock.contains(""""type" : "data""""),
+                        LeakyMock.contains(""""id" : "simplesubscription""""),
+                        LeakyMock.contains(""""RequestId" : "simplesubscription""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""s" : "3""""),
-                    LeakyMock.contains(""""type" : "data""""),
-                    LeakyMock.contains(""""id" : "simplesubscription""""),
-                    LeakyMock.contains(""""RequestId" : "simplesubscription""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""s" : "3""""),
+                        LeakyMock.contains(""""type" : "data""""),
+                        LeakyMock.contains(""""id" : "simplesubscription""""),
+                        LeakyMock.contains(""""RequestId" : "simplesubscription""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "complete""""),
-                    LeakyMock.contains(""""id" : "simplesubscription""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "complete""""),
+                        LeakyMock.contains(""""id" : "simplesubscription""""),
+                    ),
                 ),
-            ),
-        ).once()
+            ).once()
 
         EasyMock.replay(mockRemote, mockSession)
         socket.adapter.onWebSocketConnect(mockSession)
@@ -367,32 +367,35 @@ class GraphQLWebSocketTest {
         val mockRemote = LeakyMock.mock<RemoteEndpoint>()
         val mockSession = LeakyMock.mock<Session>()
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""e" : "1""""),
-                    LeakyMock.contains(""""type" : "data""""),
-                    LeakyMock.contains(""""id" : "errorsubscription""""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""e" : "1""""),
+                        LeakyMock.contains(""""type" : "data""""),
+                        LeakyMock.contains(""""id" : "errorsubscription""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""e" : "2""""),
-                    LeakyMock.contains(""""type" : "data""""),
-                    LeakyMock.contains(""""id" : "errorsubscription""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""e" : "2""""),
+                        LeakyMock.contains(""""type" : "data""""),
+                        LeakyMock.contains(""""id" : "errorsubscription""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "error""""),
-                    LeakyMock.contains(""""id" : "errorsubscription""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "error""""),
+                        LeakyMock.contains(""""id" : "errorsubscription""""),
+                    ),
                 ),
-            ),
-        ).once()
+            ).once()
 
         EasyMock.replay(mockRemote, mockSession)
         socket.adapter.onWebSocketConnect(mockSession)
@@ -415,32 +418,35 @@ class GraphQLWebSocketTest {
         val mockRemote = LeakyMock.mock<RemoteEndpoint>()
         val mockSession = LeakyMock.mock<Session>()
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "error""""),
-                    LeakyMock.contains(""""id" : "unknownoperation""""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "error""""),
+                        LeakyMock.contains(""""id" : "unknownoperation""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "error""""),
-                    LeakyMock.contains(""""id" : "invalidtype""""),
-                    LeakyMock.contains(""""Invalid message"""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "error""""),
+                        LeakyMock.contains(""""id" : "invalidtype""""),
+                        LeakyMock.contains(""""Invalid message"""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "error""""),
-                    LeakyMock.contains(""""id" : "badpayload""""),
-                    LeakyMock.contains(""""Invalid message"""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "error""""),
+                        LeakyMock.contains(""""id" : "badpayload""""),
+                        LeakyMock.contains(""""Invalid message"""),
+                    ),
                 ),
-            ),
-        ).once()
+            ).once()
         EasyMock.expect(mockSession.close(EasyMock.anyInt(), LeakyMock.anyString())).anyTimes()
 
         EasyMock.replay(mockRemote, mockSession)
@@ -477,39 +483,43 @@ class GraphQLWebSocketTest {
         val mockRemote = LeakyMock.mock<RemoteEndpoint>()
         val mockSession = LeakyMock.mock<Session>()
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "connection_ack""""),
-                    LeakyMock.contains(""""id" : "connect""""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "connection_ack""""),
+                        LeakyMock.contains(""""id" : "connect""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "ka""""),
-                    LeakyMock.contains(""""id" : "connect""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "ka""""),
+                        LeakyMock.contains(""""id" : "connect""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "ka""""),
-                    LeakyMock.contains(""""id" : "connect""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "ka""""),
+                        LeakyMock.contains(""""id" : "connect""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""payload" : "Already connected!""""),
-                    LeakyMock.contains(""""type" : "connection_error""""),
-                    LeakyMock.contains(""""id" : "connect2""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""payload" : "Already connected!""""),
+                        LeakyMock.contains(""""type" : "connection_error""""),
+                        LeakyMock.contains(""""id" : "connect2""""),
+                    ),
                 ),
-            ),
-        ).once()
+            ).once()
 
         EasyMock.replay(mockRemote, mockSession)
         socket.adapter.onWebSocketConnect(mockSession)
@@ -563,32 +573,38 @@ class GraphQLWebSocketTest {
         val secondQueryErrored = CountDownLatch(1)
         val complete = CountDownLatch(1)
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""inf" : """"),
-                    LeakyMock.contains(""""type" : "data""""),
-                    LeakyMock.contains(""""id" : "longsubscription""""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""inf" : """"),
+                        LeakyMock.contains(""""type" : "data""""),
+                        LeakyMock.contains(""""id" : "longsubscription""""),
+                    ),
                 ),
-            ),
-        ).andAnswer { data.countDown() }.atLeastOnce() // notify that data has been sent
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains("""already running"""),
-                    LeakyMock.contains(""""type" : "error""""),
-                    LeakyMock.contains(""""id" : "longsubscription""""),
+            ).andAnswer { data.countDown() }
+            .atLeastOnce() // notify that data has been sent
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains("""already running"""),
+                        LeakyMock.contains(""""type" : "error""""),
+                        LeakyMock.contains(""""id" : "longsubscription""""),
+                    ),
                 ),
-            ),
-        ).andAnswer { secondQueryErrored.countDown() }.once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "complete""""),
-                    LeakyMock.contains(""""id" : "longsubscription""""),
+            ).andAnswer { secondQueryErrored.countDown() }
+            .once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "complete""""),
+                        LeakyMock.contains(""""id" : "longsubscription""""),
+                    ),
                 ),
-            ),
-        ).andAnswer { complete.countDown() }.once() // notify that complete has been sent
+            ).andAnswer { complete.countDown() }
+            .once() // notify that complete has been sent
         EasyMock.replay(mockRemote, mockSession)
         socket.adapter.onWebSocketConnect(mockSession)
         socket.adapter.onWebSocketText(
@@ -626,14 +642,15 @@ class GraphQLWebSocketTest {
         val mockRemote = LeakyMock.mock<RemoteEndpoint>()
         val mockSession = LeakyMock.mock<Session>()
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "error""""),
-                    LeakyMock.contains(""""id" : "unknownquery""""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "error""""),
+                        LeakyMock.contains(""""id" : "unknownquery""""),
+                    ),
                 ),
-            ),
-        ).once()
+            ).once()
 
         EasyMock.replay(mockRemote, mockSession)
         socket.adapter.onWebSocketConnect(mockSession)
@@ -653,14 +670,15 @@ class GraphQLWebSocketTest {
         val mockRemote = LeakyMock.mock<RemoteEndpoint>()
         val mockSession = LeakyMock.mock<Session>()
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "error""""),
-                    LeakyMock.contains(""""Invalid message"""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "error""""),
+                        LeakyMock.contains(""""Invalid message"""),
+                    ),
                 ),
-            ),
-        ).once()
+            ).once()
 
         EasyMock.replay(mockRemote, mockSession)
         socket.adapter.onWebSocketConnect(mockSession)
@@ -680,14 +698,15 @@ class GraphQLWebSocketTest {
         val mockRemote = LeakyMock.mock<RemoteEndpoint>()
         val mockSession = LeakyMock.mock<Session>()
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "error""""),
-                    LeakyMock.contains("""Invalid message"""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "error""""),
+                        LeakyMock.contains("""Invalid message"""),
+                    ),
                 ),
-            ),
-        ).once()
+            ).once()
 
         EasyMock.replay(mockRemote, mockSession)
         socket.adapter.onWebSocketConnect(mockSession)
@@ -701,23 +720,25 @@ class GraphQLWebSocketTest {
         val mockRemote = LeakyMock.mock<RemoteEndpoint>()
         val mockSession = LeakyMock.mock<Session>()
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""u" : "billy""""),
-                    LeakyMock.contains(""""type" : "data""""),
-                    LeakyMock.contains(""""id" : "upgradeuserquery""""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""u" : "billy""""),
+                        LeakyMock.contains(""""type" : "data""""),
+                        LeakyMock.contains(""""id" : "upgradeuserquery""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "complete""""),
-                    LeakyMock.contains(""""id" : "upgradeuserquery""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "complete""""),
+                        LeakyMock.contains(""""id" : "upgradeuserquery""""),
+                    ),
                 ),
-            ),
-        ).once()
+            ).once()
 
         EasyMock.replay(mockRemote, mockSession)
         socket.adapter.onWebSocketConnect(mockSession)
@@ -733,23 +754,25 @@ class GraphQLWebSocketTest {
         val mockRemote = LeakyMock.mock<RemoteEndpoint>()
         val mockSession = LeakyMock.mock<Session>()
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""u" : null"""),
-                    LeakyMock.contains(""""type" : "data""""),
-                    LeakyMock.contains(""""id" : "nouserquery""""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""u" : null"""),
+                        LeakyMock.contains(""""type" : "data""""),
+                        LeakyMock.contains(""""id" : "nouserquery""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "complete""""),
-                    LeakyMock.contains(""""id" : "nouserquery""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "complete""""),
+                        LeakyMock.contains(""""id" : "nouserquery""""),
+                    ),
                 ),
-            ),
-        ).once()
+            ).once()
 
         EasyMock.replay(mockRemote, mockSession)
         socket.adapter.onWebSocketConnect(mockSession)
@@ -765,56 +788,62 @@ class GraphQLWebSocketTest {
         val mockRemote = LeakyMock.mock<RemoteEndpoint>()
         val mockSession = LeakyMock.mock<Session>()
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "connection_ack""""),
-                    LeakyMock.contains(""""id" : "ci""""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "connection_ack""""),
+                        LeakyMock.contains(""""id" : "ci""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "ka""""),
-                    LeakyMock.contains(""""id" : "ci""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "ka""""),
+                        LeakyMock.contains(""""id" : "ci""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""u" : "bobby""""),
-                    LeakyMock.contains(""""type" : "data""""),
-                    LeakyMock.contains(""""id" : "ciuserquery""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""u" : "bobby""""),
+                        LeakyMock.contains(""""type" : "data""""),
+                        LeakyMock.contains(""""id" : "ciuserquery""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "complete""""),
-                    LeakyMock.contains(""""id" : "ciuserquery""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "complete""""),
+                        LeakyMock.contains(""""id" : "ciuserquery""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""u" : "billy""""),
-                    LeakyMock.contains(""""type" : "data""""),
-                    LeakyMock.contains(""""id" : "ciuserquery2""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""u" : "billy""""),
+                        LeakyMock.contains(""""type" : "data""""),
+                        LeakyMock.contains(""""id" : "ciuserquery2""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "complete""""),
-                    LeakyMock.contains(""""id" : "ciuserquery2""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "complete""""),
+                        LeakyMock.contains(""""id" : "ciuserquery2""""),
+                    ),
                 ),
-            ),
-        ).once()
+            ).once()
 
         EasyMock.replay(mockRemote, mockSession)
         socket.adapter.onWebSocketConnect(mockSession)
@@ -877,52 +906,57 @@ class GraphQLWebSocketTest {
         val mockRemote = LeakyMock.mock<RemoteEndpoint>()
         val mockSession = LeakyMock.mock<Session>()
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "connection_ack""""),
-                    LeakyMock.contains(""""id" : "simpleinit""""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "connection_ack""""),
+                        LeakyMock.contains(""""id" : "simpleinit""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""s" : "1""""),
-                    LeakyMock.contains(""""type" : "next""""),
-                    LeakyMock.contains(""""id" : "simplesubscription""""),
-                    LeakyMock.contains(""""RequestId" : "simplesubscription""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""s" : "1""""),
+                        LeakyMock.contains(""""type" : "next""""),
+                        LeakyMock.contains(""""id" : "simplesubscription""""),
+                        LeakyMock.contains(""""RequestId" : "simplesubscription""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""s" : "2""""),
-                    LeakyMock.contains(""""type" : "next""""),
-                    LeakyMock.contains(""""id" : "simplesubscription""""),
-                    LeakyMock.contains(""""RequestId" : "simplesubscription""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""s" : "2""""),
+                        LeakyMock.contains(""""type" : "next""""),
+                        LeakyMock.contains(""""id" : "simplesubscription""""),
+                        LeakyMock.contains(""""RequestId" : "simplesubscription""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""s" : "3""""),
-                    LeakyMock.contains(""""type" : "next""""),
-                    LeakyMock.contains(""""id" : "simplesubscription""""),
-                    LeakyMock.contains(""""RequestId" : "simplesubscription""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""s" : "3""""),
+                        LeakyMock.contains(""""type" : "next""""),
+                        LeakyMock.contains(""""id" : "simplesubscription""""),
+                        LeakyMock.contains(""""RequestId" : "simplesubscription""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "complete""""),
-                    LeakyMock.contains(""""id" : "simplesubscription""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "complete""""),
+                        LeakyMock.contains(""""id" : "simplesubscription""""),
+                    ),
                 ),
-            ),
-        ).once()
+            ).once()
 
         EasyMock.replay(mockRemote, mockSession)
         socket.adapter.onWebSocketConnect(mockSession)
@@ -972,14 +1006,15 @@ class GraphQLWebSocketTest {
         val mockRemote = LeakyMock.mock<RemoteEndpoint>()
         val mockSession = LeakyMock.mock<Session>()
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "connection_ack""""),
-                    LeakyMock.contains(""""id" : "c1""""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "connection_ack""""),
+                        LeakyMock.contains(""""id" : "c1""""),
+                    ),
                 ),
-            ),
-        ).once()
+            ).once()
         EasyMock.expect(mockSession.close(GraphQLWebSocketCloseReason.MULTIPLE_INIT))
         EasyMock.replay(mockRemote, mockSession)
         socket.adapter.onWebSocketConnect(mockSession)
@@ -1003,9 +1038,10 @@ class GraphQLWebSocketTest {
         val mockRemote = LeakyMock.mock<RemoteEndpoint>()
         val mockSession = LeakyMock.mock<Session>()
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(
-            mockSession.close(GraphQLWebSocketCloseReason.TIMEOUT_INIT),
-        ).once()
+        EasyMock
+            .expect(
+                mockSession.close(GraphQLWebSocketCloseReason.TIMEOUT_INIT),
+            ).once()
 
         EasyMock.replay(mockRemote, mockSession)
         socket.adapter.onWebSocketConnect(mockSession)
@@ -1029,31 +1065,34 @@ class GraphQLWebSocketTest {
         val mockSession = LeakyMock.mock<Session>()
         val closeLatch = CountDownLatch(1)
         EasyMock.expect(mockSession.remote).andReturn(mockRemote).anyTimes()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "connection_ack""""),
-                    LeakyMock.contains(""""id" : "dupsubinit""""),
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "connection_ack""""),
+                        LeakyMock.contains(""""id" : "dupsubinit""""),
+                    ),
                 ),
-            ),
-        ).once()
-        EasyMock.expect(
-            mockRemote.sendString(
-                LeakyMock.and(
-                    LeakyMock.contains(""""type" : "next""""),
-                    LeakyMock.contains(""""id" : "dupsubscription""""),
+            ).once()
+        EasyMock
+            .expect(
+                mockRemote.sendString(
+                    LeakyMock.and(
+                        LeakyMock.contains(""""type" : "next""""),
+                        LeakyMock.contains(""""id" : "dupsubscription""""),
+                    ),
                 ),
-            ),
-        ).anyTimes()
-        EasyMock.expect(
-            mockSession.close(
-                GraphQLWebSocketCloseReason.MULTIPLE_SUBSCRIBER.code,
-                GraphQLWebSocketCloseReason.MULTIPLE_SUBSCRIBER.description.replace(
-                    "<unique-operation-id>",
-                    "dupsubscription",
+            ).anyTimes()
+        EasyMock
+            .expect(
+                mockSession.close(
+                    GraphQLWebSocketCloseReason.MULTIPLE_SUBSCRIBER.code,
+                    GraphQLWebSocketCloseReason.MULTIPLE_SUBSCRIBER.description.replace(
+                        "<unique-operation-id>",
+                        "dupsubscription",
+                    ),
                 ),
-            ),
-        ).andAnswer { closeLatch.countDown() }
+            ).andAnswer { closeLatch.countDown() }
 
         EasyMock.replay(mockRemote, mockSession)
         socket.adapter.onWebSocketConnect(mockSession)

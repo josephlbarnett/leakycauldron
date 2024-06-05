@@ -94,21 +94,13 @@ class GraphQLWebSocketCreator(
                 req.requestURI,
                 req.method,
                 object : SecurityContext {
-                    override fun getUserPrincipal(): Principal? {
-                        return req.userPrincipal
-                    }
+                    override fun getUserPrincipal(): Principal? = req.userPrincipal
 
-                    override fun isUserInRole(role: String?): Boolean {
-                        return req.isUserInRole(role)
-                    }
+                    override fun isUserInRole(role: String?): Boolean = req.isUserInRole(role)
 
-                    override fun isSecure(): Boolean {
-                        return req.isSecure
-                    }
+                    override fun isSecure(): Boolean = req.isSecure
 
-                    override fun getAuthenticationScheme(): String {
-                        return req.httpServletRequest.authType
-                    }
+                    override fun getAuthenticationScheme(): String = req.httpServletRequest.authType
                 },
                 MapPropertiesDelegate(emptyMap()),
                 null,

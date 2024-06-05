@@ -121,7 +121,9 @@ class GraphQLWebSocketCreatorTest {
         val mockServletRequest = LeakyMock.mock<HttpServletRequest>()
         EasyMock.expect(mockRequest.requestURI).andReturn(URI("http://test.com")).anyTimes()
         EasyMock.expect(mockRequest.method).andReturn("GET").anyTimes()
-        EasyMock.expect(mockRequest.headersMap).andReturn(mapOf("h1" to listOf("v1", "v2"), "h2" to listOf("v3")))
+        EasyMock
+            .expect(mockRequest.headersMap)
+            .andReturn(mapOf("h1" to listOf("v1", "v2"), "h2" to listOf("v3")))
             .anyTimes()
         EasyMock.expect(mockRequest.userPrincipal).andReturn(null).anyTimes()
         EasyMock.expect(mockRequest.isUserInRole("ADMIN")).andReturn(false).anyTimes()

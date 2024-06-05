@@ -59,23 +59,17 @@ private val sseScopes = ConcurrentHashMap<String, CoroutineScope>()
 open class InvocationHandlerTestResource {
     @Path("/regular")
     @GET
-    fun regularMethod(): String {
-        return "regular"
-    }
+    fun regularMethod(): String = "regular"
 
     @Path("/regularQ")
     @GET
     fun regularQueryParameter(
         @QueryParam("q") q: String?,
-    ): String {
-        return "regular$q"
-    }
+    ): String = "regular$q"
 
     @Path("/regular")
     @POST
-    fun regularPost(body: String): String {
-        return "regular$body"
-    }
+    fun regularPost(body: String): String = "regular$body"
 
     @Path("/coroutine")
     @GET
@@ -296,7 +290,8 @@ class CoroutineInvocationHandlerTest : ResourceTestBase<InvocationHandlerTestRes
     }
 
     override fun buildAdditionalResources(resourceBuilder: Resource.Builder<*>) {
-        resourceBuilder.addResource(CoroutineModelProcessor::class.java)
+        resourceBuilder
+            .addResource(CoroutineModelProcessor::class.java)
             .addResource(InvocationHandlerClassScopeTestResource::class.java)
             .addResource(InvocationHandlerClassAnnotationTestResource::class.java)
     }
@@ -310,7 +305,12 @@ class CoroutineInvocationHandlerTest : ResourceTestBase<InvocationHandlerTestRes
 
     @Test
     fun testRegularQueryParameter() {
-        val ping = resource.target("/regularQ").queryParam("q", "123").request().get()
+        val ping =
+            resource
+                .target("/regularQ")
+                .queryParam("q", "123")
+                .request()
+                .get()
         assertThat(ping.status).isEqualTo(Response.Status.OK.statusCode)
         assertThat(ping.readEntity(String::class.java)).isEqualTo("regular123")
     }
@@ -324,7 +324,12 @@ class CoroutineInvocationHandlerTest : ResourceTestBase<InvocationHandlerTestRes
 
     @Test
     fun testCoroutineQueryParameter() {
-        val ping = resource.target("/coroutineQ").queryParam("q", "123").request().get()
+        val ping =
+            resource
+                .target("/coroutineQ")
+                .queryParam("q", "123")
+                .request()
+                .get()
         assertThat(ping.status).isEqualTo(Response.Status.OK.statusCode)
         assertThat(ping.readEntity(String::class.java)).isEqualTo("coroutine123")
     }
@@ -429,7 +434,12 @@ class CoroutineInvocationHandlerTest : ResourceTestBase<InvocationHandlerTestRes
     @Test
     fun testSseMethodCancel() {
         val q = UUID.randomUUID().toString()
-        val sse = resource.target("/sse").queryParam("q", q).request().get(EventInput::class.java)
+        val sse =
+            resource
+                .target("/sse")
+                .queryParam("q", q)
+                .request()
+                .get(EventInput::class.java)
         assertThat(sseScopes[q]).isNotNull()
         val event = sse.read()
         assertThat(event.readData()).isEqualTo("0")

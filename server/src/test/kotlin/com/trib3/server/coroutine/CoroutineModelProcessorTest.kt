@@ -29,9 +29,7 @@ import java.util.Optional
 class ProcessorTestResource {
     @GET
     @Path("/simple")
-    fun simpleMethod(): String {
-        return "simple"
-    }
+    fun simpleMethod(): String = "simple"
 
     @GET
     @Path("/coroutine")
@@ -94,10 +92,15 @@ class CoroutineModelProcessorTest {
                     when (method.invocable.handlingMethod.name) {
                         "coroutineMethod" -> {
                             assertThat(method.invocable.parameters).hasSize(1)
-                            assertThat(method.invocable.parameters[0].getAnnotation(QueryParam::class.java).value)
-                                .isEqualTo("a")
-                            assertThat(method.invocable.parameters[0].type.typeName)
-                                .isEqualTo("java.util.Optional<java.lang.String>")
+                            assertThat(
+                                method.invocable.parameters[0]
+                                    .getAnnotation(QueryParam::class.java)
+                                    .value,
+                            ).isEqualTo("a")
+                            assertThat(
+                                method.invocable.parameters[0]
+                                    .type.typeName,
+                            ).isEqualTo("java.util.Optional<java.lang.String>")
                             assertThat(method.invocable.responseType).isEqualTo(String::class.java)
                         }
                         "sseMethod" -> {

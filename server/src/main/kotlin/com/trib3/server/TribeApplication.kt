@@ -81,9 +81,7 @@ class TribeApplication
         /**
          * returns the application name
          */
-        override fun getName(): String {
-            return appConfig.appName
-        }
+        override fun getName(): String = appConfig.appName
 
         /**
          * Bootstraps the application

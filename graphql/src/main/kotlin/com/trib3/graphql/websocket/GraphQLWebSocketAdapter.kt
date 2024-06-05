@@ -24,7 +24,8 @@ open class GraphQLWebSocketAdapter(
     val channel: Channel<OperationMessage<*>>,
     val objectMapper: ObjectMapper,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
-) : WebSocketAdapter(), CoroutineScope by CoroutineScope(dispatcher) {
+) : WebSocketAdapter(),
+    CoroutineScope by CoroutineScope(dispatcher) {
     val objectWriter = objectMapper.writerWithDefaultPrettyPrinter()!!
 
     companion object {

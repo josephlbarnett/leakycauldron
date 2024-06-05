@@ -28,8 +28,7 @@ class HoconConfigurationTest {
             (
                 (config.serverFactory as SimpleServerFactory)
                     .connector as HttpConnectorFactory
-            )
-                .port,
+            ).port,
         ).isEqualTo(9080)
     }
 }

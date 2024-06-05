@@ -42,9 +42,7 @@ abstract class ResourceTestBase<T> {
 
     abstract fun getResource(): T
 
-    open fun getContainerFactory(): TestContainerFactory {
-        return JettyWebTestContainerFactory()
-    }
+    open fun getContainerFactory(): TestContainerFactory = JettyWebTestContainerFactory()
 
     open fun buildAdditionalResources(resourceBuilder: Resource.Builder<*>) {
         // do nothing

@@ -63,9 +63,7 @@ class RequestIdFilter : Filter {
         /**
          * Return the current MDC's RequestId, if set
          */
-        fun getRequestId(): String? {
-            return MDC.get(REQUEST_ID_KEY)
-        }
+        fun getRequestId(): String? = MDC.get(REQUEST_ID_KEY)
 
         /**
          * Remove any RequestId set from the MDC
