@@ -45,41 +45,43 @@
         <version.activation>2.1.3</version.activation>
         <version.angus>2.0.2</version.angus>
         <version.annotation>3.0.0</version.annotation>
-        <version.ant>1.10.14</version.ant>
+        <version.ant>1.10.15</version.ant>
         <version.argparse4j>0.9.0</version.argparse4j>
         <version.assertk>0.28.1</version.assertk>
-        <version.aws.java>2.26.20</version.aws.java>
-        <version.byte-buddy>1.14.18</version.byte-buddy>
+        <version.aws.java>2.28.0</version.aws.java>
+        <version.byte-buddy>1.15.1</version.byte-buddy>
         <version.caffeine>3.1.8</version.caffeine>
-        <version.checker-qual>3.45.0</version.checker-qual>
-        <version.classgraph>4.8.174</version.classgraph>
+        <version.checker-qual>3.47.0</version.checker-qual>
+        <version.classgraph>4.8.175</version.classgraph>
         <version.commons-codec>1.17.1</version.commons-codec>
-        <version.commons-compress>1.26.2</version.commons-compress>
+        <version.commons-compress>1.27.1</version.commons-compress>
         <version.commons-io>2.16.1</version.commons-io>
-        <version.commons-lang3>3.14.0</version.commons-lang3>
+        <version.commons-lang3>3.17.0</version.commons-lang3>
         <version.commons-text>1.12.0</version.commons-text>
         <version.config4k>0.7.0</version.config4k>
-        <version.detekt>1.23.6</version.detekt>
+        <version.detekt>1.23.7</version.detekt>
         <version.dokka>1.9.20</version.dokka>
-        <version.dropwizard>4.0.7</version.dropwizard>
+        <version.dropwizard>4.0.8</version.dropwizard>
         <version.dropwizard.hocon>0.5.1</version.dropwizard.hocon>
-        <version.dropwizard.metrics>4.2.26</version.dropwizard.metrics>
+        <version.dropwizard.metrics>4.2.27</version.dropwizard.metrics>
         <version.dropwizard.metrics.cloudwatch>2.0.8</version.dropwizard.metrics.cloudwatch>
-        <version.easymock>5.3.0</version.easymock>
-        <version.errorprone>2.29.0</version.errorprone>
+        <version.easymock>5.4.0</version.easymock>
+        <version.errorprone>2.32.0</version.errorprone>
         <version.expressly>5.0.0</version.expressly>
-        <version.flyway>10.17.2</version.flyway>
+        <version.flyway>10.18.0</version.flyway>
         <version.graphql-kotlin>8.0.0</version.graphql-kotlin>
-        <version.graphql-java>22.2</version.graphql-java>
+        <version.graphql-java>22.3</version.graphql-java>
         <version.graphql-java-extended-scalars>22.0</version.graphql-java-extended-scalars>
         <version.graphql-java.dataloader>3.3.0</version.graphql-java.dataloader>
-        <version.guava>33.2.1-jre</version.guava>
+        <version.guava>33.3.0-jre</version.guava>
         <version.guice>7.0.0</version.guice>
         <version.hibernate.validator>8.0.1.Final</version.hibernate.validator>
         <version.hikaricp>5.1.0</version.hikaricp>
         <version.hk2>3.1.1</version.hk2>
         <version.httpcomponents.client>5.3.1</version.httpcomponents.client>
-        <version.httpcomponents.core>5.2.5</version.httpcomponents.core>
+        <version.httpcomponents.client4>4.5.14</version.httpcomponents.client4>
+        <version.httpcomponents.core>5.3</version.httpcomponents.core>
+        <version.httpcomponents.core4>4.4.16</version.httpcomponents.core4>
         <version.j2objc>3.0.0</version.j2objc>
         <version.jackson>2.17.2</version.jackson>
         <version.jackson.hocon>1.1.0</version.jackson.hocon>
@@ -89,17 +91,17 @@
         <version.jaxb>4.0.2</version.jaxb>
         <version.jaxb.runtime>4.0.5</version.jaxb.runtime>
         <version.jaxrs>4.0.0</version.jaxrs>
-        <version.jboss.logging>3.6.0.Final</version.jboss.logging>
-        <version.jersey>3.1.7</version.jersey>
+        <version.jboss.logging>3.6.1.Final</version.jboss.logging>
+        <version.jersey>3.1.8</version.jersey>
         <version.jetbrains.annotations>13.0</version.jetbrains.annotations>
-        <version.jetty>11.0.22</version.jetty>
+        <version.jetty>11.0.24</version.jetty>
         <version.jna>5.14.0</version.jna>
         <version.joda>2.12.7</version.joda>
-        <version.jooq>3.19.10</version.jooq>
+        <version.jooq>3.19.11</version.jooq>
         <version.jsr305>3.0.2</version.jsr305>
         <version.junit>4.13.2</version.junit>
-        <version.kotlin>2.0.0</version.kotlin>
-        <version.kotlin.coroutines>1.8.1</version.kotlin.coroutines>
+        <version.kotlin>2.0.20</version.kotlin>
+        <version.kotlin.coroutines>1.9.0</version.kotlin.coroutines>
         <version.kotlin.guice>3.0.0</version.kotlin.guice>
         <version.kotlin.logging>3.0.5</version.kotlin.logging>
         <version.ktlint>1.3.1</version.ktlint>
@@ -110,29 +112,29 @@
         <version.maven.buildhelper>3.6.0</version.maven.buildhelper>
         <version.maven.clean>3.4.0</version.maven.clean>
         <version.maven.compiler>3.13.0</version.maven.compiler>
-        <version.maven.dependency>3.7.1</version.maven.dependency>
+        <version.maven.dependency>3.8.0</version.maven.dependency>
         <version.maven.dependencyscope>0.10</version.maven.dependencyscope>
-        <version.maven.deploy>3.1.2</version.maven.deploy>
+        <version.maven.deploy>3.1.3</version.maven.deploy>
         <version.maven.enforcer>3.5.0</version.maven.enforcer>
-        <version.maven.failsafe>3.3.1</version.maven.failsafe>
+        <version.maven.failsafe>3.5.0</version.maven.failsafe>
         <version.maven.git>9.0.1</version.maven.git>
-        <version.maven.gpg>3.2.4</version.maven.gpg>
-        <version.maven.install>3.1.2</version.maven.install>
+        <version.maven.gpg>3.2.5</version.maven.gpg>
+        <version.maven.install>3.1.3</version.maven.install>
         <version.maven.jar>3.4.2</version.maven.jar>
         <version.maven.properties>1.2.1</version.maven.properties>
         <version.maven.resources>3.3.1</version.maven.resources>
         <version.maven.shade>3.6.0</version.maven.shade>
         <version.maven.source>3.3.1</version.maven.source>
-        <version.maven.surefire>3.3.1</version.maven.surefire>
-        <version.netty>4.1.111.Final</version.netty>
-        <version.postgres>42.7.3</version.postgres>
+        <version.maven.surefire>3.5.0</version.maven.surefire>
+        <version.netty>4.1.113.Final</version.netty>
+        <version.postgres>42.7.4</version.postgres>
         <version.reactivestreams>1.0.4</version.reactivestreams>
-        <version.redshift>2.1.0.29</version.redshift>
+        <version.redshift>2.1.0.30</version.redshift>
         <version.servlet>5.0.0</version.servlet>
-        <version.slf4j>2.0.13</version.slf4j>
-        <version.snakeyaml>2.2</version.snakeyaml>
-        <version.swagger>2.2.22</version.swagger>
-        <version.testcontainers>1.19.8</version.testcontainers>
+        <version.slf4j>2.0.16</version.slf4j>
+        <version.snakeyaml>2.3</version.snakeyaml>
+        <version.swagger>2.2.23</version.swagger>
+        <version.testcontainers>1.20.1</version.testcontainers>
         <version.testng>7.10.2</version.testng>
         <version.threeten>1.8.0</version.threeten>
         <version.typesafe.config>1.4.3</version.typesafe.config>
@@ -294,10 +296,6 @@
                     <exclusion>
                         <groupId>javax.xml.bind</groupId>
                         <artifactId>jaxb-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.hibernate.validator</groupId>
-                        <artifactId>hibernate-validator</artifactId>
                     </exclusion>
                     <exclusion>
                         <groupId>javax.validation</groupId>
@@ -910,6 +908,16 @@
                 <groupId>org.apache.httpcomponents.client5</groupId>
                 <artifactId>httpclient5</artifactId>
                 <version>${version.httpcomponents.client}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${version.httpcomponents.core4}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${version.httpcomponents.client4}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
