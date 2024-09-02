@@ -68,9 +68,9 @@
         <version.easymock>5.3.0</version.easymock>
         <version.errorprone>2.29.0</version.errorprone>
         <version.expressly>5.0.0</version.expressly>
-        <version.flyway>10.15.2</version.flyway>
-        <version.graphql-kotlin>7.1.4</version.graphql-kotlin>
-        <version.graphql-java>21.5</version.graphql-java>
+        <version.flyway>10.17.2</version.flyway>
+        <version.graphql-kotlin>8.0.0</version.graphql-kotlin>
+        <version.graphql-java>22.2</version.graphql-java>
         <version.graphql-java-extended-scalars>22.0</version.graphql-java-extended-scalars>
         <version.graphql-java.dataloader>3.3.0</version.graphql-java.dataloader>
         <version.guava>33.2.1-jre</version.guava>

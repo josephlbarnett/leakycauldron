@@ -20,10 +20,12 @@ import com.trib3.server.filters.RequestIdFilter
 import com.trib3.server.modules.EnvironmentCallback
 import com.trib3.server.modules.TribeApplicationModule
 import com.trib3.testing.LeakyMock
+import graphql.ExecutionResult
 import graphql.GraphQL
 import graphql.GraphQLContext
-import graphql.execution.instrumentation.dataloader.DataLoaderDispatcherInstrumentation
-import graphql.execution.instrumentation.dataloader.DataLoaderDispatcherInstrumentationOptions
+import graphql.execution.instrumentation.Instrumentation
+import graphql.execution.instrumentation.InstrumentationState
+import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters
 import io.dropwizard.core.setup.Environment
 import io.dropwizard.jetty.MutableServletContextHandler
 import jakarta.inject.Inject
@@ -45,9 +47,16 @@ class DummyModule : GraphQLApplicationModule() {
     override fun configureApplication() {
         graphQLQueriesBinder().addBinding().to<DummyQuery>()
         graphQLInstrumentationsBinder().addBinding().toInstance(
-            DataLoaderDispatcherInstrumentation(
-                DataLoaderDispatcherInstrumentationOptions.newOptions().includeStatistics(true),
-            ),
+            object : Instrumentation {
+                override fun instrumentExecutionResult(
+                    executionResult: ExecutionResult,
+                    parameters: InstrumentationExecutionParameters?,
+                    state: InstrumentationState?,
+                ): CompletableFuture<ExecutionResult> {
+                    executionResult.extensions.put("testinstrumentation", "testvalue")
+                    return CompletableFuture.completedFuture(executionResult)
+                }
+            },
         )
     }
 }
@@ -70,10 +79,7 @@ class GraphQLApplicationModuleTest
             RequestIdFilter.withRequestId("graphQLInstrumentationBindingTest") {
                 val result = graphQL.execute("query test")
                 assertThat(result.extensions["RequestId"]).isEqualTo("graphQLInstrumentationBindingTest")
-                assertThat(result.extensions["dataloader"]).isNotNull()
-                val x = result.extensions["dataloader"] as Map<*, *>
-                assertThat(x["overall-statistics"]).isNotNull()
-                assertThat(x["individual-statistics"]).isNotNull()
+                assertThat(result.extensions["testinstrumentation"]).isEqualTo("testvalue")
             }
         }
 
