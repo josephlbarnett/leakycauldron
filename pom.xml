@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.trib3</groupId>
+    <groupId>io.github.josephlbarnett</groupId>
     <artifactId>leakycauldron</artifactId>
     <packaging>pom</packaging>
 
     <parent>
-        <groupId>com.trib3</groupId>
+        <groupId>io.github.josephlbarnett</groupId>
         <artifactId>parent-pom</artifactId>
         <version>3.2-SNAPSHOT</version>
         <relativePath>parent-pom/pom.xml</relativePath>
@@ -14,7 +14,7 @@
 
     <name>Leaky Cauldron</name>
     <description>Libraries for building kotlin services</description>
-    <url>https://github.com/trib3/leakycauldron</url>
+    <url>https://github.io.github.josephlbarnett/leakycauldron</url>
 
     <licenses>
         <license>
@@ -31,9 +31,9 @@
     </developers>
 
     <scm>
-        <url>https://github.com/trib3/leakycauldron</url>
+        <url>https://github.com/josephlbarnett/leakycauldron</url>
         <developerConnection>scm:git:.</developerConnection>
-        <connection>scm:git:git://github.com/trib3/leakycauldron.git</connection>
+        <connection>scm:git:git://github.com/josephlbarnett/leakycauldron.git</connection>
     </scm>
 
     <modules>

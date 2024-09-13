@@ -6,13 +6,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.trib3</groupId>
+        <groupId>io.github.josephlbarnett</groupId>
         <artifactId>leakycauldron</artifactId>
         <version>3.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.trib3</groupId>
+    <groupId>io.github.josephlbarnett</groupId>
     <artifactId>config</artifactId>
 
     <dependencies>
@@ -69,7 +69,7 @@
 
         <!-- test -->
         <dependency>
-            <groupId>com.trib3</groupId>
+            <groupId>io.github.josephlbarnett</groupId>
             <artifactId>testing</artifactId>
         </dependency>
         <dependency>
