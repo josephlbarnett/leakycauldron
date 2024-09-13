@@ -1,12 +1,12 @@
 Graphql
 ======
 Provides the application infrastructure for adding [GraphQL](https://graphql.org) support to
-a [server](https://github.com/trib3/leakycauldron/blob/HEAD/server) application.
+a [server](https://github.com/josephlbarnett/leakycauldron/blob/HEAD/server) application.
 
 * GraphQL endpoint at `/app/graphql`:
     * UUID, java8 time, and
-      threeten-extra [Scalars](https://github.com/trib3/leakycauldron/blob/HEAD/graphql/src/main/kotlin/com/trib3/graphql/execution/LeakyCauldronHooks.kt)
-    * [Request Ids](https://github.com/trib3/leakycauldron/blob/HEAD/graphql/src/main/kotlin/com/trib3/graphql/execution/RequestIdInstrumentation.kt)
+      threeten-extra [Scalars](https://github.com/josephlbarnett/leakycauldron/blob/HEAD/graphql/src/main/kotlin/com/trib3/graphql/execution/LeakyCauldronHooks.kt)
+    * [Request Ids](https://github.com/josephlbarnett/leakycauldron/blob/HEAD/graphql/src/main/kotlin/com/trib3/graphql/execution/RequestIdInstrumentation.kt)
       attached to the GraphQL response extensions
     * Any guice bound Query, Subscription or Mutation Resolvers
     * Supports websockets using
@@ -28,7 +28,7 @@ a [server](https://github.com/trib3/leakycauldron/blob/HEAD/server) application.
 ### Configuration
 
 Configuration is done primarily though Guice.
-[`GraphQLApplicationModule`](https://github.com/trib3/leakycauldron/blob/HEAD/graphql/src/main/kotlin/com/trib3/graphql/modules/GraphQLApplicationModule.kt)
+[`GraphQLApplicationModule`](https://github.com/josephlbarnett/leakycauldron/blob/HEAD/graphql/src/main/kotlin/com/trib3/graphql/modules/GraphQLApplicationModule.kt)
 exposes binders for commonly bound objects. Additionally, some parameters are set though the HOCON config:
 
 Default config:
@@ -46,7 +46,7 @@ graphql {
 
 ### GraphQL Resolvers
 
-[`GraphQLApplicationModule`](https://github.com/trib3/leakycauldron/blob/HEAD/graphql/src/main/kotlin/com/trib3/graphql/modules/GraphQLApplicationModule.kt)
+[`GraphQLApplicationModule`](https://github.com/josephlbarnett/leakycauldron/blob/HEAD/graphql/src/main/kotlin/com/trib3/graphql/modules/GraphQLApplicationModule.kt)
 provides methods that expose multi-binders for configuring GraphQL resolvers. Any model classes must be added to
 the `graphQLPackagesBinder()` to allow [GraphQL Kotlin](https://github.com/ExpediaDotCom/graphql-kotlin/)
 to use them. Query Resolver implementations can be added to the `graphQLQueriesBinder()`, Subscriptions to
@@ -72,7 +72,7 @@ class ExampleApplicationModule : GraphQLApplicationModule() {
 #### Auth Context
 
 If Dropwizard Authentication is setup and an `AuthFilter<*, *>` binding is provided per
-the [server README](https://github.com/trib3/leakycauldron/blob/HEAD/server/README.md#auth), GraphQL resolver
+the [server README](https://github.com/josephlbarnett/leakycauldron/blob/HEAD/server/README.md#auth), GraphQL resolver
 methods can receive the `Principal` inside the GraphQL context map received from the `DataFetchingEnvironment`
 using graphql-kotlin's `get` extension method. When executing over the standard HTTP transport, resolver
 methods can also access a jax-rs `ResponseBuilder` object in order to affect the HTTP response
@@ -125,11 +125,11 @@ of the reservation request are carried over to any requests made with the return
 
 #### Auth Schema Directive
 
-A [`@GraphQLAuth`](https://github.com/trib3/leakycauldron/blob/HEAD/graphql/src/main/kotlin/com/trib3/graphql/execution/GraphQLAuthDirectiveWiring.kt)
+A [`@GraphQLAuth`](https://github.com/josephlbarnett/leakycauldron/blob/HEAD/graphql/src/main/kotlin/com/trib3/graphql/execution/GraphQLAuthDirectiveWiring.kt)
 schema directive annotation is also provided to allow role based protection of GraphQL exposed fields. Any field in the
 GraphQL schema that is annotated with `@GraphQLAuth` will be restricted to being fetched by authenticated users. If an
 `Authorizer<Principal>` binding is provided per the
-[server README](https://github.com/trib3/leakycauldron/blob/HEAD/server/README.md#auth), then the `@GraphQLAuth`
+[server README](https://github.com/josephlbarnett/leakycauldron/blob/HEAD/server/README.md#auth), then the `@GraphQLAuth`
 directive allows for role based restriction of fields.
 
 Note that any field annotated with `@GraphQLAuth` will return null if auth fails, so must return a nullable type. Failed
@@ -181,12 +181,12 @@ class ExampleSuspendQuery : Query {
 ### DataLoaders
 
 Providing a binding for
-[`KotlinDataLoaderRegistryFactoryProvider`](https://github.com/trib3/leakycauldron/blob/HEAD/graphql/src/main/kotlin/com/trib3/graphql/modules/GraphQLApplicationModule.kt)
+[`KotlinDataLoaderRegistryFactoryProvider`](https://github.com/josephlbarnett/leakycauldron/blob/HEAD/graphql/src/main/kotlin/com/trib3/graphql/modules/GraphQLApplicationModule.kt)
 (using `GraphQLApplicationModule.dataLoaderRegistryFactoryProviderBinder()`) allows for providing `DataLoader`s
 that can be used by resolvers.
 
 For implementing loaders,
-[`CoroutineBatchLoader` and `CoroutineMappedBatchLoader`](https://github.com/trib3/leakycauldron/blob/HEAD/graphql/src/main/kotlin/com/trib3/graphql/execution/CoroutineBatchLoaders.kt)
+[`CoroutineBatchLoader` and `CoroutineMappedBatchLoader`](https://github.com/josephlbarnett/leakycauldron/blob/HEAD/graphql/src/main/kotlin/com/trib3/graphql/execution/CoroutineBatchLoaders.kt)
 allow for writing loader functions as suspend functions/coroutines. When subclassing these loader implementations,
 the `CoroutineScope` will use the same scope as in the `GraphQLContext` map (see above section), and the
 `GraphQLContext` will be made available as the `BatchLoaderEnvironment.context`. If using graphql-kotlin's

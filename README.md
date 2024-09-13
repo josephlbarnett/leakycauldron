@@ -1,8 +1,8 @@
-[![CircleCI](https://circleci.com/gh/trib3/leakycauldron.svg?style=svg)](https://circleci.com/gh/trib3/leakycauldron)
-[![codecov](https://codecov.io/gh/trib3/leakycauldron/branch/main/graph/badge.svg?token=MmCucLTttM)](https://codecov.io/gh/trib3/leakycauldron)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.trib3/leakycauldron/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.trib3/leakycauldron/)
+[![CircleCI](https://circleci.com/gh/josephlbarnett/leakycauldron.svg?style=svg)](https://circleci.com/gh/josephlbarnett/leakycauldron)
+[![codecov](https://codecov.io/gh/josephlbarnett/leakycauldron/branch/main/graph/badge.svg?token=wqKHFsgfdx)](https://codecov.io/gh/josephlbarnett/leakycauldron)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.josephlbarnett/leakycauldron/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.josephlbarnett/leakycauldron/)
 
-Tribe Dynamics' Leaky Cauldron
+Joe's Fork of Tribe Dynamics' Leaky Cauldron
 =======
 
 Description
@@ -50,37 +50,37 @@ Project Layout
 Note that most modules make use of [Guice](https://github.com/google/guice) for dependency injection of configured
 instances.
 
-* [`/build-resources`](https://github.com/trib3/leakycauldron/tree/HEAD/build-resources)
+* [`/build-resources`](https://github.com/josephlbarnett/leakycauldron/tree/HEAD/build-resources)
 
 This contains resources for use during a maven build. If depended upon, it should only be brought into test scope.
 
-* [`/parent-pom`](https://github.com/trib3/leakycauldron/tree/HEAD/parent-pom)
+* [`/parent-pom`](https://github.com/josephlbarnett/leakycauldron/tree/HEAD/parent-pom)
 
 This contains the parent pom to be used for all maven projects at Tribe.
 
-* [`/json`](https://github.com/trib3/leakycauldron/tree/HEAD/json)
+* [`/json`](https://github.com/josephlbarnett/leakycauldron/tree/HEAD/json)
 
 This contains classes and [Guice](https://github.com/google/guice) modules for configuring
 [Jackson](https://github.com/FasterXML/jackson) objects to work with Tribe codebases.
 
-* [`/testing`](https://github.com/trib3/leakycauldron/tree/HEAD/testing)
+* [`/testing`](https://github.com/josephlbarnett/leakycauldron/tree/HEAD/testing)
 
 This contains classes that enhance writing unit tests.
 
-* [`/config`](https://github.com/trib3/leakycauldron/tree/HEAD/config)
+* [`/config`](https://github.com/josephlbarnett/leakycauldron/tree/HEAD/config)
 
 This contains classes for parsing [HOCON](https://github.com/lightbend/config) application.conf files with support for
 environmental overrides and AWS KMS-based encrypted values.
 
-* [`/db`](https://github.com/trib3/leakycauldron/tree/HEAD/db)
+* [`/db`](https://github.com/josephlbarnett/leakycauldron/tree/HEAD/db)
 
 This contains classes for injecting configured [jOOQ](https://www.jooq.org) `DSLContext`s and JDBC `DataSource`s into
 application data access code.
 
-* [`/server`](https://github.com/trib3/leakycauldron/tree/HEAD/server)
+* [`/server`](https://github.com/josephlbarnett/leakycauldron/tree/HEAD/server)
 
 This contains classes for setting up a configurable [Dropwizard](https://dropwizard.io) based application.
 
-* [`/graphql`](https://github.com/trib3/leakycauldron/tree/HEAD/graphql)
+* [`/graphql`](https://github.com/josephlbarnett/leakycauldron/tree/HEAD/graphql)
 
 This contains classes for adding [GraphQL](https://graphql.org) support to an application.

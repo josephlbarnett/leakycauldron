@@ -4,14 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.trib3</groupId>
+    <groupId>io.github.josephlbarnett</groupId>
     <artifactId>parent-pom</artifactId>
     <version>3.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Trib3 parent pom</name>
+    <name>LeakyCauldron parent pom</name>
     <description>Parent pom for downstream projects</description>
-    <url>https://github.com/trib3/leakycauldron/tree/HEAD/parent-pom</url>
+    <url>https://github.com/josephlbarnett/leakycauldron/tree/HEAD/parent-pom</url>
 
     <licenses>
         <license>
@@ -28,9 +28,9 @@
     </developers>
 
     <scm>
-        <url>https://github.com/trib3/leakycauldron</url>
+        <url>https://github.com/josephlbarnett/leakycauldron</url>
         <developerConnection>scm:git:.</developerConnection>
-        <connection>scm:git:git://github.com/trib3/leakycauldron.git</connection>
+        <connection>scm:git:git://github.com/josephlbarnett/leakycauldron.git</connection>
     </scm>
 
     <properties>
@@ -1153,7 +1153,7 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>com.trib3</groupId>
+                <groupId>io.github.josephlbarnett</groupId>
                 <artifactId>testing</artifactId>
                 <version>${version.leakycauldron}</version>
                 <scope>test</scope>
@@ -1258,7 +1258,7 @@
             <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.trib3</groupId>
+            <groupId>io.github.josephlbarnett</groupId>
             <artifactId>build-resources</artifactId>
             <version>${version.leakycauldron}</version>
             <scope>test</scope>
@@ -1361,7 +1361,7 @@
                                     <exclude>com.sun.xml.bind:jaxb-impl</exclude>
                                     <!-- use org.glassfish.expressly:expressly -->
                                     <exclude>org.glassfish:jakarta.el</exclude>
-                                    <!-- use com.trib3:metrics-guice since no longer available -->
+                                    <!-- use io.github.josephlbarnett:metrics-guice since no longer available -->
                                     <exclude>com.palominolabs.metrics:metrics-guice</exclude>
                                 </excludes>
                             </bannedDependencies>
@@ -1537,7 +1537,7 @@
                             <version>${version.detekt}</version>
                         </dependency>
                         <dependency>
-                            <groupId>com.trib3</groupId>
+                            <groupId>io.github.josephlbarnett</groupId>
                             <artifactId>build-resources</artifactId>
                             <version>${version.leakycauldron}</version>
                         </dependency>
@@ -1776,7 +1776,7 @@
                         <shadedArtifactAttached>true</shadedArtifactAttached>
                         <artifactSet>
                             <excludes>
-                                <exclude>com.trib3:build-resources</exclude>
+                                <exclude>io.github.josephlbarnett:build-resources</exclude>
                             </excludes>
                         </artifactSet>
                         <filters>
@@ -1819,7 +1819,7 @@
                     <version>${version.maven.assembly}</version>
                     <dependencies>
                         <dependency>
-                            <groupId>com.trib3</groupId>
+                            <groupId>io.github.josephlbarnett</groupId>
                             <artifactId>build-resources</artifactId>
                             <version>${version.leakycauldron}</version>
                         </dependency>
