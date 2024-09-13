@@ -5,13 +5,13 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.trib3</groupId>
+    <groupId>io.github.josephlbarnett</groupId>
     <artifactId>build-resources</artifactId>
     <version>3.2-SNAPSHOT</version>
 
     <name>Build Resources</name>
     <description>Resources for use during the build process</description>
-    <url>https://github.com/trib3/leakycauldron/tree/HEAD/build-resources</url>
+    <url>https://github.com/josephlbarnett/leakycauldron/tree/HEAD/build-resources</url>
 
     <licenses>
         <license>
@@ -28,9 +28,9 @@
     </developers>
 
     <scm>
-        <url>https://github.com/trib3/leakycauldron</url>
+        <url>https://github.com/josephlbarnett/leakycauldron</url>
         <developerConnection>scm:git:.</developerConnection>
-        <connection>scm:git:git://github.com/trib3/leakycauldron.git</connection>
+        <connection>scm:git:git://github.com/josephlbarnett/leakycauldron.git</connection>
     </scm>
 
     <properties>
