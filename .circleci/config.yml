@@ -51,7 +51,7 @@ jobs:
             if [ "$CIRCLE_BRANCH" = "main" ]; then
               ./mvnw install org.sonatype.central:central-publishing-maven-plugin:0.5.0:publish --no-transfer-progress -U -DskipPublishing=true
             else
-              ./mvnw install -DaltDeploymentRepository=ossrh::${MAVEN_SNAPSHOT_REPO} --no-transfer-progress -U
+              ./mvnw install --no-transfer-progress -U
             fi
       - save_cache:
           paths:
@@ -132,16 +132,16 @@ jobs:
           command: |
             mkdir -p ~/.m2
             cd ~/jars
-            find . -name "central-bundle.zip"
             BUNDLE_ID=`curl --request POST --header "Authorization: Bearer ${MVN_UPLOAD_TOKEN}" --form bundle=@central-bundle.zip "https://central.sonatype.com/api/v1/publisher/upload?publishingType=AUTOMATIC"`
             echo $BUNDLE_ID bundle uploaded
             STATUS=`curl --request POST --header "Authorization: Bearer ${MVN_UPLOAD_TOKEN}" "https://central.sonatype.com/api/v1/publisher/status?id=$BUNDLE_ID" | jq -r .deploymentState`
             while [ "$STATUS" != "PUBLISHED" -a "$STATUS" != "FAILED" ]; do
                echo $STATUS
-               sleep 1
+               sleep 10
                STATUS=`curl --request POST --header "Authorization: Bearer ${MVN_UPLOAD_TOKEN}" "https://central.sonatype.com/api/v1/publisher/status?id=$BUNDLE_ID" | jq -r .deploymentState`
             done
             if [ "$STATUS" != "PUBLISHED" ]; then
+               echo "Bad publishing status: $STATUS"
                exit 1
             fi
 

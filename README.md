@@ -1,6 +1,6 @@
 [![CircleCI](https://circleci.com/gh/josephlbarnett/leakycauldron.svg?style=svg)](https://circleci.com/gh/josephlbarnett/leakycauldron)
 [![codecov](https://codecov.io/gh/josephlbarnett/leakycauldron/branch/main/graph/badge.svg?token=wqKHFsgfdx)](https://codecov.io/gh/josephlbarnett/leakycauldron)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.josephlbarnett/leakycauldron/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.josephlbarnett/leakycauldron/)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.josephlbarnett/leakycauldron)](https://central.sonatype.com/artifact/io.github.josephlbarnett/leakycauldron/)
 
 Joe's Fork of [Tribe Dynamics' Leaky Cauldron](https://github.com/trib3/leakycauldron)
 =======
