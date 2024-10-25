@@ -31,11 +31,11 @@ class FilteredRequestLogTest {
         factory.appenders =
             ImmutableList.of(
                 AppenderFactory<IAccessEvent> {
-                        _,
-                        _,
-                        _,
-                        _,
-                        _,
+                    _,
+                    _,
+                    _,
+                    _,
+                    _,
                     ->
                     object : AppenderBase<IAccessEvent>() {
                         override fun append(eventObject: IAccessEvent) {
@@ -66,11 +66,11 @@ class FilteredRequestLogTest {
         factory.appenders =
             ImmutableList.of(
                 AppenderFactory<IAccessEvent> {
-                        _,
-                        _,
-                        _,
-                        _,
-                        _,
+                    _,
+                    _,
+                    _,
+                    _,
+                    _,
                     ->
                     object : AppenderBase<IAccessEvent>() {
                         override fun append(eventObject: IAccessEvent) {
@@ -101,11 +101,11 @@ class FilteredRequestLogTest {
         factory.appenders =
             ImmutableList.of(
                 AppenderFactory<IAccessEvent> {
-                        _,
-                        _,
-                        _,
-                        _,
-                        _,
+                    _,
+                    _,
+                    _,
+                    _,
+                    _,
                     ->
                     object : AppenderBase<IAccessEvent>() {
                         override fun append(eventObject: IAccessEvent) {
@@ -150,11 +150,11 @@ class FilteredRequestLogTest {
         factory.appenders =
             ImmutableList.of(
                 AppenderFactory<IAccessEvent> {
-                        _,
-                        _,
-                        _,
-                        _,
-                        _,
+                    _,
+                    _,
+                    _,
+                    _,
+                    _,
                     ->
                     object : AppenderBase<IAccessEvent>() {
                         override fun append(eventObject: IAccessEvent) {
