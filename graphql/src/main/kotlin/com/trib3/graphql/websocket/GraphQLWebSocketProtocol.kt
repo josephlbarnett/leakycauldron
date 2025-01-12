@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonValue
 import com.trib3.graphql.execution.MessageGraphQLError
+import org.eclipse.jetty.websocket.api.Callback
 import org.eclipse.jetty.websocket.api.Session
 import org.eclipse.jetty.websocket.api.StatusCode
 import kotlin.reflect.KClass
@@ -77,6 +78,7 @@ enum class GraphQLWebSocketSubProtocol(
                 GraphQLWebSocketCloseReason.INVALID_MESSAGE.description
                     .replace("<id>", msgId.orEmpty())
                     .replace("<body>", msgBody),
+                Callback.NOOP,
             )
         },
         onDuplicateQueryCallback = { message, adapter ->
@@ -86,6 +88,7 @@ enum class GraphQLWebSocketSubProtocol(
                     "<unique-operation-id>",
                     message.id.orEmpty(),
                 ),
+                Callback.NOOP,
             )
         },
         onDuplicateInitCallback = { _, adapter ->
@@ -109,10 +112,10 @@ enum class GraphQLWebSocketSubProtocol(
         message: OperationMessage<T>,
         mapping: Map<String, String>,
     ): OperationMessage<T> =
-        if (!mapping.containsKey(message.type?.type)) {
+        if (message.type == null || !mapping.containsKey(message.type.type)) {
             message
         } else {
-            message.copy(type = message.type?.copy(type = mapping.getValue(message.type.type)))
+            message.copy(type = message.type.copy(type = mapping.getValue(message.type.type)))
         }
 
     /**
@@ -184,7 +187,7 @@ enum class GraphQLWebSocketCloseReason(
  * code/description pairs
  */
 fun Session.close(reason: GraphQLWebSocketCloseReason) {
-    this.close(reason.code, reason.description)
+    this.close(reason.code, reason.description, Callback.NOOP)
 }
 
 /**
