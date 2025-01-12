@@ -2,16 +2,17 @@ package com.trib3.testing.server
 
 import jakarta.servlet.Servlet
 import jakarta.ws.rs.core.UriBuilder
-import org.eclipse.jetty.annotations.AnnotationConfiguration
+import org.eclipse.jetty.ee10.annotations.AnnotationConfiguration
+import org.eclipse.jetty.ee10.servlet.ServletHolder
+import org.eclipse.jetty.ee10.webapp.Configuration
+import org.eclipse.jetty.ee10.webapp.WebAppContext
+import org.eclipse.jetty.ee10.websocket.server.config.JettyWebSocketServletContainerInitializer
 import org.eclipse.jetty.server.Connector
 import org.eclipse.jetty.server.HttpConfiguration
 import org.eclipse.jetty.server.HttpConnectionFactory
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
-import org.eclipse.jetty.servlet.ServletHolder
 import org.eclipse.jetty.util.thread.QueuedThreadPool
-import org.eclipse.jetty.webapp.Configuration
-import org.eclipse.jetty.webapp.WebAppContext
 import org.glassfish.jersey.client.ClientConfig
 import org.glassfish.jersey.servlet.ServletContainer
 import org.glassfish.jersey.test.DeploymentContext
@@ -66,12 +67,13 @@ class JettyWebTestContainerFactory : TestContainerFactory {
             context.contextPath = path
             // for running tests we just want a straightforward classloader that doesn't hide things
             // like the WebAppClassLoader does, so websockets get detected properly if on the classpath
-            context.classLoader = this::class.java.classLoader
-            context.isParentLoaderPriority
+            // context.classLoader = this::class.java.classLoader
+            // context.isParentLoaderPriority
             context.setConfigurations(arrayOf<Configuration>(AnnotationConfiguration()))
             val holder = ServletHolder(servlet)
             context.addServlet(holder, "/*")
             val server = createServer(uri)
+            JettyWebSocketServletContainerInitializer.configure(context) { _, _ -> }
             server.handler = context
             server.start()
             return server

@@ -27,6 +27,7 @@ import io.dropwizard.jetty.setup.ServletEnvironment
 import jakarta.inject.Inject
 import jakarta.inject.Named
 import mu.KotlinLogging
+import org.eclipse.jetty.server.Handler
 import javax.annotation.Nullable
 
 private val log = KotlinLogging.logger { }
@@ -57,6 +58,7 @@ class TribeApplication
         val adminServlets: Set<ServletConfig>,
         @Nullable val authFilter: AuthFilter<*, *>?,
         val envCallbacks: Set<EnvironmentCallback>,
+        val rootHandler: Handler.Singleton,
     ) : Application<Configuration>() {
         val versionHealthCheck: VersionHealthCheck =
             healthChecks.first {
@@ -121,6 +123,7 @@ class TribeApplication
             conf: Configuration,
             env: Environment,
         ) {
+            env.applicationContext.insertHandler(rootHandler)
             jerseyResources.forEach { env.jersey().register(it) }
             authFilter?.let { env.jersey().register(AuthDynamicFeature(it)) }
 

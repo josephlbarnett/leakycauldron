@@ -8,11 +8,10 @@
     <parent>
         <groupId>io.github.josephlbarnett</groupId>
         <artifactId>leakycauldron</artifactId>
-        <version>3.2-SNAPSHOT</version>
+        <version>3.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>io.github.josephlbarnett</groupId>
     <artifactId>db</artifactId>
     <name>LeakyCauldron DB</name>
 

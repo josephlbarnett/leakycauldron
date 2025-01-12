@@ -29,20 +29,30 @@ import com.trib3.json.ObjectMapperProvider
 import com.trib3.server.config.TribeApplicationConfig
 import com.trib3.server.filters.RequestIdFilter
 import com.trib3.testing.LeakyMock
+import com.trib3.testing.server.TestServletContextRequest
 import graphql.GraphQL
 import graphql.execution.AsyncExecutionStrategy
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.ws.rs.ClientErrorException
-import jakarta.ws.rs.container.ContainerRequestContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.easymock.EasyMock
+import org.eclipse.jetty.ee10.servlet.ServletChannel
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler
+import org.eclipse.jetty.http.HttpField
+import org.eclipse.jetty.http.HttpFields
+import org.eclipse.jetty.http.HttpHeader
 import org.eclipse.jetty.http.HttpStatus
-import org.eclipse.jetty.servlets.CrossOriginFilter
+import org.eclipse.jetty.http.HttpURI
+import org.eclipse.jetty.server.ConnectionMetaData
+import org.eclipse.jetty.server.HttpConfiguration
+import org.eclipse.jetty.server.Request
+import org.eclipse.jetty.server.Response
+import org.glassfish.jersey.servlet.ServletContainer
 import org.testng.annotations.Test
 import java.util.Optional
 import java.util.UUID
@@ -84,14 +94,20 @@ class GraphQLResourceTest {
             graphQL,
             GraphQLConfig(ConfigLoader("GraphQLResourceTest")),
             appConfig = TribeApplicationConfig(ConfigLoader()),
-            creator = { _, _ -> null },
+            creator = { _, _, callback ->
+                callback.failed(IllegalStateException("WS not supported"))
+                null
+            },
         )
     val lockedResource =
         GraphQLResource(
             graphQL,
             GraphQLConfig(ConfigLoader("GraphQLResourceIntegrationTest")),
             appConfig = TribeApplicationConfig(ConfigLoader()),
-            creator = { _, _ -> null },
+            creator = { _, _, callback ->
+                callback.failed(IllegalStateException("WS not supported"))
+                null
+            },
         )
     val objectMapper = ObjectMapperProvider().get()
 
@@ -130,16 +146,60 @@ class GraphQLResourceTest {
     fun testUpgradeNoContainer() {
         val mockReq = LeakyMock.niceMock<HttpServletRequest>()
         val mockRes = LeakyMock.niceMock<HttpServletResponse>()
-        val mockCtx = LeakyMock.niceMock<ContainerRequestContext>()
-        EasyMock.expect(mockReq.pathInfo).andReturn("/graphql")
-        EasyMock.expect(mockReq.getHeader("Origin")).andReturn("http://test1.leakycauldron.trib3.com")
-        EasyMock
-            .expect(mockRes.getHeader(CrossOriginFilter.ACCESS_CONTROL_ALLOW_ORIGIN_HEADER))
-            .andReturn("http://test1.leakycauldron.trib3.com")
-        EasyMock.replay(mockReq, mockRes, mockCtx)
-        val resp = resource.graphQLUpgrade(Optional.empty(), mockReq, mockRes, mockCtx)
+        EasyMock.expect(mockReq.pathInfo).andReturn("/graphql").anyTimes()
+        EasyMock.expect(mockReq.servletPath).andReturn("/app").anyTimes()
+        EasyMock.replay(mockReq, mockRes)
+
+        val resp =
+            resource.graphQLUpgrade(
+                Optional.empty(),
+                mockReq,
+                mockRes,
+            )
         assertThat(resp.status).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED_405)
     }
+
+    @Test
+    fun testUpgradeFailed() =
+        runBlocking {
+            val mockReq = LeakyMock.niceMock<Request>()
+            val mockRes = LeakyMock.niceMock<Response>()
+            val connectionMetaData = LeakyMock.niceMock<ConnectionMetaData>()
+            val headerFields =
+                HttpFields.build(
+                    HttpFields.from(
+                        HttpField(HttpHeader.ORIGIN, null, "http://test1.leakycauldron.trib3.com"),
+                        HttpField(
+                            HttpHeader.ACCESS_CONTROL_ALLOW_ORIGIN,
+                            null,
+                            "http://test1.leakycauldron.trib3.com",
+                        ),
+                    ),
+                )
+            EasyMock.expect(mockReq.headers).andReturn(headerFields).anyTimes()
+            EasyMock.expect(mockReq.connectionMetaData).andReturn(connectionMetaData).anyTimes()
+            EasyMock.expect(connectionMetaData.httpConfiguration).andReturn(HttpConfiguration()).anyTimes()
+            EasyMock.expect(connectionMetaData.protocol).andReturn("HTTP/1.1").anyTimes()
+            EasyMock.expect(mockReq.httpURI).andReturn(HttpURI.from("/graphql")).anyTimes()
+            EasyMock.replay(mockReq, mockRes, connectionMetaData)
+            val handler = ServletContextHandler()
+            handler.addServlet(ServletContainer(), "/graphql")
+            handler.start()
+            try {
+                val channel = ServletChannel(handler, mockReq)
+                val ctxRequest = TestServletContextRequest(handler, channel, mockReq, mockRes)
+                channel.associate(ctxRequest)
+                val resp =
+                    resource.graphQLUpgrade(
+                        Optional.empty(),
+                        ctxRequest.servletApiRequest,
+                        ctxRequest.servletContextResponse.servletApiResponse,
+                    )
+                assertThat(resp.status).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED_405)
+            } finally {
+                handler.stop()
+            }
+        }
 
     @Test
     fun testVariablesQuery() =

@@ -34,7 +34,7 @@ import jakarta.servlet.ServletContainerInitializer
 import org.dataloader.DataLoader
 import org.dataloader.DataLoaderFactory
 import org.easymock.EasyMock
-import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer
+import org.eclipse.jetty.ee10.websocket.server.config.JettyWebSocketServletContainerInitializer
 import org.testng.annotations.Guice
 import org.testng.annotations.Test
 import java.util.concurrent.CompletableFuture

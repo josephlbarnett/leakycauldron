@@ -10,7 +10,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import org.eclipse.jetty.websocket.api.WebSocketAdapter
+import org.eclipse.jetty.websocket.api.Session
 
 private val log = KotlinLogging.logger {}
 
@@ -24,9 +24,10 @@ open class GraphQLWebSocketAdapter(
     val channel: Channel<OperationMessage<*>>,
     val objectMapper: ObjectMapper,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
-) : WebSocketAdapter(),
+) : Session.Listener.AutoDemanding,
     CoroutineScope by CoroutineScope(dispatcher) {
     val objectWriter = objectMapper.writerWithDefaultPrettyPrinter()!!
+    var session: Session? = null
 
     companion object {
         private val CLIENT_SOURCED_MESSAGES =
@@ -38,6 +39,10 @@ open class GraphQLWebSocketAdapter(
                 OperationType.GQL_PING,
                 OperationType.GQL_PONG,
             )
+    }
+
+    override fun onWebSocketOpen(session: Session?) {
+        this.session = session
     }
 
     /**
@@ -90,7 +95,7 @@ open class GraphQLWebSocketAdapter(
      * Must be called from the Subscriber's observation context
      */
     internal fun sendMessage(message: OperationMessage<*>) {
-        remote?.sendString(objectWriter.writeValueAsString(subProtocol.getServerToClientMessage(message)))
+        session?.sendText(objectWriter.writeValueAsString(subProtocol.getServerToClientMessage(message)), null)
     }
 
     /**

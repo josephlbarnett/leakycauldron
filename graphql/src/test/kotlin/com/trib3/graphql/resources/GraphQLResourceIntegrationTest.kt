@@ -31,7 +31,7 @@ import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.core.NewCookie
 import jakarta.ws.rs.core.Response.ResponseBuilder
 import org.eclipse.jetty.http.HttpStatus
-import org.eclipse.jetty.websocket.api.WebSocketAdapter
+import org.eclipse.jetty.websocket.api.Session
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest
 import org.eclipse.jetty.websocket.client.WebSocketClient
 import org.eclipse.jetty.websocket.core.server.WebSocketCreator
@@ -125,13 +125,20 @@ class GraphQLResourceIntegrationTest : ResourceTestBase<GraphQLResource>() {
             GraphQLConfig(ConfigLoader("GraphQLResourceIntegrationTest")),
             appConfig = TribeApplicationConfig(ConfigLoader("GraphQLResourceIntegrationTest")),
             creator =
-                WebSocketCreator { request, _ ->
-                    if (request.queryString != null && request.queryString.contains("fail")) {
+                WebSocketCreator { request, _, callback ->
+                    if (request.httpURI.query != null && request.httpURI.query.contains("fail")) {
+                        callback.failed(IllegalStateException("Forced failure"))
                         null
                     } else {
-                        object : WebSocketAdapter() { // simple echoing websocket implementation
+                        object : Session.Listener.AutoDemanding { // simple echoing websocket implementation
+                            var session: Session? = null
+
+                            override fun onWebSocketOpen(session: Session?) {
+                                this.session = session
+                            }
+
                             override fun onWebSocketText(message: String) {
-                                remote.sendString("You said $message")
+                                session?.sendText("You said $message", null)
                             }
                         }
                     }
@@ -161,7 +168,9 @@ class GraphQLResourceIntegrationTest : ResourceTestBase<GraphQLResource>() {
                     .uriBuilder
                     .scheme("ws")
                     .build()
-            val adapter = WebSocketAdapter()
+            val adapter =
+                object : Session.Listener.AutoDemanding {
+                }
             assertFailure {
                 client
                     .connect(
@@ -204,7 +213,7 @@ class GraphQLResourceIntegrationTest : ResourceTestBase<GraphQLResource>() {
                     .scheme("ws")
                     .build()
             val adapter =
-                object : WebSocketAdapter() {
+                object : Session.Listener.AutoDemanding {
                     override fun onWebSocketText(message: String) {
                         lock.withLock {
                             received = message
@@ -222,7 +231,7 @@ class GraphQLResourceIntegrationTest : ResourceTestBase<GraphQLResource>() {
                         },
                     ).get()
             lock.withLock {
-                session.remote.sendString("Hi there")
+                session.sendText("Hi there", null)
                 condition.await()
             }
             assertThat(received).isEqualTo("You said Hi there")

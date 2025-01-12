@@ -7,7 +7,7 @@
 
     <groupId>io.github.josephlbarnett</groupId>
     <artifactId>build-resources</artifactId>
-    <version>3.2-SNAPSHOT</version>
+    <version>3.3-SNAPSHOT</version>
 
     <name>LeakyCauldron Build Resources</name>
     <description>Resources for use during the build process</description>
