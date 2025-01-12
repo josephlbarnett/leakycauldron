@@ -33,18 +33,21 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.supervisorScope
 import mu.KotlinLogging
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler
+import org.eclipse.jetty.ee10.servlet.ServletContextRequest
+import org.eclipse.jetty.ee10.websocket.server.internal.JettyServerFrameHandlerFactory
 import org.eclipse.jetty.http.HttpStatus
+import org.eclipse.jetty.util.FutureCallback
 import org.eclipse.jetty.util.URIUtil
 import org.eclipse.jetty.websocket.core.Configuration
+import org.eclipse.jetty.websocket.core.WebSocketConstants
 import org.eclipse.jetty.websocket.core.server.WebSocketCreator
 import org.eclipse.jetty.websocket.core.server.WebSocketMappings
-import org.eclipse.jetty.websocket.server.internal.JettyServerFrameHandlerFactory
 import java.security.Principal
 import java.time.Duration
 import java.util.Optional
 import java.util.concurrent.ConcurrentHashMap
 import javax.annotation.Nullable
-import kotlin.collections.set
 
 private val log = KotlinLogging.logger {}
 
@@ -71,6 +74,58 @@ internal fun unauthorizedResponse(): Response =
             "WWW-Authenticate",
             "Basic realm=\"realm\"",
         ).build()
+
+/**
+ * Attempts to do a websocket upgrade, returning 101 if it succeeds,
+ * and 405 if the negotiation fails.
+ *
+ * See JettyWebSocketServlet for the core logic here, as it may
+ * need to change when jetty version upgrades happen.
+ */
+fun doWebSocketUpgrade(
+    request: HttpServletRequest,
+    response: HttpServletResponse,
+    creator: WebSocketCreator,
+    webSocketConfig: Configuration.ConfigurationCustomizer,
+): Response {
+    val webSocketMapping =
+        request.servletContext?.let {
+            WebSocketMappings.getMappings(
+                ServletContextHandler.getServletContextHandler(it),
+            )
+        }
+
+    val pathSpec = WebSocketMappings.parsePathSpec(URIUtil.addPaths(request.servletPath, request.pathInfo))
+    if (webSocketMapping != null && webSocketMapping.getWebSocketCreator(pathSpec) == null) {
+        synchronized(webSocketMapping) {
+            if (webSocketMapping.getWebSocketCreator(pathSpec) == null) {
+                webSocketMapping.addMapping(
+                    pathSpec,
+                    creator,
+                    JettyServerFrameHandlerFactory.getFactory(request.servletContext),
+                    webSocketConfig,
+                )
+            }
+        }
+    }
+    if (webSocketMapping != null) {
+        val wsrequest = ServletContextRequest.getServletContextRequest(request)
+        val wsresponse = wsrequest.servletContextResponse
+        val callback = FutureCallback()
+        try {
+            wsrequest.setAttribute(WebSocketConstants.WEBSOCKET_WRAPPED_REQUEST_ATTRIBUTE, request)
+            wsrequest.setAttribute(WebSocketConstants.WEBSOCKET_WRAPPED_RESPONSE_ATTRIBUTE, response)
+            if (webSocketMapping.upgrade(wsrequest, wsresponse, callback, null)) {
+                callback.block()
+                return Response.status(HttpStatus.SWITCHING_PROTOCOLS_101).build()
+            }
+        } finally {
+            wsrequest.removeAttribute(WebSocketConstants.WEBSOCKET_WRAPPED_REQUEST_ATTRIBUTE)
+            wsrequest.removeAttribute(WebSocketConstants.WEBSOCKET_WRAPPED_RESPONSE_ATTRIBUTE)
+        }
+    }
+    return Response.status(HttpStatus.METHOD_NOT_ALLOWED_405).build()
+}
 
 /**
  * Jersey Resource entry point to GraphQL execution.  Configures the graphql schemas at
@@ -196,7 +251,6 @@ open class GraphQLResource
             principal: Optional<Principal>,
             @Context request: HttpServletRequest,
             @Context response: HttpServletResponse,
-            @Context containerRequestContext: ContainerRequestContext,
         ): Response {
             val origin = request.getHeader("Origin")
             if (origin != null) {
@@ -204,25 +258,7 @@ open class GraphQLResource
                     return unauthorizedResponse()
                 }
             }
-            val webSocketMapping =
-                request.servletContext?.let {
-                    WebSocketMappings.getMappings(it)
-                }
-            val pathSpec = WebSocketMappings.parsePathSpec(URIUtil.addPaths(request.servletPath, request.pathInfo))
-            if (webSocketMapping != null && webSocketMapping.getWebSocketCreator(pathSpec) == null) {
-                webSocketMapping.addMapping(
-                    pathSpec,
-                    creator,
-                    JettyServerFrameHandlerFactory.getFactory(request.servletContext),
-                    webSocketConfig,
-                )
-            }
 
-            // Create a new WebSocketCreator for each request bound to an optional authorized principal
-            return if (webSocketMapping != null && webSocketMapping.upgrade(request, response, null)) {
-                Response.status(HttpStatus.SWITCHING_PROTOCOLS_101).build()
-            } else {
-                Response.status(HttpStatus.METHOD_NOT_ALLOWED_405).build()
-            }
+            return doWebSocketUpgrade(request, response, creator, webSocketConfig)
         }
     }
