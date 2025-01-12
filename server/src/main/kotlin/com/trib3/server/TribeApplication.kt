@@ -28,6 +28,7 @@ import jakarta.inject.Inject
 import jakarta.inject.Named
 import jakarta.servlet.DispatcherType
 import mu.KotlinLogging
+import org.eclipse.jetty.server.Handler
 import java.util.EnumSet
 import javax.annotation.Nullable
 
@@ -59,6 +60,7 @@ class TribeApplication
         val adminServlets: Set<ServletConfig>,
         @Nullable val authFilter: AuthFilter<*, *>?,
         val envCallbacks: Set<EnvironmentCallback>,
+        val rootHandler: Handler.Singleton,
     ) : Application<Configuration>() {
         val versionHealthCheck: VersionHealthCheck =
             healthChecks.first {
@@ -112,6 +114,7 @@ class TribeApplication
             conf: Configuration,
             env: Environment,
         ) {
+            env.applicationContext.insertHandler(rootHandler)
             jerseyResources.forEach { env.jersey().register(it) }
             authFilter?.let { env.jersey().register(AuthDynamicFeature(it)) }
 
