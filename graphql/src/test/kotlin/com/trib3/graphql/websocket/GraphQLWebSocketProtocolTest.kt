@@ -10,6 +10,9 @@ import com.expediagroup.graphql.server.types.GraphQLResponse
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.trib3.graphql.execution.MessageGraphQLError
 import com.trib3.json.ObjectMapperProvider
+import com.trib3.testing.LeakyMock
+import kotlinx.coroutines.channels.Channel
+import org.easymock.EasyMock
 import org.testng.annotations.Test
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberProperties
@@ -104,5 +107,39 @@ class GraphQLWebSocketProtocolTest {
         assertThat(message.type).isEqualTo(OperationType.GQL_CONNECTION_INIT)
         assertThat(message.id).isEqualTo("123")
         assertThat(message.payload).isNull()
+    }
+
+    @Test
+    fun testNullSessionMessagesDontCrash() {
+        val channel = Channel<OperationMessage<*>>()
+        val sessionlessAdapter =
+            GraphQLWebSocketAdapter(GraphQLWebSocketSubProtocol.GRAPHQL_WS_PROTOCOL, channel, mapper)
+        val exampleMessage =
+            OperationMessage(
+                OperationType.GQL_ERROR,
+                "blah",
+                listOf(MessageGraphQLError("Invalid message")),
+            )
+        GraphQLWebSocketSubProtocol.GRAPHQL_WS_PROTOCOL.onInvalidMessage("", "", sessionlessAdapter)
+        GraphQLWebSocketSubProtocol.GRAPHQL_WS_PROTOCOL.onDuplicateInit(exampleMessage, sessionlessAdapter)
+        GraphQLWebSocketSubProtocol.GRAPHQL_WS_PROTOCOL.onDuplicateQuery(exampleMessage, sessionlessAdapter)
+    }
+
+    @Test
+    fun testNullMessagesIdsDontCrash() {
+        val channel = Channel<OperationMessage<*>>()
+        val adapter = GraphQLWebSocketAdapter(GraphQLWebSocketSubProtocol.GRAPHQL_WS_PROTOCOL, channel, mapper)
+        val nullIdMessage =
+            OperationMessage(
+                null,
+                null,
+                listOf(MessageGraphQLError("Invalid message")),
+            )
+        adapter.session = LeakyMock.niceMock()
+        EasyMock.replay(adapter.session)
+        GraphQLWebSocketSubProtocol.GRAPHQL_WS_PROTOCOL.onInvalidMessage(null, "blah", adapter)
+        GraphQLWebSocketSubProtocol.GRAPHQL_WS_PROTOCOL.onInvalidMessage("blahblah", "blah", adapter)
+        GraphQLWebSocketSubProtocol.GRAPHQL_WS_PROTOCOL.onDuplicateInit(nullIdMessage, adapter)
+        GraphQLWebSocketSubProtocol.GRAPHQL_WS_PROTOCOL.onDuplicateQuery(nullIdMessage, adapter)
     }
 }

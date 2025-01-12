@@ -8,11 +8,10 @@
     <parent>
         <groupId>io.github.josephlbarnett</groupId>
         <artifactId>leakycauldron</artifactId>
-        <version>3.2-SNAPSHOT</version>
+        <version>3.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>io.github.josephlbarnett</groupId>
     <artifactId>metrics-guice</artifactId>
     <name>LeakyCauldron Metrics-Guice</name>
 
@@ -65,13 +64,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-		<dependencies>
-		    <dependency>
+                <dependencies>
+                    <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-junit47</artifactId>
-			<version>${version.maven.surefire}</version>
-		    </dependency>
-		</dependencies>
+                        <version>${version.maven.surefire}</version>
+                    </dependency>
+		        </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -1,6 +1,10 @@
 package com.trib3.server.config.dropwizard
 
+import ch.qos.logback.access.common.spi.AccessEvent
 import ch.qos.logback.access.common.spi.IAccessEvent
+import ch.qos.logback.access.jetty.JettyServerAdapter
+import ch.qos.logback.access.jetty.RequestWrapper
+import ch.qos.logback.access.jetty.ResponseWrapper
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.core.filter.Filter
@@ -16,9 +20,13 @@ import io.dropwizard.request.logging.LogbackAccessRequestLogFactory
 import io.dropwizard.request.logging.async.AsyncAccessEventAppenderFactory
 import io.dropwizard.request.logging.layout.LogbackAccessRequestLayout
 import jakarta.servlet.http.HttpServletResponse
+import org.eclipse.jetty.http.HttpFields
+import org.eclipse.jetty.server.Request
 import org.eclipse.jetty.server.RequestLog
+import org.eclipse.jetty.server.Response
 import org.slf4j.LoggerFactory
 import java.util.TimeZone
+import java.util.TreeMap
 
 private const val FAST_RESPONSE_TIME = 200
 
@@ -60,7 +68,7 @@ class FilteredLogbackAccessRequestLogFactory : LogbackAccessRequestLogFactory() 
 
         val context = logger.loggerContext
 
-        val requestLog = LogbackAccessRequestLog()
+        val requestLog = LeakyLogbackAccessRequestLog()
 
         val levelFilterFactory: LevelFilterFactory<IAccessEvent> = NullLevelFilterFactory()
         val asyncAppenderFactory: AsyncAppenderFactory<IAccessEvent> = AsyncAccessEventAppenderFactory()
@@ -87,5 +95,52 @@ class FilteredLogbackAccessRequestLogFactory : LogbackAccessRequestLogFactory() 
             },
         )
         return requestLog
+    }
+}
+
+// TODO: remove when https://github.com/dropwizard/dropwizard/issues/9773 is fixed upstream
+// this is basically a kotlinized copy of https://github.com/dropwizard/dropwizard/pull/9970
+class LeakyLogbackAccessRequestLog : LogbackAccessRequestLog() {
+    private fun buildHeaderMap(headers: HttpFields): Map<String, String> {
+        val headerMap = TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+
+        for (f in headers) {
+            val existing = headerMap.get(f.name)
+            val value = existing?.let { it + "," + f.value } ?: f.value
+            headerMap.put(f.name, value)
+        }
+        return headerMap
+    }
+
+    override fun log(
+        jettyRequest: Request,
+        jettyResponse: Response,
+    ) {
+        val httpServletRequest =
+            object : RequestWrapper(jettyRequest) {
+                override fun buildRequestHeaderMap(): Map<String, String> = buildHeaderMap(jettyRequest.headers)
+            }
+
+        val httpServletResponse = ResponseWrapper(jettyResponse)
+
+        val adapter =
+            object : JettyServerAdapter(jettyRequest, jettyResponse) {
+                override fun buildResponseHeaderMap(): Map<String, String> = buildHeaderMap(jettyResponse.headers)
+            }
+
+        val accessEvent = AccessEvent(this, httpServletRequest, httpServletResponse, adapter)
+
+        if (getFilterChainDecision(accessEvent) == FilterReply.DENY) {
+            return
+        }
+
+        appendLoopOnAppenders(accessEvent)
+    }
+
+    private fun appendLoopOnAppenders(iAccessEvent: IAccessEvent?) {
+        val appenderIterator = this.iteratorForAppenders()
+        while (appenderIterator.hasNext()) {
+            appenderIterator.next()?.doAppend(iAccessEvent)
+        }
     }
 }

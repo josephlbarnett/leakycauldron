@@ -8,11 +8,10 @@
     <parent>
         <groupId>io.github.josephlbarnett</groupId>
         <artifactId>leakycauldron</artifactId>
-        <version>3.2-SNAPSHOT</version>
+        <version>3.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>io.github.josephlbarnett</groupId>
     <artifactId>server</artifactId>
     <name>LeakyCauldron Server</name>
 
@@ -124,16 +123,20 @@
             <version>${version.leakycauldron}</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-servlets</artifactId>
+            <groupId>org.eclipse.jetty.ee10</groupId>
+            <artifactId>jetty-ee10-servlet</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
+            <groupId>org.eclipse.jetty.ee10</groupId>
+            <artifactId>jetty-ee10-servlets</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-http</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
@@ -194,11 +197,11 @@
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
+
 
         <!-- hocon config -->
         <dependency>
@@ -235,6 +238,10 @@
         <dependency>
             <groupId>ch.qos.logback.access</groupId>
             <artifactId>logback-access-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback.access</groupId>
+            <artifactId>logback-access-jetty12</artifactId>
         </dependency>
 
         <!-- test -->

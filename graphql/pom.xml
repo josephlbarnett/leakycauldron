@@ -8,11 +8,10 @@
     <parent>
         <groupId>io.github.josephlbarnett</groupId>
         <artifactId>leakycauldron</artifactId>
-        <version>3.2-SNAPSHOT</version>
+        <version>3.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>io.github.josephlbarnett</groupId>
     <artifactId>graphql</artifactId>
     <name>LeakyCauldon GraphQL</name>
 
@@ -159,8 +158,8 @@
             <artifactId>metrics-annotation</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-servlet</artifactId>
+            <groupId>org.eclipse.jetty.ee10</groupId>
+            <artifactId>jetty-ee10-servlet</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
@@ -168,23 +167,27 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-http</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-core-common</artifactId>
+            <artifactId>jetty-websocket-core-common</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-core-server</artifactId>
+            <artifactId>jetty-websocket-core-server</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-jetty-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-jetty-server</artifactId>
+            <artifactId>jetty-websocket-jetty-api</artifactId>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
@@ -197,6 +200,10 @@
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
@@ -214,7 +221,11 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-jetty-client</artifactId>
+            <artifactId>jetty-websocket-jetty-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.ee10.websocket</groupId>
+            <artifactId>jetty-ee10-websocket-jetty-server</artifactId>
         </dependency>
     </dependencies>
 </project>
