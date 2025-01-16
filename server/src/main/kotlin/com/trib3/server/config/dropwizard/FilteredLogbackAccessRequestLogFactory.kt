@@ -1,6 +1,6 @@
 package com.trib3.server.config.dropwizard
 
-import ch.qos.logback.access.spi.IAccessEvent
+import ch.qos.logback.access.common.spi.IAccessEvent
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.core.filter.Filter

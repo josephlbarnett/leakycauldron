@@ -5,7 +5,7 @@ import assertk.assertions.contains
 import assertk.assertions.each
 import assertk.assertions.isEmpty
 import assertk.assertions.isNotEmpty
-import ch.qos.logback.access.spi.IAccessEvent
+import ch.qos.logback.access.common.spi.IAccessEvent
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.core.AppenderBase
 import com.google.common.collect.ImmutableList

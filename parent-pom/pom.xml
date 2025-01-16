@@ -62,7 +62,7 @@
         <version.config4k>0.7.0</version.config4k>
         <version.detekt>1.23.7</version.detekt>
         <version.dokka>2.0.0</version.dokka>
-        <version.dropwizard>4.0.11</version.dropwizard>
+        <version.dropwizard>4.0.12</version.dropwizard>
         <version.dropwizard.hocon>0.5.1</version.dropwizard.hocon>
         <version.dropwizard.metrics>4.2.29</version.dropwizard.metrics>
         <version.dropwizard.metrics.cloudwatch>2.0.8</version.dropwizard.metrics.cloudwatch>
@@ -107,7 +107,8 @@
         <version.kotlin.logging>3.0.5</version.kotlin.logging>
         <version.ktlint>1.5.0</version.ktlint>
         <version.leakycauldron>${project.version}</version.leakycauldron>
-        <version.logback>1.4.14</version.logback>
+        <version.logback>1.5.16</version.logback>
+        <version.logback-access>2.0.6</version.logback-access>
         <version.maven.antrun>3.1.0</version.maven.antrun>
         <version.maven.assembly>3.7.1</version.maven.assembly>
         <version.maven.buildhelper>3.6.0</version.maven.buildhelper>
@@ -192,9 +193,9 @@
                 <version>${version.logback}</version>
             </dependency>
             <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-access</artifactId>
-                <version>${version.logback}</version>
+                <groupId>ch.qos.logback.access</groupId>
+                <artifactId>logback-access-common</artifactId>
+                <version>${version.logback-access}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.logging</groupId>
