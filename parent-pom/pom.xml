@@ -140,7 +140,7 @@
         <version.testng>7.10.2</version.testng>
         <version.threeten>1.8.0</version.threeten>
         <version.typesafe.config>1.4.3</version.typesafe.config>
-        <version.validation>3.1.0</version.validation>
+        <version.validation>3.1.1</version.validation>
     </properties>
 
     <dependencyManagement>
