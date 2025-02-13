@@ -2,6 +2,7 @@ package com.trib3.graphql.websocket
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -9,7 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.runBlocking
-import mu.KotlinLogging
 import org.eclipse.jetty.websocket.api.Session
 
 private val log = KotlinLogging.logger {}
@@ -64,7 +64,7 @@ open class GraphQLWebSocketAdapter(
             } catch (cancellation: CancellationException) {
                 throw cancellation
             } catch (error: Throwable) {
-                log.error("Error parsing message: ${error.message}", error)
+                log.error(error) { "Error parsing message: ${error.message}" }
                 subProtocol.onInvalidMessage(null, message, this@GraphQLWebSocketAdapter)
             }
         }
@@ -77,7 +77,7 @@ open class GraphQLWebSocketAdapter(
         reason: String?,
     ) {
         val msg = "WebSocket close $statusCode $reason"
-        log.debug(msg)
+        log.debug { msg }
         super.onWebSocketClose(statusCode, reason)
         channel.close()
         cancel(msg)
@@ -87,7 +87,7 @@ open class GraphQLWebSocketAdapter(
      * Just log the error, and rely on the [onWebSocketClose] callback to clean up
      */
     override fun onWebSocketError(cause: Throwable) {
-        log.error("WebSocket error ${cause.message}", cause)
+        log.error(cause) { "WebSocket error ${cause.message}" }
     }
 
     /**
