@@ -12,6 +12,7 @@ import com.trib3.graphql.resources.doWebSocketUpgrade
 import com.trib3.json.ObjectMapperProvider
 import com.trib3.testing.server.JettyWebTestContainerFactory
 import com.trib3.testing.server.ResourceTestBase
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.ws.rs.GET
@@ -24,7 +25,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import mu.KotlinLogging
 import org.eclipse.jetty.util.Callback
 import org.eclipse.jetty.websocket.api.Session
 import org.eclipse.jetty.websocket.api.exceptions.WebSocketTimeoutException
@@ -176,7 +176,7 @@ class GraphQLWebSocketAdapterTest : ResourceTestBase<SimpleWebSocketResource>() 
             launch(Dispatchers.IO) {
                 for (i in 0..19) {
                     delay(100)
-                    log.info("SPIN: $i: $coroutineContext")
+                    log.info { "SPIN: $i: $coroutineContext" }
                     session.sendText(
                         mapper.writeValueAsString(
                             OperationMessage(
@@ -229,7 +229,7 @@ class GraphQLWebSocketAdapterTest : ResourceTestBase<SimpleWebSocketResource>() 
             launch(Dispatchers.IO) {
                 for (i in 0..19) {
                     delay(100)
-                    log.info("FINISH: $i: $coroutineContext")
+                    log.info { "FINISH: $i: $coroutineContext" }
                     session.sendText(
                         mapper.writeValueAsString(
                             OperationMessage(
@@ -295,17 +295,17 @@ class SessionTrackingCreator : WebSocketCreator {
                             launch {
                                 while (true) {
                                     delay(100)
-                                    log.info("CHILD: ${req.httpURI.query}: ping: $coroutineContext")
+                                    log.info { "CHILD: ${req.httpURI.query}: ping: $coroutineContext" }
                                 }
                             }
                     } else if (msg.id == "finish") {
                         coroutines["${req.httpURI.query}child"]?.cancel()
                         break
                     } else {
-                        log.info("PARENT: ${req.httpURI.query}: pong: ${msg.id}: $coroutineContext")
+                        log.info { "PARENT: ${req.httpURI.query}: pong: ${msg.id}: $coroutineContext" }
                     }
                 }
-                log.info("DONE: ${req.httpURI.query}: $coroutineContext")
+                log.info { "DONE: ${req.httpURI.query}: $coroutineContext" }
             }
         return adapter
     }
