@@ -15,6 +15,7 @@ import graphql.ExecutionResultImpl
 import graphql.GraphQL
 import graphql.GraphQLContext
 import io.dropwizard.auth.Auth
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.swagger.v3.oas.annotations.Parameter
 import jakarta.inject.Inject
 import jakarta.ws.rs.DELETE
@@ -47,7 +48,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.coroutines.yield
-import mu.KotlinLogging
 import org.eclipse.jetty.http.HttpStatus
 import java.security.Principal
 import java.util.Optional
@@ -144,7 +144,7 @@ open class GraphQLSseResource
                     try {
                         result.getData<Flow<ExecutionResult>>() ?: flowOf(result)
                     } catch (e: Exception) {
-                        log.debug("Could not get Flow result, collecting result directly", e)
+                        log.debug(e) { "Could not get Flow result, collecting result directly" }
                         flowOf(result)
                     }
                 flow
@@ -162,7 +162,7 @@ open class GraphQLSseResource
                         )
                     }.collect()
             } catch (e: Exception) {
-                log.warn("Error running sse query: ${e.message}", e)
+                log.warn(e) { "Error running sse query: ${e.message}" }
                 val gqlError =
                     ExecutionResultImpl
                         .newExecutionResult()
@@ -182,7 +182,7 @@ open class GraphQLSseResource
                     buildEvent(sse, "next", objectMapper.writeValueAsString(nextMessage)),
                 )
             } finally {
-                log.info("Query ${operationId ?: RequestIdFilter.getRequestId()} completed.")
+                log.info { "Query ${operationId ?: RequestIdFilter.getRequestId()} completed." }
                 val completeMessage =
                     if (operationId != null) {
                         objectMapper.writeValueAsString(mapOf("id" to operationId))

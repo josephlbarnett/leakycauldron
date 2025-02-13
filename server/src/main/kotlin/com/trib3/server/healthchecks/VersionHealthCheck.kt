@@ -1,7 +1,7 @@
 package com.trib3.server.healthchecks
 
 import com.codahale.metrics.health.HealthCheck
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.Properties
 
 private val log = KotlinLogging.logger { }
@@ -24,7 +24,7 @@ open class VersionHealthCheck : HealthCheck() {
                 val gitCommit = gitProps.getProperty("git.commit.id.abbrev")
                 "$mavenVersion $gitBranch-$gitCommit" to true
             } catch (e: Throwable) {
-                log.error("Unable to read version info: ${e.message}", e)
+                log.error(e) { "Unable to read version info: ${e.message}" }
                 "Unable to read version info: ${e.message}" to false
             }
 

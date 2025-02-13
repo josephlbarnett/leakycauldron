@@ -4,8 +4,8 @@ import com.google.common.base.CaseFormat
 import com.typesafe.config.Config
 import io.github.config4k.ClassContainer
 import io.github.config4k.readers.SelectReader
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.inject.Inject
-import mu.KotlinLogging
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.services.kms.KmsClient
 import software.amazon.awssdk.services.kms.model.DecryptRequest
@@ -47,11 +47,10 @@ class KMSStringReader(
                 val decryptRequest = DecryptRequest.builder().ciphertextBlob(rawKms).build()
                 return kms.decrypt(decryptRequest).plaintext().asUtf8String()
             } else {
-                log.warn(
+                log.warn {
                     "trying to decrypt KMS config value without a configured kmsClient, " +
-                        "returning raw value at path {}",
-                    path,
-                )
+                        "returning raw value at path $path"
+                }
             }
         }
         return rawValue

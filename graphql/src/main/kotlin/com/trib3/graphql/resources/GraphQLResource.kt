@@ -14,6 +14,7 @@ import com.trib3.server.filters.RequestIdFilter
 import graphql.GraphQL
 import graphql.GraphQLContext
 import io.dropwizard.auth.Auth
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.swagger.v3.oas.annotations.Parameter
 import jakarta.inject.Inject
 import jakarta.servlet.http.HttpServletRequest
@@ -32,7 +33,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.supervisorScope
-import mu.KotlinLogging
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler
 import org.eclipse.jetty.ee10.servlet.ServletContextRequest
 import org.eclipse.jetty.ee10.websocket.server.internal.JettyServerFrameHandlerFactory
@@ -198,7 +198,7 @@ open class GraphQLResource
                             graphQL,
                             dataLoaderRegistryFactory,
                         ).executeRequest(query, graphQLContext = GraphQLContext.of(contextMap))
-                    log.debug("$requestId finished with $response")
+                    log.debug { "$requestId finished with $response" }
                     val responses =
                         when (response) {
                             is GraphQLResponse<*> -> listOf(response)
