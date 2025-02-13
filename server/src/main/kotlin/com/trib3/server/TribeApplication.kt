@@ -24,9 +24,9 @@ import io.dropwizard.core.ConfiguredBundle
 import io.dropwizard.core.setup.Bootstrap
 import io.dropwizard.core.setup.Environment
 import io.dropwizard.jetty.setup.ServletEnvironment
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.inject.Inject
 import jakarta.inject.Named
-import mu.KotlinLogging
 import org.eclipse.jetty.server.Handler
 import javax.annotation.Nullable
 
@@ -137,12 +137,10 @@ class TribeApplication
 
             healthChecks.forEach { env.healthChecks().register(it::class.simpleName, it) }
             envCallbacks.forEach { it.invoke(env) }
-            log.info(
-                "Initializing service {} in environment {} with version info: {} ",
-                appConfig.appName,
-                appConfig.env,
-                versionHealthCheck.info(),
-            )
+            log.info {
+                "Initializing service ${appConfig.appName} in environment ${appConfig.env}" +
+                    " with version info: ${versionHealthCheck.info()} "
+            }
         }
     }
 
