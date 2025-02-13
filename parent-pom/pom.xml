@@ -105,7 +105,7 @@
         <version.kotlin>2.1.21</version.kotlin>
         <version.kotlin.coroutines>1.10.2</version.kotlin.coroutines>
         <version.kotlin.guice>3.0.0</version.kotlin.guice>
-        <version.kotlin.logging>3.0.5</version.kotlin.logging>
+        <version.kotlin.logging>7.0.6</version.kotlin.logging>
         <version.ktlint>1.7.1</version.ktlint>
         <version.leakycauldron>${project.version}</version.leakycauldron>
         <version.logback>1.5.16</version.logback>
@@ -162,7 +162,7 @@
 
             <!-- logging -->
             <dependency>
-                <groupId>io.github.microutils</groupId>
+                <groupId>io.github.oshai</groupId>
                 <artifactId>kotlin-logging-jvm</artifactId>
                 <version>${version.kotlin.logging}</version>
                 <exclusions>
@@ -1011,7 +1011,7 @@
 
         <!-- logging -->
         <dependency>
-            <groupId>io.github.microutils</groupId>
+            <groupId>io.github.oshai</groupId>
             <artifactId>kotlin-logging-jvm</artifactId>
         </dependency>
         <dependency>
@@ -1126,6 +1126,8 @@
                                     <exclude>com.palominolabs.metrics:metrics-guice</exclude>
                                     <!-- use jna-jpms instead -->
                                     <exclude>net.java.dev.jna:jna</exclude>
+                                    <!-- use io.github.oshai instead -->
+                                    <exclude>io.github.microutils:kotlin-logging-jvm</exclude>
                                 </excludes>
                             </bannedDependencies>
                         </rules>
@@ -1642,7 +1644,7 @@
                                 org.jetbrains:annotations
                             </ignoredUnusedDeclaredDependency>
                             <ignoredUnusedDeclaredDependency>
-                                io.github.microutils:kotlin-logging-jvm
+                                io.github.oshai:kotlin-logging-jvm
                             </ignoredUnusedDeclaredDependency>
                         </ignoredUnusedDeclaredDependencies>
                         <!-- workaround for https://issues.apache.org/jira/browse/MDEP-791 -->
