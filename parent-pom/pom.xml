@@ -89,7 +89,7 @@
         <version.jacoco>0.8.13</version.jacoco>
         <version.jakarta.el>5.0.1</version.jakarta.el>
         <version.jakarta.inject>2.0.1</version.jakarta.inject>
-        <version.java.release>17</version.java.release>
+        <version.java.release>21</version.java.release>
         <version.jaxb>4.0.2</version.jaxb>
         <version.jaxb.runtime>4.0.5</version.jaxb.runtime>
         <version.jaxrs>4.0.0</version.jaxrs>
@@ -99,7 +99,7 @@
         <version.jetty>12.0.19</version.jetty>
         <version.jna>5.17.0</version.jna>
         <version.joda>2.14.0</version.joda>
-        <version.jooq>3.19.18</version.jooq>
+        <version.jooq>3.20.5</version.jooq>
         <version.jsr305>3.0.2</version.jsr305>
         <version.junit>4.13.2</version.junit>
         <version.kotlin>2.1.21</version.kotlin>
@@ -1095,6 +1095,9 @@
                         <skip>${skip.checks}</skip>
                         <rules>
                             <dependencyConvergence/>
+                            <requireJavaVersion>
+                                <version>[${version.java.release},)</version>
+                            </requireJavaVersion>
                             <requireMavenVersion>
                                 <version>[3.9.2,)</version>
 			    </requireMavenVersion>
