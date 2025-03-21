@@ -2,8 +2,8 @@ package com.trib3.db.jooqext
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -26,7 +26,7 @@ private const val DELAY_TIME = 100L
  * Will run an additional coroutine launched with the passed [coroutineContext] that monitors the
  * fetch-ing coroutine for cancellation, and calls [ResultQuery.cancel] when that occurs.
  */
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(DelicateCoroutinesApi::class)
 fun <T : Record> ResultQuery<T>.consumeAsFlow(coroutineContext: CoroutineContext = Dispatchers.IO): Flow<T> {
     val query = this
     return flow {
