@@ -97,7 +97,7 @@
         <version.jetbrains.annotations>13.0</version.jetbrains.annotations>
         <version.jetty>11.0.25</version.jetty>
         <version.jna>5.17.0</version.jna>
-        <version.joda>2.13.1</version.joda>
+        <version.joda>2.14.0</version.joda>
         <version.jooq>3.19.18</version.jooq>
         <version.jsr305>3.0.2</version.jsr305>
         <version.junit>4.13.2</version.junit>
