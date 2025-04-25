@@ -135,7 +135,7 @@ class ObjectMapperTest
             val yq = YearQuarter.of(2010, 1)
             assertThat(mapper.writeValueAsString(yq)).isEqualTo("\"2010-Q1\"")
             assertThat(mapper.readValue<YearQuarter>("\"2010-Q1\"")).isEqualTo(yq)
-            assertThat(mapper.readValue<YearQuarter>("\"\"")).isNull()
+            assertThat(mapper.readValue<YearQuarter?>("\"\"")).isNull()
             assertFailure {
                 mapper.readValue<YearQuarter>("123")
             }.all {
