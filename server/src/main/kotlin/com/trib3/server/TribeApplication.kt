@@ -26,9 +26,7 @@ import io.dropwizard.core.setup.Environment
 import io.dropwizard.jetty.setup.ServletEnvironment
 import jakarta.inject.Inject
 import jakarta.inject.Named
-import jakarta.servlet.DispatcherType
 import mu.KotlinLogging
-import java.util.EnumSet
 import javax.annotation.Nullable
 
 private val log = KotlinLogging.logger { }
@@ -105,6 +103,17 @@ class TribeApplication
             servletConfig.mappings.forEach { mapping -> servlet.addMapping(mapping) }
         }
 
+        fun addServletFilters(
+            target: ServletEnvironment,
+            configs: Set<ServletFilterConfig>,
+        ) {
+            configs.forEach {
+                val filter = target.addFilter(it.name, it.filterClass)
+                filter.initParameters = it.initParameters
+                filter.addMappingForUrlPatterns(it.dispatcherTypes, it.isMatchAfter, *it.urlPatterns.toTypedArray())
+            }
+        }
+
         /**
          * Runs the application
          */
@@ -117,17 +126,8 @@ class TribeApplication
 
             jaxrsAppProcessors.forEach { it.process(env.jersey().resourceConfig) }
 
-            servletFilterConfigs.forEach {
-                val filter = env.servlets().addFilter(it.filterClass.simpleName, it.filterClass)
-                filter.initParameters = it.initParameters
-                filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*")
-            }
-
-            adminServletFilterConfigs.forEach {
-                val filter = env.admin().addFilter(it.filterClass.simpleName, it.filterClass)
-                filter.initParameters = it.initParameters
-                filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*")
-            }
+            addServletFilters(env.servlets(), servletFilterConfigs)
+            addServletFilters(env.admin(), adminServletFilterConfigs)
 
             appServlets.forEach { addServlet(env.servlets(), it) }
             adminServlets.forEach { addServlet(env.admin(), it) }
