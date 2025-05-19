@@ -66,7 +66,7 @@
         <version.dropwizard.hocon>0.5.1</version.dropwizard.hocon>
         <version.dropwizard.metrics>4.2.30</version.dropwizard.metrics>
         <version.dropwizard.metrics.cloudwatch>2.0.8</version.dropwizard.metrics.cloudwatch>
-        <version.easymock>5.5.0</version.easymock>
+        <version.easymock>5.6.0</version.easymock>
         <version.errorprone>2.38.0</version.errorprone>
         <version.expressly>6.0.0</version.expressly>
         <version.flyway>11.8.2</version.flyway>
