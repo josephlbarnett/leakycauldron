@@ -14,6 +14,7 @@
 
     <groupId>io.github.josephlbarnett</groupId>
     <artifactId>metrics-guice</artifactId>
+    <name>LeakyCauldron Metrics-Guice</name>
 
     <dependencies>
         <dependency>

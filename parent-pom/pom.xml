@@ -9,7 +9,7 @@
     <version>3.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>LeakyCauldron parent pom</name>
+    <name>LeakyCauldron Parent Pom</name>
     <description>Parent pom for downstream projects</description>
     <url>https://github.com/josephlbarnett/leakycauldron/tree/HEAD/parent-pom</url>
 

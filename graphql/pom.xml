@@ -14,6 +14,7 @@
 
     <groupId>io.github.josephlbarnett</groupId>
     <artifactId>graphql</artifactId>
+    <name>LeakyCauldon GraphQL</name>
 
     <dependencies>
         <dependency>

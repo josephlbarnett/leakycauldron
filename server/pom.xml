@@ -14,6 +14,7 @@
 
     <groupId>io.github.josephlbarnett</groupId>
     <artifactId>server</artifactId>
+    <name>LeakyCauldron Server</name>
 
     <dependencies>
         <dependency>
