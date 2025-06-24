@@ -22,9 +22,9 @@ import java.net.InetAddress
  */
 @JsonTypeName("timestream")
 class TimestreamReporterFactory(
-    @JacksonInject(useInput = OptBoolean.FALSE) @JsonIgnore
+    @param:JacksonInject(useInput = OptBoolean.FALSE) @JsonIgnore
     private val appConfig: TribeApplicationConfig,
-    @JacksonInject(useInput = OptBoolean.FALSE) @JsonIgnore
+    @param:JacksonInject(useInput = OptBoolean.FALSE) @JsonIgnore
     internal val timestreamWriteClient: TimestreamWriteClient,
 ) : BaseReporterFactory() {
     private val hostname = InetAddress.getLocalHost().hostName
