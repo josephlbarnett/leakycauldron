@@ -39,11 +39,11 @@ private data class SimpleBean(
 private data class InjectedValueBean(
     val foo: String,
     val bar: Int,
-    @JacksonInject
+    @param:JacksonInject
     val injectedBeanDefault: SimpleBean,
-    @JacksonInject(useInput = OptBoolean.TRUE)
+    @param:JacksonInject(useInput = OptBoolean.TRUE)
     val injectedBeanTrue: SimpleBean,
-    @JacksonInject(useInput = OptBoolean.FALSE)
+    @param:JacksonInject(useInput = OptBoolean.FALSE)
     val injectedBeanFalse: SimpleBean,
 )
 

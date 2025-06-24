@@ -23,9 +23,9 @@ import java.net.InetAddress
  */
 @JsonTypeName("cloudwatch")
 class CloudWatchReporterFactory(
-    @JacksonInject(useInput = OptBoolean.FALSE) @JsonIgnore
+    @param:JacksonInject(useInput = OptBoolean.FALSE) @JsonIgnore
     private val appConfig: TribeApplicationConfig,
-    @JacksonInject(useInput = OptBoolean.FALSE) @JsonIgnore
+    @param:JacksonInject(useInput = OptBoolean.FALSE) @JsonIgnore
     internal val cloudwatch: CloudWatchAsyncClient,
 ) : BaseReporterFactory() {
     private val hostname = InetAddress.getLocalHost().hostName
