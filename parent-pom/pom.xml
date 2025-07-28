@@ -133,7 +133,7 @@
         <version.postgres>42.7.7</version.postgres>
         <version.reactivestreams>1.0.4</version.reactivestreams>
         <version.redshift>2.1.0.33</version.redshift>
-        <version.servlet>6.0.0</version.servlet>
+        <version.servlet>6.1.0</version.servlet>
         <version.slf4j>2.0.17</version.slf4j>
         <version.snakeyaml>2.4</version.snakeyaml>
         <version.swagger>2.2.34</version.swagger>
