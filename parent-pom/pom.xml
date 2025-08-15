@@ -49,7 +49,7 @@
         <version.argparse4j>0.9.0</version.argparse4j>
         <version.asm>9.8</version.asm>
         <version.assertk>0.28.1</version.assertk>
-        <version.aws.java>2.32.15</version.aws.java>
+        <version.aws.java>2.32.23</version.aws.java>
         <version.byte-buddy>1.17.6</version.byte-buddy>
         <version.caffeine>3.2.2</version.caffeine>
         <version.checker-qual>3.49.5</version.checker-qual>
