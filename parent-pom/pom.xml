@@ -83,7 +83,7 @@
         <version.httpcomponents.client4>4.5.14</version.httpcomponents.client4>
         <version.httpcomponents.core>5.3.4</version.httpcomponents.core>
         <version.httpcomponents.core4>4.4.16</version.httpcomponents.core4>
-        <version.j2objc>3.0.0</version.j2objc>
+        <version.j2objc>3.1</version.j2objc>
         <version.jackson>2.19.2</version.jackson>
         <version.jackson.hocon>1.1.0</version.jackson.hocon>
         <version.jacoco>0.8.13</version.jacoco>
