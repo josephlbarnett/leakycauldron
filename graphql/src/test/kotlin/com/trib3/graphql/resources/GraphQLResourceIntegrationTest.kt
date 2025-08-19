@@ -175,8 +175,7 @@ class GraphQLResourceIntegrationTest : ResourceTestBase<GraphQLResource>() {
                 client
                     .connect(
                         adapter,
-                        uri,
-                        ClientUpgradeRequest().also {
+                        ClientUpgradeRequest(uri).also {
                             it.cookies = listOf(HttpCookie("authCookie", "user"))
                         },
                     ).get()
@@ -225,8 +224,7 @@ class GraphQLResourceIntegrationTest : ResourceTestBase<GraphQLResource>() {
                 client
                     .connect(
                         adapter,
-                        uri,
-                        ClientUpgradeRequest().also {
+                        ClientUpgradeRequest(uri).also {
                             it.cookies = listOf(HttpCookie("authCookie", "user"))
                         },
                     ).get()
