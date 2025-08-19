@@ -129,12 +129,13 @@ class ResourceTestBaseJettyWebContainerTest : ResourceTestBase<SimpleResource>()
             client
                 .connect(
                     clientAdapter,
-                    resource
-                        .target("/websocket")
-                        .uriBuilder
-                        .scheme("ws")
-                        .build(),
-                    ClientUpgradeRequest(),
+                    ClientUpgradeRequest(
+                        resource
+                            .target("/websocket")
+                            .uriBuilder
+                            .scheme("ws")
+                            .build(),
+                    ),
                 ).get()
         lock.withLock {
             session.sendText("ping", null)
