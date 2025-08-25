@@ -68,7 +68,7 @@ class FilteredLogbackAccessRequestLogFactory : LogbackAccessRequestLogFactory() 
 
         val context = logger.loggerContext
 
-        val requestLog = LeakyLogbackAccessRequestLog()
+        val requestLog = LogbackAccessRequestLog()
 
         val levelFilterFactory: LevelFilterFactory<IAccessEvent> = NullLevelFilterFactory()
         val asyncAppenderFactory: AsyncAppenderFactory<IAccessEvent> = AsyncAccessEventAppenderFactory()
@@ -95,52 +95,5 @@ class FilteredLogbackAccessRequestLogFactory : LogbackAccessRequestLogFactory() 
             },
         )
         return requestLog
-    }
-}
-
-// TODO: remove when https://github.com/dropwizard/dropwizard/issues/9773 is fixed upstream
-// this is basically a kotlinized copy of https://github.com/dropwizard/dropwizard/pull/9970
-class LeakyLogbackAccessRequestLog : LogbackAccessRequestLog() {
-    private fun buildHeaderMap(headers: HttpFields): Map<String, String> {
-        val headerMap = TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-
-        for (f in headers) {
-            val existing = headerMap.get(f.name)
-            val value = existing?.let { it + "," + f.value } ?: f.value
-            headerMap.put(f.name, value)
-        }
-        return headerMap
-    }
-
-    override fun log(
-        jettyRequest: Request,
-        jettyResponse: Response,
-    ) {
-        val httpServletRequest =
-            object : RequestWrapper(jettyRequest) {
-                override fun buildRequestHeaderMap(): Map<String, String> = buildHeaderMap(jettyRequest.headers)
-            }
-
-        val httpServletResponse = ResponseWrapper(jettyResponse)
-
-        val adapter =
-            object : JettyServerAdapter(jettyRequest, jettyResponse) {
-                override fun buildResponseHeaderMap(): Map<String, String> = buildHeaderMap(jettyResponse.headers)
-            }
-
-        val accessEvent = AccessEvent(this, httpServletRequest, httpServletResponse, adapter)
-
-        if (getFilterChainDecision(accessEvent) == FilterReply.DENY) {
-            return
-        }
-
-        appendLoopOnAppenders(accessEvent)
-    }
-
-    private fun appendLoopOnAppenders(iAccessEvent: IAccessEvent?) {
-        val appenderIterator = this.iteratorForAppenders()
-        while (appenderIterator.hasNext()) {
-            appenderIterator.next()?.doAppend(iAccessEvent)
-        }
     }
 }
