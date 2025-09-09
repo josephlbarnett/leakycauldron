@@ -488,7 +488,7 @@ class GraphQLWebSocketTest {
             )
         }
         socket.adapter.onWebSocketError(IllegalStateException("boom"))
-        socket.adapter.onWebSocketClose(StatusCode.SERVER_ERROR, "boom")
+        socket.adapter.onWebSocketClose(StatusCode.SERVER_ERROR, "boom", null)
         assertThat(socket.channel.isClosedForReceive).isTrue()
         assertThat(socket.channel.isClosedForSend).isTrue()
         EasyMock.verify(mockSession)
@@ -585,7 +585,17 @@ class GraphQLWebSocketTest {
         socket.adapter.onWebSocketText("""{"type": "connection_init", "id": "connect", "payload":null}""")
         socket.adapter.onWebSocketText("""{"type": "start", "id": "run", "payload": {"query": "subscription {inf}"}}""")
         assertThat(socket.channel.isClosedForSend).isFalse()
-        socket.adapter.onWebSocketClose(StatusCode.NORMAL, "externally closed")
+        var succeeded = false
+        socket.adapter.onWebSocketClose(
+            StatusCode.NORMAL,
+            "externally closed",
+            object : Callback {
+                override fun succeed() {
+                    succeeded = true
+                }
+            },
+        )
+        assertThat(succeeded).isTrue()
         assertThat(socket.channel.isClosedForSend).isTrue()
         EasyMock.verify(mockSession)
     }

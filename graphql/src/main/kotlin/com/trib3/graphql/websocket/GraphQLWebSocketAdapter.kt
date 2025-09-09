@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.runBlocking
+import org.eclipse.jetty.websocket.api.Callback
 import org.eclipse.jetty.websocket.api.Session
 
 private val log = KotlinLogging.logger {}
@@ -75,11 +76,13 @@ open class GraphQLWebSocketAdapter(
     override fun onWebSocketClose(
         statusCode: Int,
         reason: String?,
+        callback: Callback?,
     ) {
         val msg = "WebSocket close $statusCode $reason"
         log.debug { msg }
-        super.onWebSocketClose(statusCode, reason)
+        super.onWebSocketClose(statusCode, reason, callback)
         channel.close()
+        callback?.succeed()
         cancel(msg)
     }
 
