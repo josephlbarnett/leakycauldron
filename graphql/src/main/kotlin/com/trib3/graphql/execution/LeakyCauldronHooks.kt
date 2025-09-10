@@ -3,7 +3,10 @@ package com.trib3.graphql.execution
 import com.expediagroup.graphql.generator.directives.KotlinDirectiveWiringFactory
 import com.expediagroup.graphql.generator.directives.KotlinSchemaDirectiveWiring
 import com.expediagroup.graphql.generator.hooks.FlowSubscriptionSchemaGeneratorHooks
+import graphql.GraphQLContext
+import graphql.execution.CoercedVariables
 import graphql.language.StringValue
+import graphql.language.Value
 import graphql.scalars.ExtendedScalars
 import graphql.schema.Coercing
 import graphql.schema.CoercingParseLiteralException
@@ -25,6 +28,7 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.ChronoField
+import java.util.Locale
 import java.util.UUID
 import javax.annotation.Nullable
 import kotlin.reflect.KType
@@ -46,18 +50,28 @@ internal val YEAR_SCALAR =
                         throw exceptionConstructor("can't parse $input", e)
                     }
 
-                @Deprecated("Deprecated in superclass", ReplaceWith("parseValue(input, context, locale)"))
-                override fun parseValue(input: Any): Year = parse(input.toString(), ::CoercingParseValueException)
+                override fun parseValue(
+                    input: Any,
+                    context: GraphQLContext,
+                    locale: Locale,
+                ): Year = parse(input.toString(), ::CoercingParseValueException)
 
-                @Deprecated("Deprecated in superclass", ReplaceWith("parseLiteral(input, context, locale)"))
-                override fun parseLiteral(input: Any): Year =
+                override fun parseLiteral(
+                    input: Value<*>,
+                    variables: CoercedVariables,
+                    context: GraphQLContext,
+                    locale: Locale,
+                ): Year =
                     when (input) {
                         is StringValue -> parse(input.value, ::CoercingParseLiteralException)
                         else -> throw CoercingParseLiteralException("can't parse $input")
                     }
 
-                @Deprecated("Deprecated in superclass", ReplaceWith("serialize(input, context, locale)"))
-                override fun serialize(dataFetcherResult: Any): String =
+                override fun serialize(
+                    dataFetcherResult: Any,
+                    context: GraphQLContext,
+                    locale: Locale,
+                ): String =
                     when (dataFetcherResult) {
                         is Year -> dataFetcherResult.toString()
                         else -> throw CoercingSerializeException("can't serialize ${dataFetcherResult::class}")
@@ -82,18 +96,28 @@ internal val YEAR_MONTH_SCALAR =
                         throw exceptionConstructor("can't parse $input", e)
                     }
 
-                @Deprecated("Deprecated in superclass", ReplaceWith("parseValue(input, context, locale)"))
-                override fun parseValue(input: Any): YearMonth = parse(input.toString(), ::CoercingParseValueException)
+                override fun parseValue(
+                    input: Any,
+                    context: GraphQLContext,
+                    locale: Locale,
+                ): YearMonth = parse(input.toString(), ::CoercingParseValueException)
 
-                @Deprecated("Deprecated in superclass", ReplaceWith("parseLiteral(input, context, locale)"))
-                override fun parseLiteral(input: Any): YearMonth =
+                override fun parseLiteral(
+                    input: Value<*>,
+                    variables: CoercedVariables,
+                    context: GraphQLContext,
+                    locale: Locale,
+                ): YearMonth =
                     when (input) {
                         is StringValue -> parse(input.value, ::CoercingParseLiteralException)
                         else -> throw CoercingParseLiteralException("can't parse $input")
                     }
 
-                @Deprecated("Deprecated in superclass", ReplaceWith("serialize(input, context, locale)"))
-                override fun serialize(dataFetcherResult: Any): String =
+                override fun serialize(
+                    dataFetcherResult: Any,
+                    context: GraphQLContext,
+                    locale: Locale,
+                ): String =
                     when (dataFetcherResult) {
                         is YearMonth -> dataFetcherResult.toString()
                         else -> throw CoercingSerializeException("can't serialize ${dataFetcherResult::class}")
@@ -118,19 +142,28 @@ internal val YEAR_QUARTER_SCALAR =
                         throw exceptionConstructor("can't parse $input", e)
                     }
 
-                @Deprecated("Deprecated in superclass", ReplaceWith("parseValue(input, context, locale)"))
-                override fun parseValue(input: Any): YearQuarter =
-                    parse(input.toString(), ::CoercingParseValueException)
+                override fun parseValue(
+                    input: Any,
+                    context: GraphQLContext,
+                    locale: Locale,
+                ): YearQuarter = parse(input.toString(), ::CoercingParseValueException)
 
-                @Deprecated("Deprecated in superclass", ReplaceWith("parseLiteral(input, context, locale)"))
-                override fun parseLiteral(input: Any): YearQuarter =
+                override fun parseLiteral(
+                    input: Value<*>,
+                    variables: CoercedVariables,
+                    context: GraphQLContext,
+                    locale: Locale,
+                ): YearQuarter =
                     when (input) {
                         is StringValue -> parse(input.value, ::CoercingParseLiteralException)
                         else -> throw CoercingParseLiteralException("can't parse $input")
                     }
 
-                @Deprecated("Deprecated in superclass", ReplaceWith("serialize(input, context, locale)"))
-                override fun serialize(dataFetcherResult: Any): String =
+                override fun serialize(
+                    dataFetcherResult: Any,
+                    context: GraphQLContext,
+                    locale: Locale,
+                ): String =
                     when (dataFetcherResult) {
                         is YearQuarter -> dataFetcherResult.toString()
                         else -> throw CoercingSerializeException("can't serialize ${dataFetcherResult::class}")
@@ -172,19 +205,28 @@ internal val LOCAL_DATETIME_SCALAR =
                         throw exceptionConstructor("can't parse $input", e)
                     }
 
-                @Deprecated("Deprecated in superclass", ReplaceWith("parseValue(input, context, locale)"))
-                override fun parseValue(input: Any): LocalDateTime =
-                    parse(input.toString(), ::CoercingParseValueException)
+                override fun parseValue(
+                    input: Any,
+                    context: GraphQLContext,
+                    locale: Locale,
+                ): LocalDateTime = parse(input.toString(), ::CoercingParseValueException)
 
-                @Deprecated("Deprecated in superclass", ReplaceWith("parseLiteral(input, context, locale)"))
-                override fun parseLiteral(input: Any): LocalDateTime =
+                override fun parseLiteral(
+                    input: Value<*>,
+                    variables: CoercedVariables,
+                    context: GraphQLContext,
+                    locale: Locale,
+                ): LocalDateTime =
                     when (input) {
                         is StringValue -> parse(input.value, ::CoercingParseLiteralException)
                         else -> throw CoercingParseLiteralException("can't parse $input")
                     }
 
-                @Deprecated("Deprecated in superclass", ReplaceWith("serialize(input, context, locale)"))
-                override fun serialize(dataFetcherResult: Any): String =
+                override fun serialize(
+                    dataFetcherResult: Any,
+                    context: GraphQLContext,
+                    locale: Locale,
+                ): String =
                     when (dataFetcherResult) {
                         is LocalDateTime -> ISO_FORMATTER.format(dataFetcherResult)
                         else -> throw CoercingSerializeException("can't serialize ${dataFetcherResult::class}")
