@@ -43,7 +43,7 @@
         <skip.tests>false</skip.tests>
 
         <version.activation>2.1.3</version.activation>
-        <version.angus>2.0.2</version.angus>
+        <version.angus>2.0.3</version.angus>
         <version.annotation>3.0.0</version.annotation>
         <version.ant>1.10.15</version.ant>
         <version.argparse4j>0.9.0</version.argparse4j>
