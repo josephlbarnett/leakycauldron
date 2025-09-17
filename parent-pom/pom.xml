@@ -136,7 +136,7 @@
         <version.servlet>6.1.0</version.servlet>
         <version.slf4j>2.0.17</version.slf4j>
         <version.snakeyaml>2.4</version.snakeyaml>
-        <version.swagger>2.2.36</version.swagger>
+        <version.swagger>2.2.37</version.swagger>
         <version.testcontainers>1.21.3</version.testcontainers>
         <version.testng>7.11.0</version.testng>
         <version.threeten>1.8.0</version.threeten>
