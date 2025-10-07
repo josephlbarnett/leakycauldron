@@ -12,7 +12,7 @@
         <relativePath>parent-pom/pom.xml</relativePath>
     </parent>
 
-    <name>Leaky Cauldron</name>
+    <name>LeakyCauldron</name>
     <description>Libraries for building kotlin services</description>
     <url>https://github.io.github.josephlbarnett/leakycauldron</url>
 

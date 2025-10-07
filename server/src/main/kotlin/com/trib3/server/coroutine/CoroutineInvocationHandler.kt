@@ -32,6 +32,10 @@ class CoroutineInvocationHandler(
     private val shouldIgnoreReturn: Boolean,
 ) : InvocationHandler,
     CoroutineScope by CoroutineScope(Dispatchers.Unconfined) {
+    val methodAnnotation = originalInvocable.definitionMethod.getAnnotation(AsyncDispatcher::class.java)
+    val classAnnotation =
+        originalInvocable.definitionMethod.declaringClass.getAnnotation(AsyncDispatcher::class.java)
+
     private suspend fun executeCoroutine(
         originalObject: Any,
         args: Array<out Any>?,
@@ -71,9 +75,6 @@ class CoroutineInvocationHandler(
             "Can't suspend!"
         }
         val originalObject = originalObjectProvider.invoke()
-        val methodAnnotation = originalInvocable.definitionMethod.getAnnotation(AsyncDispatcher::class.java)
-        val classAnnotation =
-            originalInvocable.definitionMethod.declaringClass.getAnnotation(AsyncDispatcher::class.java)
         val additionalContext =
             when ((methodAnnotation ?: classAnnotation)?.dispatcher) {
                 "Default" -> Dispatchers.Default

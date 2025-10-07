@@ -13,7 +13,7 @@
     </parent>
 
     <artifactId>graphql</artifactId>
-    <name>LeakyCauldon GraphQL</name>
+    <name>LeakyCauldron GraphQL</name>
 
     <dependencies>
         <dependency>
