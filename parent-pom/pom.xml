@@ -137,7 +137,7 @@
         <version.slf4j>2.0.17</version.slf4j>
         <version.snakeyaml>2.5</version.snakeyaml>
         <version.swagger>2.2.39</version.swagger>
-        <version.testcontainers>1.21.3</version.testcontainers>
+        <version.testcontainers>2.0.0</version.testcontainers>
         <version.testng>7.11.0</version.testng>
         <version.threeten>1.8.0</version.threeten>
         <version.typesafe.config>1.4.5</version.typesafe.config>
@@ -915,13 +915,13 @@
             </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
-                <artifactId>postgresql</artifactId>
+                <artifactId>testcontainers-postgresql</artifactId>
                 <version>${version.testcontainers}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
-                <artifactId>jdbc</artifactId>
+                <artifactId>testcontainers-jdbc</artifactId>
                 <version>${version.testcontainers}</version>
                 <scope>test</scope>
                 <exclusions>
