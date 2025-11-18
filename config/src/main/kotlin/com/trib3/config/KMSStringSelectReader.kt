@@ -83,8 +83,12 @@ class KMSStringSelectReader
          */
         fun getReader(clazz: ClassContainer): (Config, String) -> Any? =
             when (clazz.mapperClass) {
-                String::class -> KMSStringReader(kms)::getValue
-                else ->
+                String::class -> {
+                    KMSStringReader(kms)::getValue
+                }
+
+                else -> {
                     SelectReader.getReader(clazz)
+                }
             }
     }

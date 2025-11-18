@@ -214,12 +214,22 @@ class GraphQLWebSocketConsumer(
                 log.trace { "WebSocket connection subscription processing $message" }
                 when (message.type) {
                     // Connection control messages from the client
-                    OperationType.GQL_CONNECTION_INIT -> handleConnectionInit(message, scope)
-                    OperationType.GQL_CONNECTION_TERMINATE -> handleConnectionTerminate(message)
+                    OperationType.GQL_CONNECTION_INIT -> {
+                        handleConnectionInit(message, scope)
+                    }
+
+                    OperationType.GQL_CONNECTION_TERMINATE -> {
+                        handleConnectionTerminate(message)
+                    }
 
                     // Query control messages from the client
-                    OperationType.GQL_START -> handleQueryStart(message, scope)
-                    OperationType.GQL_STOP -> handleQueryStop(message)
+                    OperationType.GQL_START -> {
+                        handleQueryStart(message, scope)
+                    }
+
+                    OperationType.GQL_STOP -> {
+                        handleQueryStop(message)
+                    }
 
                     // Query finished messages from child coroutines
                     OperationType.GQL_COMPLETE,
@@ -233,7 +243,7 @@ class GraphQLWebSocketConsumer(
                     }
 
                     // Respond to pings with pongs, ignore pongs
-                    OperationType.GQL_PING ->
+                    OperationType.GQL_PING -> {
                         handleClientBoundMessage(
                             OperationMessage(
                                 OperationType.GQL_PONG,
@@ -241,6 +251,7 @@ class GraphQLWebSocketConsumer(
                                 message.payload as Map<*, *>,
                             ),
                         )
+                    }
 
                     OperationType.GQL_PONG -> {
                         // do nothing
@@ -251,13 +262,16 @@ class GraphQLWebSocketConsumer(
                     OperationType.GQL_CONNECTION_ACK,
                     OperationType.GQL_DATA,
                     OperationType.GQL_CONNECTION_KEEP_ALIVE,
-                    ->
+                    -> {
                         handleClientBoundMessage(
                             message,
                         )
+                    }
 
                     // Unknown message type
-                    else -> adapter.subProtocol.onInvalidMessage(message.id, message.toString(), adapter)
+                    else -> {
+                        adapter.subProtocol.onInvalidMessage(message.id, message.toString(), adapter)
+                    }
                 }
             } catch (cancellation: CancellationException) {
                 log.trace { "Rethrowing cancellation" }
