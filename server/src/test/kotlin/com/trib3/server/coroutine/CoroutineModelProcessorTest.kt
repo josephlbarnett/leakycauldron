@@ -103,15 +103,18 @@ class CoroutineModelProcessorTest {
                             ).isEqualTo("java.util.Optional<java.lang.String>")
                             assertThat(method.invocable.responseType).isEqualTo(String::class.java)
                         }
+
                         "sseMethod" -> {
                             assertThat(method.invocable.parameters).hasSize(2)
                             assertThat(method.invocable.responseType).isEqualTo(Void.TYPE)
                             assertThat(method.isSse)
                         }
+
                         "simpleMethod" -> {
                             assertThat(method.invocable.parameters).isEmpty()
                             assertThat(method.invocable.responseType).isEqualTo(String::class.java)
                         }
+
                         "managedAsync" -> {
                             assertThat(method.isManagedAsyncDeclared)
                             assertThat(method.isSuspendDeclared)
