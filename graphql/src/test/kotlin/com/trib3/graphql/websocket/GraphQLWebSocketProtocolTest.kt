@@ -59,11 +59,11 @@ class GraphQLWebSocketProtocolTest {
         assertThat(start.id).isEqualTo("123")
         assertThat(start.payload).isNotNull().isInstanceOf(GraphQLRequest::class)
         assertThat((start.payload as GraphQLRequest).query).isEqualTo("hi")
-        assertThat((start.payload as GraphQLRequest).variables)
+        assertThat((start.payload).variables)
             .isNotNull()
             .isInstanceOf(Map::class)
             .isEqualTo(mapOf<String, Any?>())
-        assertThat((start.payload as GraphQLRequest).operationName).isEqualTo("boo")
+        assertThat((start.payload).operationName).isEqualTo("boo")
     }
 
     @Test

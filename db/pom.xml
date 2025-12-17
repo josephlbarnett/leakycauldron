@@ -8,7 +8,7 @@
     <parent>
         <groupId>io.github.josephlbarnett</groupId>
         <artifactId>leakycauldron</artifactId>
-        <version>3.4-SNAPSHOT</version>
+        <version>3.5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
