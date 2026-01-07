@@ -1,10 +1,10 @@
-build:
-  maxIssues: 0  # CHANGE FROM DEFAULT OF 10
+#build:
+#  maxIssues: 0  # CHANGE FROM DEFAULT OF 10
 
 complexity:
   LongParameterList:
-    functionThreshold: 10 # CHANGE FROM DEFAULT OF 6
-    constructorThreshold: 10 # CHANGE FROM DEFAULT OF 7
+    allowedFunctionParameters: 10 # CHANGE FROM DEFAULT OF 6
+    allowedConstructorParameters: 10 # CHANGE FROM DEFAULT OF 7
   TooManyFunctions:
     ignorePrivate: true # CHANGE FROM DEFAULT OF false
 
@@ -25,4 +25,4 @@ style:
 
 potential-bugs:
   UnreachableCode:
-    active: false # CHANGE FROM DEFAULT OF true due to https://github.com/detekt/detekt/issues/6129
+    active: true # CHANGE FROM DEFAULT OF true due to https://github.com/detekt/detekt/issues/6129
