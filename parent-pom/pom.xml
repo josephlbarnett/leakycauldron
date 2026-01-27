@@ -93,7 +93,7 @@
         <version.jaxb>4.0.4</version.jaxb>
         <version.jaxb.runtime>4.0.6</version.jaxb.runtime>
         <version.jaxrs>4.0.0</version.jaxrs>
-        <version.jboss.logging>3.6.1.Final</version.jboss.logging>
+        <version.jboss.logging>3.6.2.Final</version.jboss.logging>
         <version.jersey>3.1.11</version.jersey>
         <version.jetbrains.annotations>13.0</version.jetbrains.annotations>
         <version.jetty>12.1.5</version.jetty>
