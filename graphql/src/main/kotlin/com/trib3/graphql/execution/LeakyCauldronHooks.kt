@@ -41,11 +41,11 @@ internal val YEAR_SCALAR =
         .coercing(
             object : Coercing<Year, String> {
                 private fun parse(
-                    input: String,
+                    input: String?,
                     exceptionConstructor: (String, Throwable) -> Exception,
-                ): Year =
+                ): Year? =
                     try {
-                        Year.parse(input)
+                        input?.let { Year.parse(it) }
                     } catch (e: Exception) {
                         throw exceptionConstructor("can't parse $input", e)
                     }
@@ -54,14 +54,14 @@ internal val YEAR_SCALAR =
                     input: Any,
                     context: GraphQLContext,
                     locale: Locale,
-                ): Year = parse(input.toString(), ::CoercingParseValueException)
+                ): Year? = parse(input.toString(), ::CoercingParseValueException)
 
                 override fun parseLiteral(
                     input: Value<*>,
                     variables: CoercedVariables,
                     context: GraphQLContext,
                     locale: Locale,
-                ): Year =
+                ): Year? =
                     when (input) {
                         is StringValue -> parse(input.value, ::CoercingParseLiteralException)
                         else -> throw CoercingParseLiteralException("can't parse $input")
@@ -87,11 +87,11 @@ internal val YEAR_MONTH_SCALAR =
         .coercing(
             object : Coercing<YearMonth, String> {
                 private fun parse(
-                    input: String,
+                    input: String?,
                     exceptionConstructor: (String, Throwable) -> Exception,
-                ): YearMonth =
+                ): YearMonth? =
                     try {
-                        YearMonth.parse(input)
+                        input?.let { YearMonth.parse(it) }
                     } catch (e: Exception) {
                         throw exceptionConstructor("can't parse $input", e)
                     }
@@ -100,14 +100,14 @@ internal val YEAR_MONTH_SCALAR =
                     input: Any,
                     context: GraphQLContext,
                     locale: Locale,
-                ): YearMonth = parse(input.toString(), ::CoercingParseValueException)
+                ): YearMonth? = parse(input.toString(), ::CoercingParseValueException)
 
                 override fun parseLiteral(
                     input: Value<*>,
                     variables: CoercedVariables,
                     context: GraphQLContext,
                     locale: Locale,
-                ): YearMonth =
+                ): YearMonth? =
                     when (input) {
                         is StringValue -> parse(input.value, ::CoercingParseLiteralException)
                         else -> throw CoercingParseLiteralException("can't parse $input")
@@ -133,11 +133,11 @@ internal val YEAR_QUARTER_SCALAR =
         .coercing(
             object : Coercing<YearQuarter, String> {
                 private fun parse(
-                    input: String,
+                    input: String?,
                     exceptionConstructor: (String, Throwable) -> Exception,
-                ): YearQuarter =
+                ): YearQuarter? =
                     try {
-                        YearQuarter.parse(input)
+                        input?.let { YearQuarter.parse(it) }
                     } catch (e: Exception) {
                         throw exceptionConstructor("can't parse $input", e)
                     }
@@ -146,14 +146,14 @@ internal val YEAR_QUARTER_SCALAR =
                     input: Any,
                     context: GraphQLContext,
                     locale: Locale,
-                ): YearQuarter = parse(input.toString(), ::CoercingParseValueException)
+                ): YearQuarter? = parse(input.toString(), ::CoercingParseValueException)
 
                 override fun parseLiteral(
                     input: Value<*>,
                     variables: CoercedVariables,
                     context: GraphQLContext,
                     locale: Locale,
-                ): YearQuarter =
+                ): YearQuarter? =
                     when (input) {
                         is StringValue -> parse(input.value, ::CoercingParseLiteralException)
                         else -> throw CoercingParseLiteralException("can't parse $input")
@@ -196,11 +196,11 @@ internal val LOCAL_DATETIME_SCALAR =
                         .toFormatter()
 
                 private fun parse(
-                    input: String,
+                    input: String?,
                     exceptionConstructor: (String, Throwable) -> Exception,
-                ): LocalDateTime =
+                ): LocalDateTime? =
                     try {
-                        LocalDateTime.parse(input)
+                        input?.let { LocalDateTime.parse(it) }
                     } catch (e: Exception) {
                         throw exceptionConstructor("can't parse $input", e)
                     }
@@ -209,14 +209,14 @@ internal val LOCAL_DATETIME_SCALAR =
                     input: Any,
                     context: GraphQLContext,
                     locale: Locale,
-                ): LocalDateTime = parse(input.toString(), ::CoercingParseValueException)
+                ): LocalDateTime? = parse(input.toString(), ::CoercingParseValueException)
 
                 override fun parseLiteral(
                     input: Value<*>,
                     variables: CoercedVariables,
                     context: GraphQLContext,
                     locale: Locale,
-                ): LocalDateTime =
+                ): LocalDateTime? =
                     when (input) {
                         is StringValue -> parse(input.value, ::CoercingParseLiteralException)
                         else -> throw CoercingParseLiteralException("can't parse $input")

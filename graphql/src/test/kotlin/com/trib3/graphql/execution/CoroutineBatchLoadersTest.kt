@@ -107,7 +107,7 @@ class CoroutineBatchLoadersTest {
                     environment: BatchLoaderEnvironment,
                 ): List<String> =
                     keys.map {
-                        it + environment.getContext<GraphQLContext>().get<String>() + environment.keyContexts[it]
+                        it + environment.getContext<GraphQLContext>()?.get<String>() + environment.keyContexts[it]
                     }
 
                 override val dataLoaderName = "testListDataLoaderContext"
@@ -130,7 +130,7 @@ class CoroutineBatchLoadersTest {
                     environment: BatchLoaderEnvironment,
                 ): Map<String, String> =
                     keys.associateWith {
-                        it + environment.getContext<GraphQLContext>().get<String>() + environment.keyContexts[it]
+                        it + environment.getContext<GraphQLContext>()?.get<String>() + environment.keyContexts[it]
                     }
 
                 override val dataLoaderName = "testMappedDataLoaderContext"

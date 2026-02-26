@@ -157,7 +157,7 @@ class GraphQLApplicationModuleDataLoaderOverrideTest
             val loader =
                 factory!!
                     .generate(GraphQLContext.getDefault())
-                    .getDataLoader<String, String>("loader")
+                    .getDataLoader<String, String>("loader")!!
             assertThat(loader).isNotNull()
             val future = loader.loadMany(listOf("a", "b"))
             // an actual GraphQL resolver would return CompletableFuture<T> instead of T, and graphql-java would

@@ -27,16 +27,18 @@ abstract class CoroutineBaseLoader<K, V>(
      * with the passed in [graphQLContext]
      */
     open fun getDataLoaderOptions(graphQLContext: GraphQLContext): DataLoaderOptions =
-        DataLoaderOptions.newOptions().setBatchLoaderContextProvider {
-            graphQLContext
-        }
+        DataLoaderOptions
+            .newOptions()
+            .setBatchLoaderContextProvider {
+                graphQLContext
+            }.build()
 
     /**
      * Get a [CoroutineScope] out of the [environment]'s [GraphQLContext] if possible, or construct
      * one given the [coroutineContext]
      */
     fun getScope(environment: BatchLoaderEnvironment): CoroutineScope =
-        environment.getContext<GraphQLContext>().get(CoroutineScope::class) as? CoroutineScope
+        environment.getContext<GraphQLContext>()?.get(CoroutineScope::class)
             ?: CoroutineScope(coroutineContext)
 }
 
@@ -45,7 +47,7 @@ abstract class CoroutineBaseLoader<K, V>(
  * using suspend functions/coroutines to execute the [load].  Will run with a [BatchLoaderEnvironment.context]
  * that is a [GraphQLContext] and execute with the [CoroutineScope] contained in that context.
  */
-abstract class CoroutineBatchLoader<K, V> :
+abstract class CoroutineBatchLoader<K : Any, V> :
     CoroutineBaseLoader<K, V>(),
     BatchLoaderWithContext<K, V> {
     /**
@@ -73,7 +75,7 @@ abstract class CoroutineBatchLoader<K, V> :
  * using suspend functions/coroutines to execute the [load].  Will run with a [BatchLoaderEnvironment.context]
  * that is a [GraphQLContext] and execute with the [CoroutineScope] contained in that context.
  */
-abstract class CoroutineMappedBatchLoader<K, V> :
+abstract class CoroutineMappedBatchLoader<K : Any, V> :
     CoroutineBaseLoader<K, V>(),
     MappedBatchLoaderWithContext<K, V> {
     /**

@@ -4,6 +4,7 @@ import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNull
 import assertk.assertions.isSuccess
 import com.expediagroup.graphql.generator.SchemaGeneratorConfig
 import com.expediagroup.graphql.generator.TopLevelObject
@@ -12,6 +13,8 @@ import graphql.ErrorType
 import graphql.ExecutionInput
 import graphql.GraphQL
 import graphql.GraphQLContext
+import graphql.execution.CoercedVariables
+import graphql.language.StringValue
 import graphql.schema.CoercingSerializeException
 import org.testng.annotations.Test
 import org.threeten.extra.YearQuarter
@@ -74,6 +77,14 @@ class LeakyCauldronHooksTest {
     fun testYear() {
         val result = graphQL.execute("""query {year(y:"2019")}""").getData<Map<String, String>>()
         assertThat(result["year"]).isEqualTo("2020")
+        assertThat(
+            YEAR_SCALAR.coercing.parseLiteral(
+                StringValue.of(null),
+                CoercedVariables.emptyVariables(),
+                GraphQLContext.getDefault(),
+                Locale.ENGLISH,
+            ),
+        ).isNull()
         assertValidationErrors("""query {year(y:123)}""", """query {year(y:"123-45")}""")
 
         assertFailure {
@@ -105,6 +116,14 @@ class LeakyCauldronHooksTest {
     fun testQuarter() {
         val result = graphQL.execute("""query {quarter(q:"2019-Q1")}""").getData<Map<String, String>>()
         assertThat(result["quarter"]).isEqualTo("2019-Q2")
+        assertThat(
+            YEAR_QUARTER_SCALAR.coercing.parseLiteral(
+                StringValue.of(null),
+                CoercedVariables.emptyVariables(),
+                GraphQLContext.getDefault(),
+                Locale.ENGLISH,
+            ),
+        ).isNull()
         assertValidationErrors("""query {quarter(q:123)}""", """query {quarter(q:"123")}""")
 
         assertFailure {
@@ -140,6 +159,14 @@ class LeakyCauldronHooksTest {
     fun testMonth() {
         val result = graphQL.execute("""query {month(m:"2019-01")}""").getData<Map<String, String>>()
         assertThat(result["month"]).isEqualTo("2019-02")
+        assertThat(
+            YEAR_MONTH_SCALAR.coercing.parseLiteral(
+                StringValue.of(null),
+                CoercedVariables.emptyVariables(),
+                GraphQLContext.getDefault(),
+                Locale.ENGLISH,
+            ),
+        ).isNull()
         assertValidationErrors("""query {month(m:123)}""", """query {month(m:"123")}""")
 
         assertFailure {
@@ -178,6 +205,14 @@ class LeakyCauldronHooksTest {
                 .execute("""query {localDateTime(l:"2019-10-30T00:01")}""")
                 .getData<Map<String, String>>()
         assertThat(result["localDateTime"]).isEqualTo("2019-10-31T01:01:00.000")
+        assertThat(
+            LOCAL_DATETIME_SCALAR.coercing.parseLiteral(
+                StringValue.of(null),
+                CoercedVariables.emptyVariables(),
+                GraphQLContext.getDefault(),
+                Locale.ENGLISH,
+            ),
+        ).isNull()
         assertValidationErrors("""query {localDateTime(l:123)}""", """query {localDateTime(l:"123")}""")
 
         assertFailure {
