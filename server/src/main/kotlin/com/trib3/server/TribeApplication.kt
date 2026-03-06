@@ -25,12 +25,17 @@ import io.dropwizard.core.setup.Bootstrap
 import io.dropwizard.core.setup.Environment
 import io.dropwizard.jetty.setup.ServletEnvironment
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLoggingConfiguration
 import jakarta.inject.Inject
 import jakarta.inject.Named
 import org.eclipse.jetty.server.Handler
 import javax.annotation.Nullable
 
-private val log = KotlinLogging.logger { }
+private val log =
+    run {
+        KotlinLoggingConfiguration.logStartupMessage = false
+        KotlinLogging.logger { }
+    }
 
 /**
  * A dropwizard Application that allows Guice configuration of the application

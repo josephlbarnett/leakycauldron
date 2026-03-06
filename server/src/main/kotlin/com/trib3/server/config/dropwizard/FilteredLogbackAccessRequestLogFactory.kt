@@ -1,10 +1,6 @@
 package com.trib3.server.config.dropwizard
 
-import ch.qos.logback.access.common.spi.AccessEvent
 import ch.qos.logback.access.common.spi.IAccessEvent
-import ch.qos.logback.access.jetty.JettyServerAdapter
-import ch.qos.logback.access.jetty.RequestWrapper
-import ch.qos.logback.access.jetty.ResponseWrapper
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.core.filter.Filter
@@ -20,13 +16,9 @@ import io.dropwizard.request.logging.LogbackAccessRequestLogFactory
 import io.dropwizard.request.logging.async.AsyncAccessEventAppenderFactory
 import io.dropwizard.request.logging.layout.LogbackAccessRequestLayout
 import jakarta.servlet.http.HttpServletResponse
-import org.eclipse.jetty.http.HttpFields
-import org.eclipse.jetty.server.Request
 import org.eclipse.jetty.server.RequestLog
-import org.eclipse.jetty.server.Response
 import org.slf4j.LoggerFactory
 import java.util.TimeZone
-import java.util.TreeMap
 
 private const val FAST_RESPONSE_TIME = 200
 
@@ -69,6 +61,7 @@ class FilteredLogbackAccessRequestLogFactory : LogbackAccessRequestLogFactory() 
         val context = logger.loggerContext
 
         val requestLog = LogbackAccessRequestLog()
+        requestLog.isQuiet = true
 
         val levelFilterFactory: LevelFilterFactory<IAccessEvent> = NullLevelFilterFactory()
         val asyncAppenderFactory: AsyncAppenderFactory<IAccessEvent> = AsyncAccessEventAppenderFactory()
