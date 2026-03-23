@@ -1,6 +1,9 @@
 package com.trib3.server.swagger
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.trib3.server.config.TribeApplicationConfig
+import io.swagger.v3.core.converter.ModelConverters
+import io.swagger.v3.core.jackson.ModelResolver
 import io.swagger.v3.jaxrs2.integration.JaxrsApplicationScanner
 import io.swagger.v3.jaxrs2.integration.JaxrsOpenApiContextBuilder
 import io.swagger.v3.jaxrs2.integration.OpenApiServlet
@@ -23,8 +26,10 @@ class SwaggerInitializer
     @Inject
     constructor(
         val appConfig: TribeApplicationConfig,
+        val objectMapper: ObjectMapper,
     ) : JaxrsAppProcessor {
         override fun process(application: Application) {
+            ModelConverters.getInstance().addConverter(ModelResolver(objectMapper))
             // this is tricky, but we want to document the jersey exposed APIs
             // from within the admin servlet, and the swagger libraries don't
             // make things easy.  Fake out the servlet context -> swagger context
