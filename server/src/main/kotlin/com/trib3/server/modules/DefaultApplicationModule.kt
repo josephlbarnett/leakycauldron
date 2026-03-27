@@ -21,6 +21,7 @@ import dev.misfitlabs.kotlinguice4.multibindings.KotlinMultibinder
 import io.dropwizard.auth.AuthValueFactoryProvider
 import io.dropwizard.configuration.ConfigurationFactoryFactory
 import io.dropwizard.core.Configuration
+import io.prometheus.metrics.exporter.servlet.jakarta.PrometheusMetricsServlet
 import jakarta.inject.Provider
 import jakarta.servlet.DispatcherType
 import jakarta.servlet.Filter
@@ -71,6 +72,9 @@ class DefaultApplicationModule : TribeApplicationModule() {
         bind<MetricRegistry>().toInstance(registry)
         install(MetricsInstrumentationModule.builder().withMetricRegistry(registry).build())
         bind<HealthCheckRegistry>().`in`(Scopes.SINGLETON)
+        adminServletBinder().addBinding().toInstance(
+            ServletConfig("prometheus", PrometheusMetricsServlet(), listOf("/prometheus")),
+        )
 
         // Ensure @Auth annotations can be used as long as downstream binds an AuthFilter implementation
         // (and optionally an Authorizer implementation)

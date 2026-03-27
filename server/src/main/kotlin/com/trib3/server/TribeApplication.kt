@@ -26,6 +26,9 @@ import io.dropwizard.core.setup.Environment
 import io.dropwizard.jetty.setup.ServletEnvironment
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.oshai.kotlinlogging.KotlinLoggingConfiguration
+import io.prometheus.metrics.instrumentation.dropwizard.DropwizardExports
+import io.prometheus.metrics.instrumentation.dropwizard5.labels.CustomLabelMapper
+import io.prometheus.metrics.instrumentation.dropwizard5.labels.MapperConfig
 import jakarta.inject.Inject
 import jakarta.inject.Named
 import org.eclipse.jetty.server.Handler
@@ -142,6 +145,24 @@ class TribeApplication
 
             healthChecks.forEach { env.healthChecks().register(it::class.simpleName, it) }
             envCallbacks.forEach { it.invoke(env) }
+            DropwizardExports
+                .builder()
+                .dropwizardRegistry(metricRegistry)
+                .customLabelMapper(
+                    object : CustomLabelMapper(
+                        listOf(MapperConfig(
+                            // This config won't actually match what we want because the * glob stops at '.'s
+                            // but we do need a non-empty list of MapperConfigs to use a CustomLabelMapper
+                            "*.total", $$"${0}.total", mapOf())),
+                    ) {
+                        override fun getName(dropwizardName: String?): String {
+                            // replace metrics that end with ".total" with ".async" to avoid
+                            // https://github.com/prometheus/client_java/issues/1321 and still
+                            // track both the .xyz (sync) and the .xyz.total (async) metrics
+                            return super.getName(dropwizardName?.replace("\\.total$".toRegex(), ".async"))
+                        }
+                    },
+                ).register()
             log.info {
                 "Initializing service ${appConfig.appName} in environment ${appConfig.env}" +
                     " with version info: ${versionHealthCheck.info()} "

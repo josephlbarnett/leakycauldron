@@ -131,6 +131,7 @@
         <version.maven.surefire>3.5.5</version.maven.surefire>
         <version.netty>4.2.12.Final</version.netty>
         <version.postgres>42.7.10</version.postgres>
+        <version.prometheus>1.5.1</version.prometheus>
         <version.reactivestreams>1.0.4</version.reactivestreams>
         <version.redshift>2.2.5</version.redshift>
         <version.servlet>6.1.0</version.servlet>
@@ -727,6 +728,13 @@
                 <groupId>io.github.azagniotov</groupId>
                 <artifactId>dropwizard-metrics-cloudwatch</artifactId>
                 <version>${version.dropwizard.metrics.cloudwatch}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.prometheus</groupId>
+                <artifactId>prometheus-metrics-bom</artifactId>
+                <version>${version.prometheus}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
             <!-- commons -->
