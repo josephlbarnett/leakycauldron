@@ -26,6 +26,7 @@ import io.dropwizard.core.setup.Environment
 import io.dropwizard.jetty.setup.ServletEnvironment
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.oshai.kotlinlogging.KotlinLoggingConfiguration
+import io.prometheus.metrics.instrumentation.dropwizard.DropwizardExports
 import jakarta.inject.Inject
 import jakarta.inject.Named
 import org.eclipse.jetty.server.Handler
@@ -142,6 +143,10 @@ class TribeApplication
 
             healthChecks.forEach { env.healthChecks().register(it::class.simpleName, it) }
             envCallbacks.forEach { it.invoke(env) }
+            DropwizardExports
+                .builder()
+                .dropwizardRegistry(metricRegistry)
+                .register()
             log.info {
                 "Initializing service ${appConfig.appName} in environment ${appConfig.env}" +
                     " with version info: ${versionHealthCheck.info()} "
