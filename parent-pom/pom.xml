@@ -99,7 +99,7 @@
         <version.jetty>12.1.8</version.jetty>
         <version.jna>5.18.1</version.jna>
         <version.joda>2.14.1</version.joda>
-        <version.jooq>3.21.1</version.jooq>
+        <version.jooq>3.21.2</version.jooq>
         <version.jsr305>3.0.2</version.jsr305>
         <version.junit>4.13.2</version.junit>
         <version.kotlin>2.3.10</version.kotlin>
