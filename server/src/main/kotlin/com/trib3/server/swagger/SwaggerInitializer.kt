@@ -13,6 +13,7 @@ import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.servers.Server
 import jakarta.inject.Inject
 import jakarta.ws.rs.core.Application
+import jakarta.ws.rs.core.UriBuilder
 
 // JaxrsOpenApiContextBuilder<T> needs to be subclassed in order to instantiate with a <T>
 private class SwaggerContextBuilder : JaxrsOpenApiContextBuilder<SwaggerContextBuilder>()
@@ -25,31 +26,36 @@ interface JaxrsAppProcessor {
 class SwaggerInitializer
     @Inject
     constructor(
+        // this is tricky, but we want to document the jersey exposed APIs
+        // from within the admin servlet, and the swagger libraries don't
+        // make things easy.  Fake out the servlet context -> swagger context
+        // with what ServletConfigContextUtils.getContextIdFromServletConfig
+        // will generate for the actual servlet, then add the swagger servlet
+        val contextId: String =
+            OpenApiContext.OPENAPI_CONTEXT_ID_PREFIX + "servlet." +
+                OpenApiServlet::class.simpleName,
         val appConfig: TribeApplicationConfig,
         val objectMapper: ObjectMapper,
     ) : JaxrsAppProcessor {
         override fun process(application: Application) {
             ModelConverters.getInstance().addConverter(ModelResolver(objectMapper))
-            // this is tricky, but we want to document the jersey exposed APIs
-            // from within the admin servlet, and the swagger libraries don't
-            // make things easy.  Fake out the servlet context -> swagger context
-            // with what ServletConfigContextUtils.getContextIdFromServletConfig
-            // will generate for the actual servlet, then add the swagger servlet
-            val ctxId = OpenApiContext.OPENAPI_CONTEXT_ID_PREFIX + "servlet." + OpenApiServlet::class.simpleName
+            val hostAndPath = UriBuilder.newInstance().host(appConfig.corsDomains[0]).path(appConfig.appContextPath)
+            val baseUrls =
+                listOf(
+                    hostAndPath.clone().scheme("https"),
+                    hostAndPath.clone().scheme("http"),
+                    hostAndPath.clone().scheme("http").port(appConfig.appPort),
+                )
             SwaggerContextBuilder()
                 .openApiConfiguration(
                     SwaggerConfiguration()
                         .openAPI(
                             OpenAPI().servers(
-                                listOf(
-                                    Server().url("https://${appConfig.corsDomains[0]}/app"),
-                                    Server().url("http://${appConfig.corsDomains[0]}/app"),
-                                    Server().url("http://${appConfig.corsDomains[0]}:${appConfig.appPort}/app"),
-                                ),
+                                baseUrls.map { Server().url(it.build().toString()) },
                             ),
                         ).scannerClass(JaxrsApplicationScanner::class.qualifiedName),
                 ).application(application)
-                .ctxId(ctxId)
+                .ctxId(contextId)
                 .buildContext(true)
         }
     }

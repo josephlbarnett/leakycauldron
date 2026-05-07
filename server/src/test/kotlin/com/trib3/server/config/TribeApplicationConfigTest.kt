@@ -12,5 +12,12 @@ class TribeApplicationConfigTest {
         assertThat(config.env).isEqualTo("dev")
         assertThat(config.appName).isEqualTo("Test")
         assertThat(config.adminAuthToken).isEqualTo("SECRET")
+        assertThat(config.appContextPath).isEqualTo("/app")
+    }
+
+    @Test
+    fun testCustomAppContextPath() {
+        val config = TribeApplicationConfig(ConfigLoader("appContextPathTestCase"))
+        assertThat(config.appContextPath).isEqualTo("/custom")
     }
 }

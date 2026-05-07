@@ -82,6 +82,22 @@ class AuthCookieResourceTest : ResourceTestBase<AuthCookieResource>() {
     }
 
     @Test
+    fun testCustomContextPathCookiePath() {
+        val customAppConfig = TribeApplicationConfig(ConfigLoader("appContextPathTestCase"))
+        val rawResource = AuthCookieResource(customAppConfig)
+        val mockRequest = LeakyMock.mock<ContainerRequestContext>()
+        val mockSecContext = LeakyMock.mock<SecurityContext>()
+        EasyMock.expect(mockRequest.getHeaderString("Authorization")).andReturn("Basic dXNlcjoxMjM0NQ==")
+        EasyMock.expect(mockRequest.securityContext).andReturn(mockSecContext)
+        EasyMock.expect(mockSecContext.isSecure).andReturn(false)
+        EasyMock.replay(mockRequest, mockSecContext)
+        val response = rawResource.setAuthCookie(mockRequest)
+        assertThat(response.status).isEqualTo(HttpStatus.NO_CONTENT_204)
+        val cookie = response.cookies["TEST_AUTHORIZATION"]
+        assertThat(cookie?.path).isEqualTo("/custom")
+    }
+
+    @Test
     fun testNullAuthHeaderCase() {
         // test against the resource method directly
         val rawResource = AuthCookieResource(appConfig)

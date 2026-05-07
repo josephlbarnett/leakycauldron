@@ -16,6 +16,7 @@ class TribeApplicationConfig
         val appName: String
         val corsDomains: List<String>
         val appPort: Int
+        val appContextPath: String
         val adminAuthToken: String?
         val httpsHeaders: List<String>
 
@@ -25,6 +26,7 @@ class TribeApplicationConfig
             appName = config.extract("application.name")
             corsDomains = config.extract("application.domains")
             appPort = config.extract<Int>("server.connector.port")
+            appContextPath = config.extract("server.applicationContextPath")
             adminAuthToken = config.extract("application.adminAuthToken")
             httpsHeaders = config.extract("application.httpsHeaders")
         }

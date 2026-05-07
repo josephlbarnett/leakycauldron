@@ -6,7 +6,11 @@ import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.core.filter.Filter
 import ch.qos.logback.core.pattern.PatternLayoutBase
 import ch.qos.logback.core.spi.FilterReply
+import com.fasterxml.jackson.annotation.JacksonInject
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonTypeName
+import com.fasterxml.jackson.annotation.OptBoolean
+import com.trib3.server.config.TribeApplicationConfig
 import io.dropwizard.logging.common.async.AsyncAppenderFactory
 import io.dropwizard.logging.common.filter.LevelFilterFactory
 import io.dropwizard.logging.common.filter.NullLevelFilterFactory
@@ -51,7 +55,10 @@ class RequestIdLogbackAccessRequestLayoutFactory : LayoutFactory<IAccessEvent> {
  * layout pattern to include timestamp and requestId prefix.
  */
 @JsonTypeName("filtered-logback-access")
-class FilteredLogbackAccessRequestLogFactory : LogbackAccessRequestLogFactory() {
+class FilteredLogbackAccessRequestLogFactory(
+    @param:JacksonInject(useInput = OptBoolean.FALSE) @JsonIgnore
+    private val appConfig: TribeApplicationConfig,
+) : LogbackAccessRequestLogFactory() {
     override fun build(name: String): RequestLog {
         // almost the same as super.build(), differences are commented
         val logger =
@@ -73,11 +80,12 @@ class FilteredLogbackAccessRequestLogFactory : LogbackAccessRequestLogFactory() 
         }
 
         // add successful ping filter
+        val pingPath = "${appConfig.appContextPath}/ping"
         requestLog.addFilter(
             object : Filter<IAccessEvent>() {
                 override fun decide(event: IAccessEvent): FilterReply {
                     if (
-                        event.requestURI == "/app/ping" &&
+                        event.requestURI == pingPath &&
                         event.statusCode == HttpServletResponse.SC_OK &&
                         event.elapsedTime < FAST_RESPONSE_TIME
                     ) {
