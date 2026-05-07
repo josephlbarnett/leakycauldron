@@ -2,6 +2,8 @@ package com.trib3.graphql.resources
 
 import assertk.assertFailure
 import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.endsWith
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
@@ -17,8 +19,10 @@ import com.trib3.config.ConfigLoader
 import com.trib3.graphql.GraphQLConfig
 import com.trib3.graphql.execution.CustomDataFetcherExceptionHandler
 import com.trib3.graphql.execution.RequestIdInstrumentation
+import com.trib3.json.ObjectMapperProvider
 import com.trib3.server.config.TribeApplicationConfig
 import com.trib3.server.filters.CookieTokenAuthFilter
+import com.trib3.server.swagger.SwaggerInitializer
 import com.trib3.testing.server.JettyWebTestContainerFactory
 import com.trib3.testing.server.ResourceTestBase
 import graphql.GraphQL
@@ -26,8 +30,10 @@ import graphql.execution.AsyncExecutionStrategy
 import graphql.schema.DataFetchingEnvironment
 import io.dropwizard.auth.AuthDynamicFeature
 import io.dropwizard.testing.common.Resource
+import io.swagger.v3.oas.integration.OpenApiContextLocator
 import jakarta.ws.rs.client.Entity
 import jakarta.ws.rs.container.ContainerRequestContext
+import jakarta.ws.rs.core.Application
 import jakarta.ws.rs.core.NewCookie
 import jakarta.ws.rs.core.Response.ResponseBuilder
 import org.eclipse.jetty.http.HttpStatus
@@ -278,5 +284,59 @@ class GraphQLResourceIntegrationTest : ResourceTestBase<GraphQLResource>() {
         val data = result.readEntity(Map::class.java)["data"] as Map<*, *>
         assertThat(data["requestContext"]?.toString()).isNotNull().endsWith("/graphql")
         assertThat(data["requestContext"]?.toString()).isNotNull().startsWith("other-value --")
+    }
+
+    @Test
+    fun testSwaggerIntegration() {
+        val initializer =
+            SwaggerInitializer(
+                "GraphQLSwagger",
+                TribeApplicationConfig(ConfigLoader()),
+                ObjectMapperProvider().get(),
+            )
+        initializer.process(
+            object : Application() {
+                override fun getClasses(): Set<Class<*>> =
+                    setOf(GraphQLResource::class.java, GraphQLSseResource::class.java)
+            },
+        )
+        val context = OpenApiContextLocator.getInstance().getOpenApiContext("GraphQLSwagger")
+        val openApi = context.read()
+        assertThat(openApi.paths["/graphql"]).isNotNull()
+        assertThat(openApi.paths["/graphql/stream"]).isNotNull()
+
+        // POST /graphql request body should default to application/json (not */*)
+        // and `$ref` the sealed-parent component (not inline its oneOf at the use site)
+        val postBodyContent =
+            openApi.paths["/graphql"]
+                ?.post
+                ?.requestBody
+                ?.content
+        assertThat(postBodyContent?.keys).isEqualTo(setOf("application/json"))
+        val postBodySchema = postBodyContent?.get("application/json")?.schema
+        assertThat(postBodySchema?.`$ref`).isEqualTo("#/components/schemas/GraphQLServerRequest")
+
+        val schemas = openApi.components.schemas
+        // Sealed parent: oneOf each subclass.
+        val gqlServerRequest = schemas["GraphQLServerRequest"]
+        assertThat(gqlServerRequest).isNotNull()
+        assertThat(gqlServerRequest!!.oneOf?.map { it.`$ref` })
+            .isNotNull()
+            .containsExactlyInAnyOrder(
+                "#/components/schemas/GraphQLRequest",
+                "#/components/schemas/GraphQLBatchRequest",
+            )
+
+        // Single-request subclass: normal object with properties.
+        val gqlRequest = schemas["GraphQLRequest"]
+        assertThat(gqlRequest).isNotNull()
+        assertThat(gqlRequest!!.type).isEqualTo("object")
+        assertThat(gqlRequest.properties.keys).contains("query")
+
+        // Batch subclass: array of GraphQLRequest.
+        val gqlBatch = schemas["GraphQLBatchRequest"]
+        assertThat(gqlBatch).isNotNull()
+        assertThat(gqlBatch!!.type).isEqualTo("array")
+        assertThat(gqlBatch.items?.`$ref`).isEqualTo("#/components/schemas/GraphQLRequest")
     }
 }

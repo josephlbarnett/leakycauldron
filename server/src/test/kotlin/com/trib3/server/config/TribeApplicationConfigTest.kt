@@ -20,4 +20,10 @@ class TribeApplicationConfigTest {
         val config = TribeApplicationConfig(ConfigLoader("appContextPathTestCase"))
         assertThat(config.appContextPath).isEqualTo("/custom")
     }
+
+    @Test
+    fun testRootPathAppendedAndSlashesCollapsed() {
+        val config = TribeApplicationConfig(ConfigLoader("rootPathTestCase"))
+        assertThat(config.appContextPath).isEqualTo("/app/v1")
+    }
 }

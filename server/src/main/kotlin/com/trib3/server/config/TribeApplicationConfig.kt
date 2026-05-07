@@ -25,8 +25,12 @@ class TribeApplicationConfig
             env = config.extract("env")
             appName = config.extract("application.name")
             corsDomains = config.extract("application.domains")
-            appPort = config.extract<Int>("server.connector.port")
-            appContextPath = config.extract("server.applicationContextPath")
+            appPort = config.extract("server.connector.port")
+            val applicationContextPath = config.extract<String>("server.applicationContextPath")
+            val rootPath = config.extract<String?>("server.rootPath")
+            appContextPath = rootPath?.let {
+                "$applicationContextPath/$rootPath".replace(Regex("/+"), "/")
+            } ?: applicationContextPath
             adminAuthToken = config.extract("application.adminAuthToken")
             httpsHeaders = config.extract("application.httpsHeaders")
         }
