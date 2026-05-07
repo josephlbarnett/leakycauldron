@@ -23,14 +23,18 @@ interface JaxrsAppProcessor {
     fun process(application: Application)
 }
 
+/**
+ * Builds and registers an [OpenApiContext] for our application.
+ *
+ * We add Swagger's [OpenApiServlet] to our admin servlet context, not to
+ * our application servlet context. [SwaggerInitializer] preregisters an
+ * [OpenApiContext] under the [contextId] that the [OpenApiServlet] uses,
+ * so that the admin-side servlet can serve documentation for our
+ * application-side Jersey resources.
+ */
 class SwaggerInitializer
     @Inject
     constructor(
-        // this is tricky, but we want to document the jersey exposed APIs
-        // from within the admin servlet, and the swagger libraries don't
-        // make things easy.  Fake out the servlet context -> swagger context
-        // with what ServletConfigContextUtils.getContextIdFromServletConfig
-        // will generate for the actual servlet, then add the swagger servlet
         val contextId: String =
             OpenApiContext.OPENAPI_CONTEXT_ID_PREFIX + "servlet." +
                 OpenApiServlet::class.simpleName,
