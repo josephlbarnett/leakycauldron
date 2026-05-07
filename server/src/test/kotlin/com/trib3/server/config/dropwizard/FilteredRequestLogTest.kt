@@ -9,6 +9,8 @@ import ch.qos.logback.access.common.spi.IAccessEvent
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.core.AppenderBase
 import com.google.common.collect.ImmutableList
+import com.trib3.config.ConfigLoader
+import com.trib3.server.config.TribeApplicationConfig
 import com.trib3.testing.LeakyMock
 import com.trib3.testing.server.TestServletContextRequest
 import io.dropwizard.logging.common.AppenderFactory
@@ -28,10 +30,13 @@ import org.testng.annotations.Test
 import java.util.TimeZone
 
 class FilteredRequestLogTest {
+    private val appConfig = TribeApplicationConfig(ConfigLoader())
+    private val customAppConfig = TribeApplicationConfig(ConfigLoader("appContextPathTestCase"))
+
     @Test
     fun testLogFilterExcludesPing() {
         val events = mutableListOf<IAccessEvent>()
-        val factory = FilteredLogbackAccessRequestLogFactory()
+        val factory = FilteredLogbackAccessRequestLogFactory(appConfig)
         factory.appenders =
             ImmutableList.of(
                 AppenderFactory<IAccessEvent> {
@@ -67,9 +72,48 @@ class FilteredRequestLogTest {
     }
 
     @Test
+    fun testLogFilterExcludesPingForCustomAppContextPath() {
+        val events = mutableListOf<IAccessEvent>()
+        val factory = FilteredLogbackAccessRequestLogFactory(customAppConfig)
+        factory.appenders =
+            ImmutableList.of(
+                AppenderFactory<IAccessEvent> {
+                    _,
+                    _,
+                    _,
+                    _,
+                    _,
+                    ->
+                    object : AppenderBase<IAccessEvent>() {
+                        override fun append(eventObject: IAccessEvent) {
+                            events.add(eventObject)
+                        }
+                    }.also { it.start() }
+                },
+            )
+        val logger = factory.build("test")
+        val mockRequest = LeakyMock.niceMock<Request>()
+        val mockResponse = LeakyMock.niceMock<Response>()
+        val connectionMetaData = LeakyMock.niceMock<ConnectionMetaData>()
+        // `/custom/ping` should be filtered with custom context path.
+        EasyMock.expect(mockRequest.httpURI).andReturn(HttpURI.from("/custom/ping")).anyTimes()
+        EasyMock.expect(mockRequest.headersNanoTime).andReturn(System.nanoTime() + 200_000_000).anyTimes()
+        EasyMock.expect(mockResponse.status).andReturn(HttpServletResponse.SC_OK).anyTimes()
+        EasyMock.expect(connectionMetaData.httpConfiguration).andReturn(HttpConfiguration()).anyTimes()
+        EasyMock.expect(connectionMetaData.protocol).andReturn("HTTP/1.1").anyTimes()
+        EasyMock.replay(mockRequest, mockResponse, connectionMetaData)
+        val handler = ServletContextHandler()
+        val channel = ServletChannel(handler, connectionMetaData)
+        val testRequest = TestServletContextRequest(handler, channel, mockRequest, mockResponse)
+
+        logger.log(testRequest, mockResponse)
+        assertThat(events).isEmpty()
+    }
+
+    @Test
     fun testLogFilterIncludesSlowPing() {
         val events = mutableListOf<IAccessEvent>()
-        val factory = FilteredLogbackAccessRequestLogFactory()
+        val factory = FilteredLogbackAccessRequestLogFactory(appConfig)
         factory.appenders =
             ImmutableList.of(
                 AppenderFactory<IAccessEvent> {
@@ -106,7 +150,7 @@ class FilteredRequestLogTest {
     @Test
     fun testLogFilterIncludesFailedPing() {
         val events = mutableListOf<IAccessEvent>()
-        val factory = FilteredLogbackAccessRequestLogFactory()
+        val factory = FilteredLogbackAccessRequestLogFactory(appConfig)
         factory.appenders =
             ImmutableList.of(
                 AppenderFactory<IAccessEvent> {
@@ -157,7 +201,7 @@ class FilteredRequestLogTest {
     @Test
     fun testLogFilterIncludesArbitrary() {
         val events = mutableListOf<IAccessEvent>()
-        val factory = FilteredLogbackAccessRequestLogFactory()
+        val factory = FilteredLogbackAccessRequestLogFactory(appConfig)
         factory.appenders =
             ImmutableList.of(
                 AppenderFactory<IAccessEvent> {

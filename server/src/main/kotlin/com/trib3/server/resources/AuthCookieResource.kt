@@ -55,7 +55,7 @@ class AuthCookieResource
                         NewCookie
                             .Builder(getCookieName())
                             .value(authToken)
-                            .path("/app")
+                            .path(appConfig.appContextPath)
                             .secure(containerRequestContext.securityContext.isSecure)
                             .httpOnly(true)
                             .build(),
