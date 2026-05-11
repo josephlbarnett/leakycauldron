@@ -28,7 +28,6 @@ import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.sse.Sse
 import jakarta.ws.rs.sse.SseEventSink
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,11 +49,11 @@ import java.util.Optional
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
+import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.coroutineContext
 
 private val sseScopes = ConcurrentHashMap<String, CoroutineScope>()
 
-@OptIn(ExperimentalStdlibApi::class)
 @Path("/")
 open class InvocationHandlerTestResource {
     @Path("/regular")
@@ -75,8 +74,8 @@ open class InvocationHandlerTestResource {
     @GET
     @Timed
     open suspend fun coroutineMethod(): String {
-        if (coroutineContext[CoroutineDispatcher].toString() != "Dispatchers.Unconfined") {
-            throw IllegalStateException("wrong dispatcher ${coroutineContext[CoroutineDispatcher]}")
+        if (coroutineContext[ContinuationInterceptor] != Dispatchers.Unconfined) {
+            throw IllegalStateException("wrong dispatcher ${coroutineContext[ContinuationInterceptor]}")
         }
         delay(1)
         return "coroutine"
@@ -87,8 +86,8 @@ open class InvocationHandlerTestResource {
     suspend fun coroutineQueryParameter(
         @QueryParam("q") q: Optional<String>,
     ): String {
-        if (coroutineContext[CoroutineDispatcher].toString() != "Dispatchers.Unconfined") {
-            throw IllegalStateException("wrong dispatcher ${coroutineContext[CoroutineDispatcher]}")
+        if (coroutineContext[ContinuationInterceptor] != Dispatchers.Unconfined) {
+            throw IllegalStateException("wrong dispatcher ${coroutineContext[ContinuationInterceptor]}")
         }
         delay(1)
         return "coroutine${q.orElse("null")}"
@@ -97,8 +96,8 @@ open class InvocationHandlerTestResource {
     @Path("/coroutine")
     @POST
     suspend fun coroutinePost(body: String): String {
-        if (coroutineContext[CoroutineDispatcher].toString() != "Dispatchers.Unconfined") {
-            throw IllegalStateException("wrong dispatcher ${coroutineContext[CoroutineDispatcher]}")
+        if (coroutineContext[ContinuationInterceptor] != Dispatchers.Unconfined) {
+            throw IllegalStateException("wrong dispatcher ${coroutineContext[ContinuationInterceptor]}")
         }
         delay(1)
         return "coroutine$body"
@@ -108,8 +107,8 @@ open class InvocationHandlerTestResource {
     @GET
     @AsyncDispatcher("Default")
     suspend fun coroutineMethodDefaultDispatcher(): String {
-        if (coroutineContext[CoroutineDispatcher].toString() != "Dispatchers.Default") {
-            throw IllegalStateException("wrong dispatcher ${coroutineContext[CoroutineDispatcher]}")
+        if (coroutineContext[ContinuationInterceptor] != Dispatchers.Default) {
+            throw IllegalStateException("wrong dispatcher ${coroutineContext[ContinuationInterceptor]}")
         }
         delay(1)
         return "coroutine"
@@ -119,8 +118,8 @@ open class InvocationHandlerTestResource {
     @GET
     @AsyncDispatcher("IO")
     suspend fun coroutineMethodDefaultIO(): String {
-        if (coroutineContext[CoroutineDispatcher].toString() != "Dispatchers.IO") {
-            throw IllegalStateException("wrong dispatcher ${coroutineContext[CoroutineDispatcher]}")
+        if (coroutineContext[ContinuationInterceptor] != Dispatchers.IO) {
+            throw IllegalStateException("wrong dispatcher ${coroutineContext[ContinuationInterceptor]}")
         }
         delay(1)
         return "coroutine"
@@ -130,8 +129,8 @@ open class InvocationHandlerTestResource {
     @GET
     @AsyncDispatcher("Main")
     suspend fun coroutineMethodDefaultMain(): String {
-        if (coroutineContext[CoroutineDispatcher].toString() != "Dispatchers.Main") {
-            throw IllegalStateException("wrong dispatcher ${coroutineContext[CoroutineDispatcher]}")
+        if (coroutineContext[ContinuationInterceptor] != Dispatchers.Main) {
+            throw IllegalStateException("wrong dispatcher ${coroutineContext[ContinuationInterceptor]}")
         }
         delay(1)
         return "coroutine"
@@ -141,8 +140,8 @@ open class InvocationHandlerTestResource {
     @GET
     @AsyncDispatcher("Unconfined")
     suspend fun coroutineMethodDefaultUnconfined(): String {
-        if (coroutineContext[CoroutineDispatcher].toString() != "Dispatchers.Unconfined") {
-            throw IllegalStateException("wrong dispatcher ${coroutineContext[CoroutineDispatcher]}")
+        if (coroutineContext[ContinuationInterceptor] != Dispatchers.Unconfined) {
+            throw IllegalStateException("wrong dispatcher ${coroutineContext[ContinuationInterceptor]}")
         }
         delay(1)
         return "coroutine"
@@ -208,15 +207,14 @@ open class InvocationHandlerTestResource {
     }
 }
 
-@OptIn(ExperimentalStdlibApi::class)
 @Path("/")
 @AsyncDispatcher("Default")
 class InvocationHandlerClassAnnotationTestResource {
     @Path("/coroutineClassAnnotationDefault")
     @GET
     suspend fun coroutineMethodDefaultDispatcher(): String {
-        if (coroutineContext[CoroutineDispatcher].toString() != "Dispatchers.Default") {
-            throw IllegalStateException("wrong dispatcher ${coroutineContext[CoroutineDispatcher]}")
+        if (coroutineContext[ContinuationInterceptor] != Dispatchers.Default) {
+            throw IllegalStateException("wrong dispatcher ${coroutineContext[ContinuationInterceptor]}")
         }
         delay(1)
         return "coroutineAnnotation"
@@ -226,22 +224,21 @@ class InvocationHandlerClassAnnotationTestResource {
     @GET
     @AsyncDispatcher("IO")
     suspend fun coroutineMethodIODispatcher(): String {
-        if (coroutineContext[CoroutineDispatcher].toString() != "Dispatchers.IO") {
-            throw IllegalStateException("wrong dispatcher ${coroutineContext[CoroutineDispatcher]}")
+        if (coroutineContext[ContinuationInterceptor] != Dispatchers.IO) {
+            throw IllegalStateException("wrong dispatcher ${coroutineContext[ContinuationInterceptor]}")
         }
         delay(1)
         return "coroutineAnnotation"
     }
 }
 
-@OptIn(ExperimentalStdlibApi::class)
 @Path("/")
 class InvocationHandlerClassScopeTestResource : CoroutineScope by CoroutineScope(Dispatchers.Default) {
     @Path("/coroutineClassScopeDefault")
     @GET
     suspend fun coroutineMethodDefaultDispatcher(): String {
-        if (coroutineContext[CoroutineDispatcher].toString() != "Dispatchers.Default") {
-            throw IllegalStateException("wrong dispatcher ${coroutineContext[CoroutineDispatcher]}")
+        if (coroutineContext[ContinuationInterceptor] != Dispatchers.Default) {
+            throw IllegalStateException("wrong dispatcher ${coroutineContext[ContinuationInterceptor]}")
         }
         delay(1)
         return "coroutineScope"
@@ -251,23 +248,26 @@ class InvocationHandlerClassScopeTestResource : CoroutineScope by CoroutineScope
     @GET
     @AsyncDispatcher("IO")
     suspend fun coroutineMethodIODispatcher(): String {
-        if (kotlin.coroutines.coroutineContext[CoroutineDispatcher].toString() != "Dispatchers.IO") {
-            throw IllegalStateException("wrong dispatcher ${kotlin.coroutines.coroutineContext[CoroutineDispatcher]}")
+        if (kotlin.coroutines.coroutineContext[ContinuationInterceptor] != Dispatchers.IO) {
+            throw IllegalStateException(
+                "wrong dispatcher ${kotlin.coroutines.coroutineContext[ContinuationInterceptor]}",
+            )
         }
         delay(1)
         return "coroutineScope"
     }
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class CoroutineInvocationHandlerTest : ResourceTestBase<InvocationHandlerTestResource>() {
     private val mainDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @BeforeClass
     fun setup() {
         Dispatchers.setMain(mainDispatcher)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @AfterClass
     fun tearDown() {
         Dispatchers.resetMain()
