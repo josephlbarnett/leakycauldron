@@ -79,13 +79,13 @@ class FilteredLogbackAccessRequestLogFactory(
             requestLog.addAppender(output.build(context, name, layoutFactory, levelFilterFactory, asyncAppenderFactory))
         }
 
-        // add successful ping filter
-        val pingPath = "${appConfig.appContextPath}/ping"
+        // add successful ping/prometheus scrape filter
+        val ignorePaths = setOf("${appConfig.appContextPath}/ping", "${appConfig.adminContextPath}/prometheus")
         requestLog.addFilter(
             object : Filter<IAccessEvent>() {
                 override fun decide(event: IAccessEvent): FilterReply {
                     if (
-                        event.requestURI == pingPath &&
+                        ignorePaths.contains(event.requestURI) &&
                         event.statusCode == HttpServletResponse.SC_OK &&
                         event.elapsedTime < FAST_RESPONSE_TIME
                     ) {

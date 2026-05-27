@@ -34,41 +34,43 @@ class FilteredRequestLogTest {
     private val customAppConfig = TribeApplicationConfig(ConfigLoader("appContextPathTestCase"))
 
     @Test
-    fun testLogFilterExcludesPing() {
-        val events = mutableListOf<IAccessEvent>()
-        val factory = FilteredLogbackAccessRequestLogFactory(appConfig)
-        factory.appenders =
-            ImmutableList.of(
-                AppenderFactory<IAccessEvent> {
-                    _,
-                    _,
-                    _,
-                    _,
-                    _,
-                    ->
-                    object : AppenderBase<IAccessEvent>() {
-                        override fun append(eventObject: IAccessEvent) {
-                            events.add(eventObject)
-                        }
-                    }.also { it.start() }
-                },
-            )
-        val logger = factory.build("test")
-        val mockRequest = LeakyMock.niceMock<Request>()
-        val mockResponse = LeakyMock.niceMock<Response>()
-        val connectionMetaData = LeakyMock.niceMock<ConnectionMetaData>()
-        EasyMock.expect(mockRequest.httpURI).andReturn(HttpURI.from("/app/ping")).anyTimes()
-        EasyMock.expect(mockRequest.headersNanoTime).andReturn(System.nanoTime() + 200_000_000).anyTimes()
-        EasyMock.expect(mockResponse.status).andReturn(HttpServletResponse.SC_OK).anyTimes()
-        EasyMock.expect(connectionMetaData.httpConfiguration).andReturn(HttpConfiguration()).anyTimes()
-        EasyMock.expect(connectionMetaData.protocol).andReturn("HTTP/1.1").anyTimes()
-        EasyMock.replay(mockRequest, mockResponse, connectionMetaData)
-        val handler = ServletContextHandler()
-        val channel = ServletChannel(handler, connectionMetaData)
-        val testRequest = TestServletContextRequest(handler, channel, mockRequest, mockResponse)
+    fun testLogFilterExcludesPingAndPrometheus() {
+        for (path in setOf("/app/ping", "/admin/prometheus")) {
+            val events = mutableListOf<IAccessEvent>()
+            val factory = FilteredLogbackAccessRequestLogFactory(appConfig)
+            factory.appenders =
+                ImmutableList.of(
+                    AppenderFactory<IAccessEvent> {
+                        _,
+                        _,
+                        _,
+                        _,
+                        _,
+                        ->
+                        object : AppenderBase<IAccessEvent>() {
+                            override fun append(eventObject: IAccessEvent) {
+                                events.add(eventObject)
+                            }
+                        }.also { it.start() }
+                    },
+                )
+            val logger = factory.build("test")
+            val mockRequest = LeakyMock.niceMock<Request>()
+            val mockResponse = LeakyMock.niceMock<Response>()
+            val connectionMetaData = LeakyMock.niceMock<ConnectionMetaData>()
+            EasyMock.expect(mockRequest.httpURI).andReturn(HttpURI.from(path)).anyTimes()
+            EasyMock.expect(mockRequest.headersNanoTime).andReturn(System.nanoTime() + 200_000_000).anyTimes()
+            EasyMock.expect(mockResponse.status).andReturn(HttpServletResponse.SC_OK).anyTimes()
+            EasyMock.expect(connectionMetaData.httpConfiguration).andReturn(HttpConfiguration()).anyTimes()
+            EasyMock.expect(connectionMetaData.protocol).andReturn("HTTP/1.1").anyTimes()
+            EasyMock.replay(mockRequest, mockResponse, connectionMetaData)
+            val handler = ServletContextHandler()
+            val channel = ServletChannel(handler, connectionMetaData)
+            val testRequest = TestServletContextRequest(handler, channel, mockRequest, mockResponse)
 
-        logger.log(testRequest, mockResponse)
-        assertThat(events).isEmpty()
+            logger.log(testRequest, mockResponse)
+            assertThat(events).isEmpty()
+        }
     }
 
     @Test

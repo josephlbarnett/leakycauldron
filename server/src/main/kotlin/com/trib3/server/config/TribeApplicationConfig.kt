@@ -17,6 +17,7 @@ class TribeApplicationConfig
         val corsDomains: List<String>
         val appPort: Int
         val appContextPath: String
+        val adminContextPath: String
         val adminAuthToken: String?
         val httpsHeaders: List<String>
 
@@ -31,6 +32,7 @@ class TribeApplicationConfig
             appContextPath = rootPath?.let {
                 "$applicationContextPath/$rootPath".replace(Regex("/+"), "/")
             } ?: applicationContextPath
+            adminContextPath = config.extract("server.adminContextPath")
             adminAuthToken = config.extract("application.adminAuthToken")
             httpsHeaders = config.extract("application.httpsHeaders")
         }
