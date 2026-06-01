@@ -16,17 +16,13 @@ import com.fasterxml.jackson.annotation.OptBoolean
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.google.inject.multibindings.MapBinder
-import com.google.inject.name.Names
 import com.trib3.json.modules.ObjectMapperModule
 import dev.misfitlabs.kotlinguice4.KotlinModule
-import dev.misfitlabs.kotlinguice4.typeLiteral
 import jakarta.inject.Inject
 import org.testng.annotations.Guice
 import org.testng.annotations.Test
 import org.threeten.extra.YearQuarter
 import java.time.LocalDate
-import kotlin.reflect.KClass
 
 private data class SimpleBean(
     val foo: String,
@@ -83,13 +79,9 @@ private val moduleInjectedBean =
 
 private class SimpleMixinModule : KotlinModule() {
     override fun configure() {
-        MapBinder
-            .newMapBinder(
-                binder(),
-                typeLiteral<KClass<*>>(),
-                typeLiteral<KClass<*>>(),
-                Names.named(ObjectMapperProvider.OBJECT_MAPPER_MIXINS),
-            ).addBinding(SimpleBean::class)
+        ObjectMapperModule
+            .objectMapperMixinBinder { binder() }
+            .addBinding(SimpleBean::class)
             .toInstance(SimpleMixin::class)
         bind<Int>().toInstance(25)
         bind<UnDeserializable>().toInstance(UnDeserializable(SimpleEnum.TWO))

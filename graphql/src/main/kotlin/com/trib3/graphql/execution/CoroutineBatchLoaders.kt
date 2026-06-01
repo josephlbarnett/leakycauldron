@@ -18,7 +18,7 @@ import kotlin.coroutines.CoroutineContext
  * Base class for implementing a [KotlinDataLoader] that ensures the [BatchLoaderEnvironment.context]
  * defaults to a [GraphQLContext] and provides access to the [CoroutineScope] contained in that context.
  */
-abstract class CoroutineBaseLoader<K, V>(
+abstract class CoroutineBaseLoader<K : Any, V : Any>(
     private val coroutineContext: CoroutineContext = Dispatchers.Default,
 ) : KotlinDataLoader<K, V> {
     /**
@@ -47,7 +47,7 @@ abstract class CoroutineBaseLoader<K, V>(
  * using suspend functions/coroutines to execute the [load].  Will run with a [BatchLoaderEnvironment.context]
  * that is a [GraphQLContext] and execute with the [CoroutineScope] contained in that context.
  */
-abstract class CoroutineBatchLoader<K : Any, V> :
+abstract class CoroutineBatchLoader<K : Any, V : Any> :
     CoroutineBaseLoader<K, V>(),
     BatchLoaderWithContext<K, V> {
     /**
@@ -75,7 +75,7 @@ abstract class CoroutineBatchLoader<K : Any, V> :
  * using suspend functions/coroutines to execute the [load].  Will run with a [BatchLoaderEnvironment.context]
  * that is a [GraphQLContext] and execute with the [CoroutineScope] contained in that context.
  */
-abstract class CoroutineMappedBatchLoader<K : Any, V> :
+abstract class CoroutineMappedBatchLoader<K : Any, V : Any> :
     CoroutineBaseLoader<K, V>(),
     MappedBatchLoaderWithContext<K, V> {
     /**

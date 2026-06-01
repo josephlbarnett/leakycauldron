@@ -79,7 +79,7 @@ class LeakyCauldronHooksTest {
         assertThat(result["year"]).isEqualTo("2020")
         assertThat(
             YEAR_SCALAR.coercing.parseLiteral(
-                StringValue.of(null),
+                StringValue.newStringValue().build(),
                 CoercedVariables.emptyVariables(),
                 GraphQLContext.getDefault(),
                 Locale.ENGLISH,
@@ -118,7 +118,7 @@ class LeakyCauldronHooksTest {
         assertThat(result["quarter"]).isEqualTo("2019-Q2")
         assertThat(
             YEAR_QUARTER_SCALAR.coercing.parseLiteral(
-                StringValue.of(null),
+                StringValue.newStringValue().build(),
                 CoercedVariables.emptyVariables(),
                 GraphQLContext.getDefault(),
                 Locale.ENGLISH,
@@ -161,7 +161,7 @@ class LeakyCauldronHooksTest {
         assertThat(result["month"]).isEqualTo("2019-02")
         assertThat(
             YEAR_MONTH_SCALAR.coercing.parseLiteral(
-                StringValue.of(null),
+                StringValue.newStringValue().build(),
                 CoercedVariables.emptyVariables(),
                 GraphQLContext.getDefault(),
                 Locale.ENGLISH,
@@ -207,7 +207,7 @@ class LeakyCauldronHooksTest {
         assertThat(result["localDateTime"]).isEqualTo("2019-10-31T01:01:00.000")
         assertThat(
             LOCAL_DATETIME_SCALAR.coercing.parseLiteral(
-                StringValue.of(null),
+                StringValue.newStringValue().build(),
                 CoercedVariables.emptyVariables(),
                 GraphQLContext.getDefault(),
                 Locale.ENGLISH,
