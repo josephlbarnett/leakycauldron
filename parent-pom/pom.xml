@@ -142,7 +142,7 @@
         <version.testcontainers>2.0.5</version.testcontainers>
         <version.testng>7.12.0</version.testng>
         <version.threeten>1.9.0</version.threeten>
-        <version.typesafe.config>1.4.8</version.typesafe.config>
+        <version.typesafe.config>1.4.9</version.typesafe.config>
         <version.validation>3.1.1</version.validation>
     </properties>
 
