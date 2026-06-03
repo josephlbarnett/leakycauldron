@@ -36,6 +36,7 @@ class CoroutineInvocationHandler(
     val classAnnotation =
         originalInvocable.definitionMethod.declaringClass.getAnnotation(AsyncDispatcher::class.java)
 
+    @Suppress("RedundantSuspendModifier") // false positive with kotlin 2.4.0?
     private suspend fun executeCoroutine(
         originalObject: Any,
         args: Array<out Any>?,
