@@ -94,6 +94,10 @@
             <artifactId>prometheus-metrics-instrumentation-dropwizard</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>prometheus-metrics-instrumentation-dropwizard5</artifactId>
+        </dependency>
+        <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>cloudwatch</artifactId>
         </dependency>

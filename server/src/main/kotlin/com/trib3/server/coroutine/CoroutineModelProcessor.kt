@@ -54,6 +54,7 @@ class CoroutineModelProcessor
         private fun createClassWrapper(method: ResourceMethod): Class<*> =
             ByteBuddy()
                 .subclass(Any::class.java)
+                .name(method.invocable.definitionMethod.declaringClass.name + "CoroutineWrapper")
                 .annotateType(
                     method.invocable.definitionMethod.declaringClass.annotations
                         .toList(),

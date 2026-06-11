@@ -27,6 +27,8 @@ import io.dropwizard.jetty.setup.ServletEnvironment
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.oshai.kotlinlogging.KotlinLoggingConfiguration
 import io.prometheus.metrics.instrumentation.dropwizard.DropwizardExports
+import io.prometheus.metrics.instrumentation.dropwizard5.labels.CustomLabelMapper
+import io.prometheus.metrics.instrumentation.dropwizard5.labels.MapperConfig
 import jakarta.inject.Inject
 import jakarta.inject.Named
 import org.eclipse.jetty.server.Handler
@@ -146,7 +148,24 @@ class TribeApplication
             DropwizardExports
                 .builder()
                 .dropwizardRegistry(metricRegistry)
-                .register()
+                .customLabelMapper(
+                    object : CustomLabelMapper(
+                        listOf(
+                            MapperConfig(
+                                // This config won't actually match what we want because the * glob stops at '.'s
+                                // but we do need a non-empty list of MapperConfigs to use a CustomLabelMapper
+                                "*.total",
+                                $$"${0}.total",
+                                mapOf(),
+                            ),
+                        ),
+                    ) {
+                        override fun getName(dropwizardName: String?): String {
+                            // this one actually remaps **.total -> **.async
+                            return super.getName(dropwizardName?.replace("\\.total$".toRegex(), ".async"))
+                        }
+                    },
+                ).register()
             log.info {
                 "Initializing service ${appConfig.appName} in environment ${appConfig.env}" +
                     " with version info: ${versionHealthCheck.info()} "
