@@ -36,8 +36,8 @@ annotation class GraphQLAuth(
  * If no roles or no authorizer are specified, will fetch data as long as a [Principal] is authenticated.
  * Otherwise will only fetch data if the authenticated [Principal] is assigned any listed role.
  *
- * If data is not fetched, then [Response.Status.UNAUTHORIZED] will be returned as an error for an
- * authenticated but unauthorized user, and [Response.Status.FORBIDDEN] will be returned as an error
+ * If data is not fetched, then [Response.Status.FORBIDDEN] will be returned as an error for an
+ * authenticated but unauthorized user, and [Response.Status.UNAUTHORIZED] will be returned as an error
  * for an unauthenticated user.
  */
 class GraphQLAuthDirectiveWiring(

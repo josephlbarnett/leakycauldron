@@ -8,6 +8,8 @@ import assertk.assertions.isSuccess
 import assertk.assertions.isTrue
 import com.trib3.testing.LeakyMock
 import jakarta.servlet.FilterConfig
+import jakarta.servlet.ServletRequest
+import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.easymock.EasyMock
@@ -146,5 +148,74 @@ class AdminAuthFilterTest {
         }.hasMessage("Invalid credentials")
         assertThat(proceeded).isFalse()
         EasyMock.verify(mockResponse)
+    }
+
+    private fun assertUnauthorized(
+        authHeader: String,
+        token: String,
+    ) {
+        val mockRequest = LeakyMock.niceMock<HttpServletRequest>()
+        val mockResponse = LeakyMock.niceMock<HttpServletResponse>()
+        EasyMock.expect(mockResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED)).once()
+        EasyMock.expect(mockResponse.setHeader("WWW-Authenticate", "Basic realm=\"realm\"")).once()
+        val mockFilterConfig = LeakyMock.niceMock<FilterConfig>()
+        EasyMock.expect(mockRequest.getHeader("Authorization")).andReturn(authHeader).anyTimes()
+        EasyMock.expect(mockFilterConfig.getInitParameter("token")).andReturn(token).anyTimes()
+        EasyMock.replay(mockRequest, mockResponse, mockFilterConfig)
+        val filter = AdminAuthFilter()
+        filter.init(mockFilterConfig)
+        assertFailure {
+            filter.doFilter(mockRequest, mockResponse) { _, _ -> }
+        }.hasMessage("Invalid credentials")
+        EasyMock.verify(mockResponse)
+    }
+
+    // Malformed credentials that previously threw (IndexOutOfBounds / base64 decode) must resolve to a 401.
+    @Test
+    fun testMalformedNoSpaceHeader() = assertUnauthorized("Basic", "123")
+
+    @Test
+    fun testMalformedInvalidBase64() = assertUnauthorized("Basic !!!not-base64!!!", "123")
+
+    @Test
+    fun testMalformedNoColon() =
+        assertUnauthorized("Basic ${String(Base64.getEncoder().encode("nocolon".toByteArray()))}", "123")
+
+    // Non-HTTP servlet types can't carry credentials or a WWW-Authenticate response; still reject cleanly.
+    @Test
+    fun testNonHttpRequestAndResponse() {
+        val mockRequest = LeakyMock.niceMock<ServletRequest>()
+        val mockResponse = LeakyMock.niceMock<ServletResponse>()
+        val mockFilterConfig = LeakyMock.niceMock<FilterConfig>()
+        EasyMock.expect(mockFilterConfig.getInitParameter("token")).andReturn("123").anyTimes()
+        EasyMock.replay(mockRequest, mockResponse, mockFilterConfig)
+        val filter = AdminAuthFilter()
+        filter.init(mockFilterConfig)
+        assertFailure {
+            filter.doFilter(mockRequest, mockResponse) { _, _ -> }
+        }.hasMessage("Invalid credentials")
+    }
+
+    @Test
+    fun testTokenConfiguredFilterPasswordWithColon() {
+        val base64 = Base64.getEncoder()
+        val mockRequest = LeakyMock.niceMock<HttpServletRequest>()
+        val mockResponse = LeakyMock.niceMock<HttpServletResponse>()
+        val mockFilterConfig = LeakyMock.niceMock<FilterConfig>()
+        val base64pass = String(base64.encode("abc:pa:ss".toByteArray()))
+        EasyMock.expect(mockRequest.getHeader("Authorization")).andReturn("Basic $base64pass").anyTimes()
+        EasyMock.expect(mockFilterConfig.getInitParameter("token")).andReturn("pa:ss").anyTimes()
+        EasyMock.replay(mockRequest, mockResponse, mockFilterConfig)
+        val filter = AdminAuthFilter()
+        filter.init(mockFilterConfig)
+        var proceeded = false
+        assertThat(
+            runCatching {
+                filter.doFilter(mockRequest, mockResponse) { _, _ ->
+                    proceeded = true
+                }
+            },
+        ).isSuccess()
+        assertThat(proceeded).isTrue()
     }
 }

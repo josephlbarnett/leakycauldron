@@ -8,6 +8,7 @@ import com.jasonclawson.jackson.dataformat.hocon.HoconFactory
 import com.trib3.config.ConfigLoader
 import io.dropwizard.configuration.ConfigurationFactory
 import io.dropwizard.configuration.ConfigurationSourceProvider
+import io.dropwizard.configuration.ConfigurationValidationException
 import jakarta.validation.Validator
 
 /**
@@ -41,7 +42,10 @@ class HoconConfigurationFactory<T>(
         val configRoot = configLoader.load().root()
         val node: JsonNode = mapper.readTree(hoconFactory.createParser(configRoot.render()))
         val config = mapper.readValue(TreeTraversingParser(node), klass)
-        validator.validate(config)
+        val violations = validator.validate(config)
+        if (violations.isNotEmpty()) {
+            throw ConfigurationValidationException("default configuration", violations)
+        }
         return config
     }
 }

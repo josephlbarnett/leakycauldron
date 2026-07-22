@@ -58,6 +58,7 @@ class AuthCookieResource
                             .path(appConfig.appContextPath)
                             .secure(containerRequestContext.securityContext.isSecure)
                             .httpOnly(true)
+                            .sameSite(NewCookie.SameSite.STRICT)
                             .build(),
                     )
                 }.build()

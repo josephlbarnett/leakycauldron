@@ -7,6 +7,7 @@ import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import java.security.MessageDigest
 import java.util.Base64
 
 /**
@@ -26,20 +27,28 @@ class AdminAuthFilter : Filter {
     private fun checkToken(
         request: ServletRequest,
         response: ServletResponse,
+        expectedToken: String,
     ) {
-        val credentials =
-            when (request) {
-                is HttpServletRequest -> request.getHeader("Authorization")
-                else -> null
-            }
-        if (credentials != null) {
-            val (scheme, encoded) = credentials.split(' ')
-            if ("basic" == scheme.lowercase()) {
-                val decoded = String(base64.decode(encoded))
-                val (_, pass) = decoded.split(":")
-                if (pass == token) {
-                    return
+        val credentials = (request as? HttpServletRequest)?.getHeader("Authorization")
+        val parts = credentials?.split(' ', limit = 2)
+        val scheme = parts?.getOrNull(0)
+        val encoded = parts?.getOrNull(1)
+        if (scheme != null && "basic" == scheme.lowercase() && encoded != null) {
+            val decoded =
+                try {
+                    String(base64.decode(encoded))
+                } catch (ignored: IllegalArgumentException) {
+                    null
                 }
+            // HTTP Basic credentials are `userid:password`; the password may contain colons.
+            val pass = decoded?.substringAfter(':', missingDelimiterValue = "")
+            if (pass != null &&
+                MessageDigest.isEqual(
+                    pass.toByteArray(Charsets.UTF_8),
+                    expectedToken.toByteArray(Charsets.UTF_8),
+                )
+            ) {
+                return
             }
         }
         // boom
@@ -58,9 +67,7 @@ class AdminAuthFilter : Filter {
         response: ServletResponse,
         chain: FilterChain,
     ) {
-        if (token != null) {
-            checkToken(request, response)
-        }
+        token?.let { checkToken(request, response, it) }
         chain.doFilter(request, response)
     }
 
