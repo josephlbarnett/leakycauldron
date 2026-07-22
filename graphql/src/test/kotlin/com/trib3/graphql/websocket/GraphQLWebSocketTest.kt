@@ -5,6 +5,7 @@ import assertk.assertions.contains
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import com.expediagroup.graphql.generator.SchemaGeneratorConfig
 import com.expediagroup.graphql.generator.TopLevelObject
@@ -28,11 +29,13 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -43,8 +46,10 @@ import org.eclipse.jetty.websocket.api.Session
 import org.eclipse.jetty.websocket.api.StatusCode
 import org.testng.annotations.Test
 import java.security.Principal
+import java.util.UUID
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 
 class SocketQuery {
     suspend fun q(): List<String> {
@@ -177,6 +182,7 @@ class GraphQLWebSocketTest {
     fun testSocketQuery() {
         val socket = getSocket()
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
         EasyMock
             .expect(
                 mockSession.sendText(
@@ -212,6 +218,7 @@ class GraphQLWebSocketTest {
     fun testSocketVariableQuery() {
         val socket = getSocket()
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
         EasyMock
             .expect(
                 mockSession.sendText(
@@ -252,6 +259,7 @@ class GraphQLWebSocketTest {
         val socket = getSocket()
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         val errorCapture = EasyMock.newCapture<String>()
         EasyMock
@@ -285,6 +293,7 @@ class GraphQLWebSocketTest {
         val socket = getSocket(mockGraphQL)
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock
             .expect(mockGraphQL.executeAsync(LeakyMock.anyObject<ExecutionInput>()))
@@ -313,6 +322,7 @@ class GraphQLWebSocketTest {
         val socket = getSocket()
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock
             .expect(
@@ -378,6 +388,7 @@ class GraphQLWebSocketTest {
         val socket = getSocket()
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock
             .expect(
@@ -432,6 +443,7 @@ class GraphQLWebSocketTest {
         assertThat(socket.graphQLConfig).isEqualTo(config)
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock
             .expect(
@@ -500,6 +512,7 @@ class GraphQLWebSocketTest {
         val socket = getSocket(keepAliveDispatcher = testDispatcher)
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock
             .expect(
@@ -556,6 +569,7 @@ class GraphQLWebSocketTest {
         val socket = getSocket()
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock.expect(mockSession.close(GraphQLWebSocketCloseReason.NORMAL)).once()
 
@@ -572,6 +586,7 @@ class GraphQLWebSocketTest {
         val socket = getSocket(dispatcher = Dispatchers.Default)
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock
             .expect(
@@ -606,6 +621,7 @@ class GraphQLWebSocketTest {
         val socket = getSocket(dispatcher = Dispatchers.Default)
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
         // use these to signal the test that certain steps have been accomplished
         val data = CountDownLatch(1)
         val secondQueryErrored = CountDownLatch(1)
@@ -682,6 +698,7 @@ class GraphQLWebSocketTest {
         val socket = getSocket()
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock
             .expect(
@@ -711,6 +728,7 @@ class GraphQLWebSocketTest {
         val socket = getSocket()
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock
             .expect(
@@ -740,6 +758,7 @@ class GraphQLWebSocketTest {
         val socket = getSocket()
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock
             .expect(
@@ -763,6 +782,7 @@ class GraphQLWebSocketTest {
         val socket = getSocket(user = "bill", authenticate = true)
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock
             .expect(
@@ -799,6 +819,7 @@ class GraphQLWebSocketTest {
         val socket = getSocket(authenticate = true)
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock
             .expect(
@@ -835,6 +856,7 @@ class GraphQLWebSocketTest {
         val socket = getSocket(user = "bob", authenticate = true)
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock
             .expect(
@@ -919,6 +941,7 @@ class GraphQLWebSocketTest {
         val socket = getSocket(overrideConfig = forceAuthConfig, authenticate = true)
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock.expect(mockSession.close(GraphQLWebSocketCloseReason.UNAUTHORIZED)).once()
 
@@ -936,6 +959,7 @@ class GraphQLWebSocketTest {
         val socket = getSocket(overrideConfig = forceAuthConfig, authenticate = true)
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock.expect(mockSession.close(GraphQLWebSocketCloseReason.UNAUTHORIZED)).once()
 
@@ -958,6 +982,7 @@ class GraphQLWebSocketTest {
             )
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock
             .expect(
@@ -1040,6 +1065,7 @@ class GraphQLWebSocketTest {
             )
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock.expect(mockSession.close(GraphQLWebSocketCloseReason.UNAUTHORIZED))
         EasyMock.replay(mockSession)
@@ -1063,6 +1089,7 @@ class GraphQLWebSocketTest {
             )
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock
             .expect(
@@ -1096,6 +1123,7 @@ class GraphQLWebSocketTest {
             )
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock
             .expect(
@@ -1121,6 +1149,7 @@ class GraphQLWebSocketTest {
             )
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
         val closeLatch = CountDownLatch(1)
 
         EasyMock
@@ -1189,6 +1218,7 @@ class GraphQLWebSocketTest {
             )
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock.expect(
             mockSession.close(
@@ -1218,6 +1248,7 @@ class GraphQLWebSocketTest {
             )
 
         val mockSession = LeakyMock.mock<Session>()
+        EasyMock.expect(mockSession.demand()).anyTimes()
 
         EasyMock.expect(
             mockSession.sendText(
@@ -1249,5 +1280,129 @@ class GraphQLWebSocketTest {
             """.trimIndent(),
         )
         EasyMock.verify(mockSession)
+    }
+
+    /**
+     * The next frame must only be demanded after the current message has been accepted by the channel,
+     * so a stalled consumer backpressures the socket instead of the adapter reading ahead.
+     */
+    @Test
+    fun testDemandGatedOnSend() {
+        val channel = Channel<OperationMessage<*>>()
+        val demands = AtomicInteger(0)
+        val mockSession = LeakyMock.mock<Session>()
+        EasyMock
+            .expect(mockSession.demand())
+            .andAnswer { demands.incrementAndGet() }
+            .anyTimes()
+        EasyMock.replay(mockSession)
+        val adapter =
+            GraphQLWebSocketAdapter(
+                GraphQLWebSocketSubProtocol.APOLLO_PROTOCOL,
+                channel,
+                mapper,
+                Dispatchers.Unconfined,
+            )
+
+        adapter.onWebSocketOpen(mockSession)
+        assertThat(demands.get()).isEqualTo(1) // initial frame demanded
+
+        adapter.onWebSocketText("""{"type": "start", "id": "q1", "payload": {"query": "query { q }"}}""")
+        // nothing is receiving from the channel, so send suspends and the next frame is not demanded
+        assertThat(demands.get()).isEqualTo(1)
+
+        // draining the message lets the suspended send complete, which demands the next frame
+        assertThat(channel.tryReceive().getOrNull()?.id).isEqualTo("q1")
+        assertThat(demands.get()).isEqualTo(2)
+        EasyMock.verify(mockSession)
+    }
+
+    /**
+     * If the socket is torn down while a message is in flight, the cancelled coroutine must not demand
+     * another frame, and frames arriving after teardown must be ignored rather than demanded.
+     */
+    @Test
+    fun testInFlightCancellationDoesNotDemand() {
+        val channel = Channel<OperationMessage<*>>()
+        val message = """{"type": "start", "id": "q1", "payload": {"query": "query { q }"}}"""
+        val demands = AtomicInteger(0)
+        val mockSession = LeakyMock.mock<Session>()
+        EasyMock
+            .expect(mockSession.demand())
+            .andAnswer { demands.incrementAndGet() }
+            .anyTimes()
+        EasyMock.replay(mockSession)
+        val adapter =
+            GraphQLWebSocketAdapter(
+                GraphQLWebSocketSubProtocol.APOLLO_PROTOCOL,
+                channel,
+                mapper,
+                Dispatchers.Unconfined,
+            )
+
+        adapter.onWebSocketOpen(mockSession)
+        adapter.onWebSocketText(message) // suspends at send, awaiting a receiver
+        assertThat(demands.get()).isEqualTo(1)
+
+        adapter.cancel("closing")
+        assertThat(adapter.isActive).isFalse()
+
+        // a frame arriving after teardown is ignored: nothing reaches the channel and no frame is demanded
+        adapter.onWebSocketText(message)
+        assertThat(channel.tryReceive().isFailure).isTrue()
+        assertThat(demands.get()).isEqualTo(1)
+        EasyMock.verify(mockSession)
+    }
+
+    @Test
+    fun testSanitizeMessageId() {
+        assertThat(sanitizeMessageId("simplequery")).isEqualTo("simplequery")
+        assertThat(sanitizeMessageId("q1\nFORGED LOG LINE")).isEqualTo("q1FORGED LOG LINE")
+        assertThat(sanitizeMessageId("a\r\nb\tc")).isEqualTo("abc")
+        assertThat(sanitizeMessageId(null)).isNull()
+        val generated = sanitizeMessageId("\r\n\t")
+        assertThat(generated).isNotNull()
+        assertThat(generated?.let(UUID::fromString)?.toString()).isEqualTo(generated)
+    }
+
+    @Test
+    fun testDemandWithoutSession() {
+        val channel = Channel<OperationMessage<*>>()
+        val adapter =
+            GraphQLWebSocketAdapter(
+                GraphQLWebSocketSubProtocol.APOLLO_PROTOCOL,
+                channel,
+                mapper,
+                Dispatchers.Unconfined,
+            )
+        adapter.onWebSocketOpen(null)
+        adapter.onWebSocketText("""{"type": "start", "id": "q1", "payload": {"query": "query { q }"}}""")
+        assertThat(channel.tryReceive().getOrNull()?.id).isEqualTo("q1")
+    }
+
+    @Test
+    fun testClosedChannelSkipsDemand() {
+        val channel = Channel<OperationMessage<*>>()
+        channel.close()
+        val message = """{"type": "start", "id": "q1", "payload": {"query": "query { q }"}}"""
+        val demands = AtomicInteger(0)
+        val mockSession = LeakyMock.niceMock<Session>()
+        EasyMock
+            .expect(mockSession.demand())
+            .andAnswer { demands.incrementAndGet() }
+            .anyTimes()
+        EasyMock.replay(mockSession)
+        val adapter =
+            GraphQLWebSocketAdapter(
+                GraphQLWebSocketSubProtocol.APOLLO_PROTOCOL,
+                channel,
+                mapper,
+                Dispatchers.Unconfined,
+            )
+
+        adapter.onWebSocketOpen(mockSession) // demands the first frame
+        // the send fails on the already-closed channel; the finally must not demand another frame
+        adapter.onWebSocketText(message)
+        assertThat(demands.get()).isEqualTo(1)
     }
 }

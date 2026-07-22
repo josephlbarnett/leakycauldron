@@ -40,10 +40,20 @@ import org.glassfish.jersey.internal.MapPropertiesDelegate
 import org.glassfish.jersey.server.ContainerRequest
 import java.security.Principal
 import java.time.Duration
+import java.util.UUID
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 private val log = KotlinLogging.logger {}
+
+private val CONTROL_CHARACTERS = Regex("\\p{Cntrl}")
+
+/**
+ * Strips control characters (eg CR/LF) from a client-supplied message id so it cannot forge log
+ * entries, substituting a generated id when a provided id sanitizes to blank.
+ */
+internal fun sanitizeMessageId(id: String?): String? =
+    id?.replace(CONTROL_CHARACTERS, "")?.ifBlank { UUID.randomUUID().toString() }
 
 /**
  * Base class for child coroutines of the [GraphQLWebSocketConsumer].  Allows
@@ -198,7 +208,7 @@ class GraphQLWebSocketConsumer(
             }
         }
         channel.consumeAsFlow().collect {
-            handleMessage(it, scope)
+            handleMessage(it.copy(id = sanitizeMessageId(it.id)), scope)
         }
     }
 

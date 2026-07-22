@@ -6,10 +6,12 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.eclipse.jetty.websocket.api.Callback
 import org.eclipse.jetty.websocket.api.Session
 
@@ -25,7 +27,7 @@ open class GraphQLWebSocketAdapter(
     val channel: Channel<OperationMessage<*>>,
     val objectMapper: ObjectMapper,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
-) : Session.Listener.AutoDemanding,
+) : Session.Listener,
     CoroutineScope by CoroutineScope(dispatcher) {
     val objectWriter = objectMapper.writerWithDefaultPrettyPrinter()!!
     var session: Session? = null
@@ -44,13 +46,15 @@ open class GraphQLWebSocketAdapter(
 
     override fun onWebSocketOpen(session: Session?) {
         this.session = session
+        session?.demand()
     }
 
     /**
      * Parse incoming messages as [OperationMessage]s, then send them to the channel consumer
      */
-    override fun onWebSocketText(message: String) =
-        runBlocking {
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun onWebSocketText(message: String) {
+        this.launch {
             try {
                 val operation =
                     subProtocol.getClientToServerMessage(
@@ -67,8 +71,13 @@ open class GraphQLWebSocketAdapter(
             } catch (error: Throwable) {
                 log.error(error) { "Error parsing message: ${error.message}" }
                 subProtocol.onInvalidMessage(null, message, this@GraphQLWebSocketAdapter)
+            } finally {
+                if (isActive && !channel.isClosedForSend) {
+                    session?.demand()
+                }
             }
         }
+    }
 
     /**
      * Notify channel that the stream is finished
