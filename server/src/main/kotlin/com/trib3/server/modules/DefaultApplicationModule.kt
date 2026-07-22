@@ -94,12 +94,8 @@ class DefaultApplicationModule : TribeApplicationModule() {
         val corsHandler = CrossOriginHandler()
         val corsDomains =
             appConfig.corsDomains
-                .flatMap {
-                    listOf(
-                        "https?://*.?$it",
-                        "https?://*.?$it:${appConfig.appPort}",
-                    )
-                }.toSet()
+                .map { "https?://(?:[^/@:]+\\.)?${Regex.escape(it)}(?::${appConfig.appPort})?" }
+                .toSet()
         corsHandler.allowedOriginPatterns = corsDomains
         corsHandler.isAllowCredentials = true
         corsHandler.allowedMethods = setOf("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD")

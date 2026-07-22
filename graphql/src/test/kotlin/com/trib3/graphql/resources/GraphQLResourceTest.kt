@@ -2,6 +2,7 @@ package com.trib3.graphql.resources
 
 import assertk.assertThat
 import assertk.assertions.contains
+import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.doesNotContain
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
@@ -200,6 +201,43 @@ class GraphQLResourceTest {
                 handler.stop()
             }
         }
+
+    @Test
+    fun testUpgradeOriginValidation() {
+        val port = TribeApplicationConfig(ConfigLoader()).appPort
+
+        fun upgradeStatus(origin: String): Int {
+            val mockReq = LeakyMock.niceMock<HttpServletRequest>()
+            val mockRes = LeakyMock.niceMock<HttpServletResponse>()
+            EasyMock.expect(mockReq.getHeader("Origin")).andReturn(origin).anyTimes()
+            EasyMock.expect(mockReq.pathInfo).andReturn("/graphql").anyTimes()
+            EasyMock.expect(mockReq.servletPath).andReturn("/app").anyTimes()
+            EasyMock.replay(mockReq, mockRes)
+            return resource.graphQLUpgrade(Optional.empty(), mockReq, mockRes).status
+        }
+
+        val origins =
+            listOf(
+                "https://test1.leakycauldron.trib3.com",
+                "http://test1.leakycauldron.trib3.com",
+                "https://test2.leakycauldron.trib3.com",
+                "https://sub.test1.leakycauldron.trib3.com",
+                "https://test1.leakycauldron.trib3.com:$port",
+                "https://xtest1.leakycauldron.trib3.com",
+                "https://test1Xleakycauldron.trib3.com",
+                "https://test1.leakycauldron.trib3.com.evil.com",
+                "https://test1.leakycauldron.trib3.com:9999",
+                "https://evil.com",
+            )
+        assertThat(origins.filter { upgradeStatus(it) != HttpStatus.UNAUTHORIZED_401 })
+            .containsExactlyInAnyOrder(
+                "https://test1.leakycauldron.trib3.com",
+                "http://test1.leakycauldron.trib3.com",
+                "https://test2.leakycauldron.trib3.com",
+                "https://sub.test1.leakycauldron.trib3.com",
+                "https://test1.leakycauldron.trib3.com:$port",
+            )
+    }
 
     @Test
     fun testVariablesQuery() =

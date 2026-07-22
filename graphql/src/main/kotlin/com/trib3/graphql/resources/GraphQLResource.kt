@@ -147,12 +147,9 @@ open class GraphQLResource
         // when doing CORS checking of websockets
         private val corsRegex =
             Regex(
-                appConfig.corsDomains
-                    .joinToString("|") {
-                        "https?://*.?$it|" +
-                            "https?://*.?$it:${appConfig.appPort}"
-                    }.replace(".", "\\.")
-                    .replace("*", ".*"),
+                appConfig.corsDomains.joinToString("|") { domain ->
+                    "https?://(?:[^/@:]+\\.)?${Regex.escape(domain)}(?::${appConfig.appPort})?"
+                },
             )
         internal val runningFutures = ConcurrentHashMap<String, CoroutineScope>()
 

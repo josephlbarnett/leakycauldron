@@ -3,6 +3,7 @@ package com.trib3.server.modules
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.contains
+import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
@@ -10,6 +11,8 @@ import assertk.assertions.isNull
 import com.codahale.metrics.health.HealthCheck
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.trib3.config.ConfigLoader
+import com.trib3.server.config.TribeApplicationConfig
 import com.trib3.server.config.dropwizard.HoconConfigurationFactoryFactory
 import com.trib3.server.filters.RequestIdFilter
 import com.trib3.server.healthchecks.PingHealthCheck
@@ -27,6 +30,7 @@ import org.eclipse.jetty.server.handler.CrossOriginHandler
 import org.testng.annotations.Guice
 import org.testng.annotations.Test
 import java.security.Principal
+import java.util.regex.Pattern
 
 @Guice(modules = [DefaultApplicationModule::class])
 class DefaultApplicationModuleTest
@@ -59,5 +63,33 @@ class DefaultApplicationModuleTest
             assertThat(DefaultApplicationModule()).isEqualTo(DefaultApplicationModule())
             assertThat(authFilter).isNull()
             assertThat(authorizer).isNull()
+        }
+
+        @Test
+        fun testCorsAllowedOriginPatterns() {
+            val appConfig = TribeApplicationConfig(ConfigLoader("corsPatternTestCase"))
+            val handler = DefaultApplicationModule().provideCorsHandler(appConfig) as CrossOriginHandler
+            val patterns = handler.allowedOriginPatterns.map { Pattern.compile(it, Pattern.CASE_INSENSITIVE) }
+            val origins =
+                listOf(
+                    "https://test1.leakycauldron.trib3.com",
+                    "http://test1.leakycauldron.trib3.com",
+                    "https://test2.leakycauldron.trib3.com",
+                    "https://sub.test1.leakycauldron.trib3.com",
+                    "https://test1.leakycauldron.trib3.com:${appConfig.appPort}",
+                    "https://xtest1.leakycauldron.trib3.com",
+                    "https://test1Xleakycauldron.trib3.com",
+                    "https://test1.leakycauldron.trib3.com.evil.com",
+                    "https://test1.leakycauldron.trib3.com:9999",
+                    "https://evil.com",
+                )
+            assertThat(origins.filter { o -> patterns.any { it.matcher(o).matches() } })
+                .containsExactlyInAnyOrder(
+                    "https://test1.leakycauldron.trib3.com",
+                    "http://test1.leakycauldron.trib3.com",
+                    "https://test2.leakycauldron.trib3.com",
+                    "https://sub.test1.leakycauldron.trib3.com",
+                    "https://test1.leakycauldron.trib3.com:${appConfig.appPort}",
+                )
         }
     }

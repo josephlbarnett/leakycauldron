@@ -335,4 +335,18 @@ class SwaggerInitializerTest {
             ),
         )
     }
+
+    @Test
+    fun testServerUrlsWithNoConfiguredDomains() {
+        newInitializer("serverUrlsWithNoConfiguredDomains", ConfigLoader("emptyDomainsTestCase"))
+            .process(object : Application() {})
+        val context = OpenApiContextLocator.getInstance().getOpenApiContext("serverUrlsWithNoConfiguredDomains")
+        assertThat(context.read().servers.map { it.url }).isEqualTo(
+            listOf(
+                "https://localhost/app",
+                "http://localhost/app",
+                "http://localhost:9080/app",
+            ),
+        )
+    }
 }

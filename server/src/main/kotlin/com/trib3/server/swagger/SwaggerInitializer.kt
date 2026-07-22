@@ -180,7 +180,12 @@ class SwaggerInitializer(
     override fun process(application: Application) {
         ModelConverters.getInstance().addConverter(ModelResolver(objectMapper))
         ModelConverters.getInstance().addConverter(SealedKotlinSchemaConverter(objectMapper))
-        val hostAndPath = UriBuilder.newInstance().host(appConfig.corsDomains[0]).path(appConfig.appContextPath)
+        val hostAndPath =
+            UriBuilder
+                .newInstance()
+                .host(
+                    appConfig.corsDomains.firstOrNull() ?: "localhost",
+                ).path(appConfig.appContextPath)
         val baseUrls =
             listOf(
                 hostAndPath.clone().scheme("https"),
