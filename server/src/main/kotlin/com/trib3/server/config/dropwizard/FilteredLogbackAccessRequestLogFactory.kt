@@ -1,5 +1,6 @@
 package com.trib3.server.config.dropwizard
 
+import ch.qos.logback.access.common.PatternLayout
 import ch.qos.logback.access.common.spi.IAccessEvent
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
@@ -18,7 +19,7 @@ import io.dropwizard.logging.common.layout.LayoutFactory
 import io.dropwizard.request.logging.LogbackAccessRequestLog
 import io.dropwizard.request.logging.LogbackAccessRequestLogFactory
 import io.dropwizard.request.logging.async.AsyncAccessEventAppenderFactory
-import io.dropwizard.request.logging.layout.LogbackAccessRequestLayout
+import io.dropwizard.request.logging.layout.SafeRequestParameterConverter
 import jakarta.servlet.http.HttpServletResponse
 import org.eclipse.jetty.server.RequestLog
 import org.slf4j.LoggerFactory
@@ -27,15 +28,33 @@ import java.util.TimeZone
 private const val FAST_RESPONSE_TIME = 200
 
 /**
- * [LogbackAccessRequestLayout] that also includes the request Id read from the response
- * headers, and timestamp in the same layout we use for the regular application log.
+ * [PatternLayout] like dropwizard's LogbackAccessRequestLayout, but that also includes the
+ * request Id read from the response headers, and timestamp in the same layout we use for the
+ * regular application log.
  */
 class RequestIdLogbackAccessRequestLayout(
     context: LoggerContext,
     timeZone: TimeZone,
-) : LogbackAccessRequestLayout(context, timeZone) {
+) : PatternLayout() {
     init {
-        pattern = "%t{ISO8601,UTC} [%responseHeader{X-Request-Id}] ${this.pattern}"
+        // Reimplement's dropwizard's LogbackAccessRequestLayout until upstream is compatible with logback 1.6.x+
+        // see https://github.com/dropwizard/dropwizard/pull/11265
+        outputPatternAsHeader = false
+        pattern =
+            "%t{ISO8601,UTC} [%responseHeader{X-Request-Id}] %h %l %u [%t{dd/MMM/yyyy:HH:mm:ss Z," + timeZone.getID() +
+            "}] \"%r\" %s %b \"%i{Referer}\" \"%i{User-Agent}\" %D"
+        this.context = context
+    }
+
+    companion object {
+        init {
+            PatternLayout.ACCESS_DEFAULT_CONVERTER_SUPPLIER_MAP.put("requestParameter") {
+                SafeRequestParameterConverter()
+            }
+            PatternLayout.ACCESS_DEFAULT_CONVERTER_SUPPLIER_MAP.put("reqParameter") {
+                SafeRequestParameterConverter()
+            }
+        }
     }
 }
 
