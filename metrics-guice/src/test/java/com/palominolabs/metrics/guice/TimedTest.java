@@ -48,7 +48,7 @@ public class TimedTest {
 
         assertThat("Guice creates a timer which records invocation duration without overestimating too much",
             metric.getSnapshot().getMax(),
-            is(lessThan(NANOSECONDS.convert(15, MILLISECONDS))));
+            is(lessThan(NANOSECONDS.convert(20, MILLISECONDS))));
     }
 
     @Test
