@@ -75,7 +75,7 @@
         <version.graphql-java>25.0</version.graphql-java>
         <version.graphql-java-extended-scalars>24.0</version.graphql-java-extended-scalars>
         <version.graphql-java.dataloader>6.0.0</version.graphql-java.dataloader>
-        <version.guava>33.6.0-jre</version.guava>
+        <version.guava>33.7.1-jre</version.guava>
         <version.guice>7.0.0</version.guice>
         <version.hibernate.validator>8.0.2.Final</version.hibernate.validator>
         <version.hikaricp>7.1.0</version.hikaricp>
@@ -102,6 +102,7 @@
         <version.jna>5.19.1</version.jna>
         <version.joda>2.14.3</version.joda>
         <version.jooq>3.21.7</version.jooq>
+        <version.jspecify>1.0.1</version.jspecify>
         <version.jsr305>3.0.2</version.jsr305>
         <version.junit>4.13.2</version.junit>
         <version.kotlin>2.4.10</version.kotlin>
@@ -221,6 +222,11 @@
                 <groupId>com.google.j2objc</groupId>
                 <artifactId>j2objc-annotations</artifactId>
                 <version>${version.j2objc}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>${version.jspecify}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.ben-manes.caffeine</groupId>
