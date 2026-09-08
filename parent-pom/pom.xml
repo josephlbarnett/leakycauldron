@@ -101,7 +101,7 @@
         <version.jetty>12.1.12</version.jetty>
         <version.jna>5.19.1</version.jna>
         <version.joda>2.14.3</version.joda>
-        <version.jooq>3.21.7</version.jooq>
+        <version.jooq>3.21.8</version.jooq>
         <version.jspecify>1.0.1</version.jspecify>
         <version.jsr305>3.0.2</version.jsr305>
         <version.junit>4.13.2</version.junit>
