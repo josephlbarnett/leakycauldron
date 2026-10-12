@@ -45,7 +45,7 @@ class GraphQLAuthDirectiveWiring(
 ) : KotlinSchemaDirectiveWiring {
     private fun missingAllowedRole(
         principal: Principal,
-        roles: Array<String>,
+        roles: List<String>,
     ): Boolean =
         authorizer != null &&
             roles.isNotEmpty() &&
@@ -54,11 +54,11 @@ class GraphQLAuthDirectiveWiring(
             }
 
     override fun onField(environment: KotlinFieldDirectiveEnvironment): GraphQLFieldDefinition {
-        @Suppress("UNCHECKED_CAST")
         val roles =
             environment.directive
                 .getArgument("roles")
-                .argumentValue.value as Array<String>
+                ?.getValue<List<String>>()
+                .orEmpty()
         val originalDataFetcher = environment.getDataFetcher()
 
         val authFetcher =

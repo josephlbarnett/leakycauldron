@@ -165,7 +165,7 @@ class QueryCoroutine(
             OperationMessage(
                 OperationType.GQL_ERROR,
                 messageId,
-                listOf(MessageGraphQLError(cause.message)),
+                listOf(MessageGraphQLError(cause.message ?: "Unknown error")),
             ),
         )
     }

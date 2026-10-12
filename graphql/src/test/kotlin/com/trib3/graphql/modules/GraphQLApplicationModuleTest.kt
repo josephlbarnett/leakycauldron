@@ -53,7 +53,7 @@ class DummyModule : GraphQLApplicationModule() {
                     parameters: InstrumentationExecutionParameters?,
                     state: InstrumentationState?,
                 ): CompletableFuture<ExecutionResult> {
-                    executionResult.extensions.put("testinstrumentation", "testvalue")
+                    executionResult.extensions!!.put("testinstrumentation", "testvalue")
                     return CompletableFuture.completedFuture(executionResult)
                 }
             },
@@ -78,8 +78,8 @@ class GraphQLApplicationModuleTest
             assertThat(environmentCallbacks).isNotEmpty()
             RequestIdFilter.withRequestId("graphQLInstrumentationBindingTest") {
                 val result = graphQL.execute("query test")
-                assertThat(result.extensions["RequestId"]).isEqualTo("graphQLInstrumentationBindingTest")
-                assertThat(result.extensions["testinstrumentation"]).isEqualTo("testvalue")
+                assertThat(result.extensions!!["RequestId"]).isEqualTo("graphQLInstrumentationBindingTest")
+                assertThat(result.extensions!!["testinstrumentation"]).isEqualTo("testvalue")
             }
         }
 
