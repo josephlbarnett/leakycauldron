@@ -54,7 +54,7 @@
         <version.caffeine>3.3.0</version.caffeine>
         <version.checker-qual>4.3.0</version.checker-qual>
         <version.classgraph>4.8.196</version.classgraph>
-        <version.commons-codec>1.22.1</version.commons-codec>
+        <version.commons-codec>1.23.0</version.commons-codec>
         <version.commons-compress>1.28.0</version.commons-compress>
         <version.commons-io>2.22.0</version.commons-io>
         <version.commons-lang3>3.21.0</version.commons-lang3>
