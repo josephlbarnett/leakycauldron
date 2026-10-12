@@ -32,7 +32,7 @@ class RequestIdInstrumentationTest {
         MDC.put("RequestId", "RequestIdInstrumentationTest::testInstrumentation")
         try {
             val result = graphQL.execute("query {}")
-            assertThat(result.extensions["RequestId"])
+            assertThat(result.extensions!!["RequestId"])
                 .isEqualTo("RequestIdInstrumentationTest::testInstrumentation")
         } finally {
             if (prevMDC == null) {

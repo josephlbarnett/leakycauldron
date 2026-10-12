@@ -73,20 +73,20 @@ class GraphQLGraphQLAuthDirectiveWiringTest {
     @Test
     fun testRegularUser() {
         val result = query(regularUser)
-        val data = result.getData<Map<String, String>>()
+        val data = result.getData<Map<String, String>>()!!
         val errors = result.errors
         assertThat(data["needUser"]).isEqualTo(regularUser.name)
         assertThat(data["noUser"]).isEqualTo("nope")
         assertThat(data["needSuperUser"]).isNull()
         assertThat(errors).hasSize(1)
-        assertThat(errors[0].path[0]).isEqualTo("needSuperUser")
+        assertThat(errors[0].path!![0]).isEqualTo("needSuperUser")
         assertThat(errors[0].message).isNotNull().contains("HTTP 403 Forbidden")
     }
 
     @Test
     fun testSuperUser() {
         val result = query(superUser)
-        val data = result.getData<Map<String, String>>()
+        val data = result.getData<Map<String, String>>()!!
         val errors = result.errors
         assertThat(data["needUser"]).isEqualTo(superUser.name)
         assertThat(data["noUser"]).isEqualTo("nope")
@@ -97,22 +97,22 @@ class GraphQLGraphQLAuthDirectiveWiringTest {
     @Test
     fun testNoUser() {
         val result = query(null)
-        val data = result.getData<Map<String, String>>()
+        val data = result.getData<Map<String, String>>()!!
         val errors = result.errors
         assertThat(data["needUser"]).isNull()
         assertThat(data["noUser"]).isEqualTo("nope")
         assertThat(data["needSuperUser"]).isNull()
         assertThat(errors).hasSize(2)
-        assertThat(errors[0].path[0]).isEqualTo("needUser")
+        assertThat(errors[0].path!![0]).isEqualTo("needUser")
         assertThat(errors[0].message).isNotNull().contains("HTTP 401 Unauthorized")
-        assertThat(errors[1].path[0]).isEqualTo("needSuperUser")
+        assertThat(errors[1].path!![0]).isEqualTo("needSuperUser")
         assertThat(errors[1].message).isNotNull().contains("HTTP 401 Unauthorized")
     }
 
     @Test
     fun testRegularUserNoAuthorizer() {
         val result = query(regularUser, null)
-        val data = result.getData<Map<String, String>>()
+        val data = result.getData<Map<String, String>>()!!
         val errors = result.errors
         assertThat(data["needUser"]).isEqualTo(regularUser.name)
         assertThat(data["noUser"]).isEqualTo("nope")
@@ -123,7 +123,7 @@ class GraphQLGraphQLAuthDirectiveWiringTest {
     @Test
     fun testSuperUserNoAuthorizer() {
         val result = query(superUser, null)
-        val data = result.getData<Map<String, String>>()
+        val data = result.getData<Map<String, String>>()!!
         val errors = result.errors
         assertThat(data["needUser"]).isEqualTo(superUser.name)
         assertThat(data["noUser"]).isEqualTo("nope")
@@ -134,15 +134,15 @@ class GraphQLGraphQLAuthDirectiveWiringTest {
     @Test
     fun testNoUserNoAuthorizer() {
         val result = query(null, null)
-        val data = result.getData<Map<String, String>>()
+        val data = result.getData<Map<String, String>>()!!
         val errors = result.errors
         assertThat(data["needUser"]).isNull()
         assertThat(data["noUser"]).isEqualTo("nope")
         assertThat(data["needSuperUser"]).isNull()
         assertThat(errors).hasSize(2)
-        assertThat(errors[0].path[0]).isEqualTo("needUser")
+        assertThat(errors[0].path!![0]).isEqualTo("needUser")
         assertThat(errors[0].message).isNotNull().contains("HTTP 401 Unauthorized")
-        assertThat(errors[1].path[0]).isEqualTo("needSuperUser")
+        assertThat(errors[1].path!![0]).isEqualTo("needSuperUser")
         assertThat(errors[1].message).isNotNull().contains("HTTP 401 Unauthorized")
     }
 
@@ -165,15 +165,15 @@ class GraphQLGraphQLAuthDirectiveWiringTest {
                         .query("{ needUser noUser needSuperUser }")
                         .build(),
                 )
-        val data = result.getData<Map<String, String>>()
+        val data = result.getData<Map<String, String>>()!!
         val errors = result.errors
         assertThat(data["needUser"]).isNull()
         assertThat(data["noUser"]).isEqualTo("nope")
         assertThat(data["needSuperUser"]).isNull()
         assertThat(errors).hasSize(2)
-        assertThat(errors[0].path[0]).isEqualTo("needUser")
+        assertThat(errors[0].path!![0]).isEqualTo("needUser")
         assertThat(errors[0].message).isNotNull().contains("HTTP 401 Unauthorized")
-        assertThat(errors[1].path[0]).isEqualTo("needSuperUser")
+        assertThat(errors[1].path!![0]).isEqualTo("needSuperUser")
         assertThat(errors[1].message).isNotNull().contains("HTTP 401 Unauthorized")
     }
 }
