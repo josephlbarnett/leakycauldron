@@ -8,7 +8,6 @@ import assertk.assertions.isNull
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 import com.trib3.config.ConfigLoader
-import com.trib3.json.ObjectMapperProvider
 import com.trib3.server.config.TribeApplicationConfig
 import io.swagger.v3.core.converter.AnnotatedType
 import io.swagger.v3.core.converter.ModelConverterContextImpl
@@ -23,6 +22,8 @@ import jakarta.ws.rs.core.Application
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import org.testng.annotations.Test
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.kotlinModule
 import io.swagger.v3.oas.models.media.Schema as ModelSchema
 
 @JvmInline
@@ -118,18 +119,20 @@ class ClassConsumesTestResource {
     fun post(body: Parent.A): Response = Response.ok(body).build()
 }
 
+private val mapper = JsonMapper.builder().addModule(kotlinModule()).build()
+
 class SwaggerInitializerTest {
     private fun newInitializer(
         contextId: String,
         configLoader: ConfigLoader = ConfigLoader(),
-    ) = SwaggerInitializer(contextId, TribeApplicationConfig(configLoader), ObjectMapperProvider().get())
+    ) = SwaggerInitializer(contextId, TribeApplicationConfig(configLoader), mapper)
 
     /** Resolves [type] against an isolated converter chain (no downstream `ModelResolver`). */
     private fun resolveDirectly(
         type: Class<*>,
         asSubtype: Boolean = false,
     ): Pair<ModelSchema<*>?, ModelConverterContextImpl> {
-        val context = ModelConverterContextImpl(SealedKotlinSchemaConverter(ObjectMapperProvider().get()))
+        val context = ModelConverterContextImpl(SealedKotlinSchemaConverter(mapper))
         val annotated = AnnotatedType().type(type)
         if (asSubtype) annotated.subtype(true)
         return context.resolve(annotated) to context

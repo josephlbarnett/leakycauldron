@@ -140,7 +140,7 @@
         <version.servlet>6.1.0</version.servlet>
         <version.slf4j>2.0.20</version.slf4j>
         <version.snakeyaml>2.7</version.snakeyaml>
-        <version.swagger>2.2.55</version.swagger>
+        <version.swagger>3.0.0</version.swagger>
         <version.testcontainers>2.0.5</version.testcontainers>
         <version.testng>7.12.0</version.testng>
         <version.threeten>1.11.0</version.threeten>
@@ -556,62 +556,28 @@
             <!-- swagger -->
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-core-jakarta</artifactId>
-                <version>${version.swagger}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.dataformat</groupId>
-                        <artifactId>jackson-dataformat-yaml</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.datatype</groupId>
-                        <artifactId>jackson-datatype-jsr310</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-models-jakarta</artifactId>
+                <artifactId>swagger-core</artifactId>
                 <version>${version.swagger}</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-annotations-jakarta</artifactId>
+                <artifactId>swagger-models</artifactId>
                 <version>${version.swagger}</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-integration-jakarta</artifactId>
+                <artifactId>swagger-annotations</artifactId>
                 <version>${version.swagger}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.dataformat</groupId>
-                        <artifactId>jackson-dataformat-yaml</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.datatype</groupId>
-                        <artifactId>jackson-datatype-jsr310</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-jaxrs2-jakarta</artifactId>
+                <artifactId>swagger-integration</artifactId>
                 <version>${version.swagger}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.dataformat</groupId>
-                        <artifactId>jackson-dataformat-yaml</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.datatype</groupId>
-                        <artifactId>jackson-datatype-jsr310</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.javassist</groupId>
-                        <artifactId>javassist</artifactId>
-                    </exclusion>
-                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-rest</artifactId>
+                <version>${version.swagger}</version>
             </dependency>
 
 

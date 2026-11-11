@@ -39,7 +39,7 @@ import io.dropwizard.jersey.DropwizardResourceConfig
 import io.dropwizard.jersey.setup.JerseyEnvironment
 import io.dropwizard.jetty.MutableServletContextHandler
 import io.dropwizard.jetty.setup.ServletEnvironment
-import io.swagger.v3.jaxrs2.integration.OpenApiServlet
+import io.swagger.v3.rest.integration.OpenApiServlet
 import jakarta.servlet.Filter
 import jakarta.servlet.FilterRegistration
 import jakarta.servlet.Servlet

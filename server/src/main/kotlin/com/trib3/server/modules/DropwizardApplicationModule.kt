@@ -10,7 +10,7 @@ import dev.misfitlabs.kotlinguice4.multibindings.KotlinMultibinder
 import io.dropwizard.core.Configuration
 import io.dropwizard.core.ConfiguredBundle
 import io.dropwizard.servlets.assets.AssetServlet
-import io.swagger.v3.jaxrs2.integration.OpenApiServlet
+import io.swagger.v3.rest.integration.OpenApiServlet
 import jakarta.inject.Named
 
 /**

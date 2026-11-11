@@ -49,6 +49,8 @@ import org.eclipse.jetty.websocket.core.server.WebSocketCreator
 import org.glassfish.jersey.test.spi.TestContainerFactory
 import org.testng.annotations.Guice
 import org.testng.annotations.Test
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.kotlinModule
 import java.net.HttpCookie
 import java.security.Principal
 import java.util.Optional
@@ -311,7 +313,7 @@ class GraphQLResourceIntegrationTest
                 SwaggerInitializer(
                     "GraphQLSwagger",
                     TribeApplicationConfig(ConfigLoader()),
-                    ObjectMapperProvider().get(),
+                    JsonMapper.builder().addModule(kotlinModule()).build(),
                 )
             initializer.process(
                 object : Application() {

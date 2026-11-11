@@ -1,17 +1,11 @@
 package com.trib3.server.swagger
 
-import com.fasterxml.jackson.databind.JavaType
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.trib3.server.config.TribeApplicationConfig
 import io.swagger.v3.core.converter.AnnotatedType
 import io.swagger.v3.core.converter.ModelConverter
 import io.swagger.v3.core.converter.ModelConverterContext
 import io.swagger.v3.core.converter.ModelConverters
 import io.swagger.v3.core.jackson.ModelResolver
-import io.swagger.v3.jaxrs2.Reader
-import io.swagger.v3.jaxrs2.integration.JaxrsApplicationScanner
-import io.swagger.v3.jaxrs2.integration.JaxrsOpenApiContextBuilder
-import io.swagger.v3.jaxrs2.integration.OpenApiServlet
 import io.swagger.v3.oas.integration.SwaggerConfiguration
 import io.swagger.v3.oas.integration.api.OpenApiContext
 import io.swagger.v3.oas.models.OpenAPI
@@ -19,15 +13,23 @@ import io.swagger.v3.oas.models.media.ComposedSchema
 import io.swagger.v3.oas.models.media.Content
 import io.swagger.v3.oas.models.media.Schema
 import io.swagger.v3.oas.models.servers.Server
+import io.swagger.v3.rest.Reader
+import io.swagger.v3.rest.integration.OpenApiServlet
+import io.swagger.v3.rest.integration.RestApplicationScanner
+import io.swagger.v3.rest.integration.RestOpenApiContextBuilder
 import jakarta.inject.Inject
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.core.Application
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.UriBuilder
+import tools.jackson.databind.JavaType
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.jsonFormatVisitors.JsonArrayFormatVisitor
+import tools.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper
 import io.swagger.v3.oas.annotations.media.Schema as SchemaAnnotation
 
 // JaxrsOpenApiContextBuilder<T> needs to be subclassed in order to instantiate with a <T>
-private class SwaggerContextBuilder : JaxrsOpenApiContextBuilder<SwaggerContextBuilder>()
+private class SwaggerContextBuilder : RestOpenApiContextBuilder<SwaggerContextBuilder>()
 
 /**
  * Defaults `application/json` for content whose declaring resource has no
@@ -106,13 +108,18 @@ internal class SealedKotlinSchemaConverter(
         javaType: JavaType,
         context: ModelConverterContext,
     ): Schema<*>? {
-        val jsonValueType =
-            mapper.serializationConfig
-                .introspect(javaType)
-                .findJsonValueAccessor()
-                ?.type
-                ?.takeIf { it.isContainerType }
-        val contentType = jsonValueType?.contentType
+        val contentType =
+            buildList {
+                mapper.acceptJsonFormatVisitor(
+                    javaType,
+                    object : JsonFormatVisitorWrapper.Base() {
+                        override fun expectArrayFormat(type: JavaType): JsonArrayFormatVisitor? {
+                            add(type)
+                            return null
+                        }
+                    },
+                )
+            }.firstOrNull { it != javaType }?.contentType
         val rawClass = javaType.rawClass
         val name = rawClass.swaggerSchemaName()
         return if (contentType == null || name == null) {
@@ -199,7 +206,7 @@ class SwaggerInitializer(
                         OpenAPI().servers(
                             baseUrls.map { Server().url(it.build().toString()) },
                         ),
-                    ).scannerClass(JaxrsApplicationScanner::class.qualifiedName)
+                    ).scannerClass(RestApplicationScanner::class.qualifiedName)
                     .readerClass(JsonDefaultMediaTypeReader::class.qualifiedName),
             ).application(application)
             .ctxId(contextId)
